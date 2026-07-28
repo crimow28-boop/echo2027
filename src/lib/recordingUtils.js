@@ -43,7 +43,7 @@ export const PAGE_SIZE = 50;
 export function buildQuery(filters) {
   const query = {};
   const parsed = parseSearchRequest(filters.search);
-  const { text, digits, from, to } = parsed;
+  const { text, rawText, digits, from, to } = parsed;
 
   if (from || to) {
     query.callDate = {};
@@ -58,6 +58,11 @@ export function buildQuery(filters) {
     // like "#" that are part of the saved contact name.
     if (text.replace(/\s/g, "").length >= 2) {
       conditions.push({ callerFriendly: { $regex: escapeRegex(text), $options: "i" } });
+    }
+
+    // Fallback for names that contain words we strip as conversational filler.
+    if (rawText && rawText !== text && rawText.replace(/\s/g, "").length >= 2) {
+      conditions.push({ callerFriendly: { $regex: escapeRegex(rawText), $options: "i" } });
     }
 
     // Phone: normalize Israeli local numbers to e164 (drop the leading 0).

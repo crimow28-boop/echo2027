@@ -49,26 +49,25 @@ function parseDateToken(token) {
   return null;
 }
 
-// Extract relative Hebrew/English date phrases such as "היום", "אתמול", "השבוע".
+// Relative date phrases, including common Hebrew prefixes ("מהיום", "מאתמול").
+// Hebrew letters are not word characters in JS regex, so no \b anchors here.
+const RELATIVE_RANGES = [
+  { re: /(מה?|ב)?אתמול|yesterday/, days: [1, 1] },
+  { re: /(מה?|ב)?היום|today/, days: [0, 0] },
+  { re: /(מה?|ב)?שבוע(\s+האחרון|\s+שעבר)?|השבוע|last week|this week|past week/, days: [7, 0] },
+  { re: /(מה?|ב)?חודש(\s+האחרון|\s+שעבר)?|החודש|last month|this month|past month/, days: [30, 0] },
+];
+
 function parseRelativeRange(text) {
   const now = new Date();
-  if (/\b(היום|today)\b/.test(text)) {
-    return { from: startOfDay(now), to: endOfDay(now), matched: /היום|today/ };
-  }
-  if (/\b(אתמול|yesterday)\b/.test(text)) {
-    const y = new Date(now);
-    y.setDate(y.getDate() - 1);
-    return { from: startOfDay(y), to: endOfDay(y), matched: /אתמול|yesterday/ };
-  }
-  if (/(השבוע|last week|this week|שבוע אחרון)/.test(text)) {
-    const f = new Date(now);
-    f.setDate(f.getDate() - 7);
-    return { from: startOfDay(f), to: endOfDay(now), matched: /השבוע|last week|this week|שבוע אחרון/ };
-  }
-  if (/(החודש|this month|last month|חודש אחרון)/.test(text)) {
-    const f = new Date(now);
-    f.setDate(f.getDate() - 30);
-    return { from: startOfDay(f), to: endOfDay(now), matched: /החודש|this month|last month|חודש אחרון/ };
+  for (const item of RELATIVE_RANGES) {
+    const match = text.match(item.re);
+    if (!match) continue;
+    const fromDate = new Date(now);
+    fromDate.setDate(fromDate.getDate() - item.days[0]);
+    const toDate = new Date(now);
+    toDate.setDate(toDate.getDate() - item.days[1]);
+    return { from: startOfDay(fromDate), to: endOfDay(toDate), matchedText: match[0] };
   }
   return null;
 }
@@ -95,7 +94,7 @@ export function parseSearchRequest(rawInput) {
     if (relative) {
       from = relative.from;
       to = relative.to;
-      working = working.replace(new RegExp(relative.matched, "g"), " ");
+      working = working.split(relative.matchedText).join(" ");
     }
   }
 
@@ -110,6 +109,9 @@ export function parseSearchRequest(rawInput) {
 
   const text = kept.join(" ").trim();
   const digits = text.replace(/\D/g, "");
+  // Kept as a fallback: some contact names contain words we treat as filler
+  // (e.g. "חבר עם פרווה").
+  const rawText = working.trim();
 
-  return { text, digits, from, to };
+  return { text, rawText, digits, from, to };
 }
