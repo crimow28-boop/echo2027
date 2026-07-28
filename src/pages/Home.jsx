@@ -227,7 +227,7 @@ export default function Home() {
 
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
         {/* Top bar */}
         <div className="flex items-start justify-between gap-4 mb-6">
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">מצאו כל שיחה, ברגע</h1>
