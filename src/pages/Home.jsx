@@ -187,8 +187,8 @@ export default function Home() {
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Top bar */}
-        <div className="flex items-center justify-between border-b-2 border-foreground pb-3 mb-10">
-          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">CALLECT</span>
+        <div className="flex items-center justify-between border-b border-border pb-4 mb-12">
+          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground/70">CALLECT</span>
           <div className="flex items-center gap-2">
             <Button onClick={handleExport} disabled={exporting} variant="ghost" size="icon" className="rounded-none shadow-none text-muted-foreground hover:text-foreground hover:bg-transparent h-9 w-9 disabled:opacity-40">
               {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -203,46 +203,46 @@ export default function Home() {
         </div>
 
         {settingsLoaded && !hasSettings && (
-          <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-3 border-2 border-amber-400 p-4">
+          <div className="mb-10 flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
             <div className="flex items-center gap-3 flex-1">
               <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0" />
-              <div className="font-mono text-xs leading-relaxed text-amber-700">
-                <p className="uppercase tracking-wider font-bold">חיבור נדרש</p>
-                <p className="text-amber-600 mt-1">כדי לסנכרן ולשלוח הקלטות, יש להזין את טוקן ה-EXM ופרטי Green API.</p>
+              <div className="text-sm leading-relaxed text-amber-800">
+                <p className="font-medium">חיבור נדרש</p>
+                <p className="text-amber-700 mt-1">כדי לסנכרן ולשלוח הקלטות, יש להזין את טוקן ה-EXM ופרטי Green API.</p>
               </div>
             </div>
-            <Button asChild size="sm" className="gap-2 rounded-none border-2 border-amber-500 bg-amber-400 text-foreground shadow-none hover:bg-amber-300 hover:text-foreground font-mono text-[11px] uppercase tracking-wider">
-              <Link to="/onboarding">[ להגדרה → ]</Link>
+            <Button asChild size="sm" className="gap-2 rounded-lg border border-amber-300 bg-amber-100 text-amber-800 shadow-none hover:bg-amber-200 text-xs font-medium">
+              <Link to="/onboarding">להגדרה →</Link>
             </Button>
           </div>
         )}
 
         {/* Search hero */}
         <div className="text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none">חיפוש הקלטה</h1>
-          <p className="mt-3 font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">בקשו הקלטות לפי מספר טלפון או שם איש קשר</p>
-          <div className="relative mt-6 max-w-xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">חיפוש הקלטה</h1>
+          <p className="mt-3 text-sm text-muted-foreground">בקשו הקלטות לפי מספר טלפון או שם איש קשר</p>
+          <div className="relative mt-8 max-w-xl mx-auto">
             <Search className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={filters.search}
               onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
               placeholder="מה תרצו לחפש?"
               dir="auto"
-              className="pr-12 h-14 sm:h-16 text-lg font-mono rounded-none border-2 border-foreground bg-card focus-visible:ring-0 focus-visible:border-primary"
+              className="pr-12 h-14 text-base rounded-2xl border border-border bg-card shadow-sm focus-visible:ring-0 focus-visible:border-primary/50"
             />
           </div>
           {/* Example suggestions */}
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/70">לדוגמה:</span>
+            <span className="text-xs text-muted-foreground">לדוגמה:</span>
             {SEARCH_SUGGESTIONS.map((s) => (
               <button
                 key={s.label}
                 type="button"
                 onClick={() => setFilters((prev) => ({ ...prev, search: s.label }))}
-                className="group inline-flex items-baseline gap-1.5 rounded-none border border-foreground/30 bg-card px-2.5 py-1 font-mono text-xs hover:border-foreground hover:bg-muted transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-foreground hover:bg-accent transition-colors"
               >
-                <span className="text-foreground">{s.label}</span>
-                <span className="text-[9px] uppercase tracking-wider text-muted-foreground/70 group-hover:text-muted-foreground">· {s.hint}</span>
+                <span>{s.label}</span>
+                <span className="text-xs text-muted-foreground">· {s.hint}</span>
               </button>
             ))}
           </div>
@@ -251,28 +251,28 @@ export default function Home() {
         {/* Results */}
         {hasSearch ? (
           <div className="mt-8">
-            <div className="flex items-center gap-2 mb-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-              <span className={`inline-block w-2.5 h-2.5 ${loading ? "bg-muted-foreground animate-pulse" : "bg-primary"}`}></span>
+            <div className="flex items-center gap-2 mb-4 text-xs text-muted-foreground">
+              <span className={`inline-block w-2 h-2 rounded-full ${loading ? "bg-muted-foreground animate-pulse" : "bg-primary"}`}></span>
               {loading ? "טוען..." : `נמצאו ${recordings.length} תוצאות`}
             </div>
 
             {/* Table - Desktop */}
-            <div className="hidden md:block border-2 border-foreground bg-card overflow-hidden">
+            <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-muted/30 border-b-2 border-foreground">
+                <thead className="bg-muted/40 border-b border-border">
                   <tr className="text-right">
-                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">מתקשר</th>
-                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">מספר</th>
-                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">משך</th>
-                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">תאריך</th>
-                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">תאריך שליחה</th>
-                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium text-center">פעולה</th>
+                    <th className="px-4 py-3 text-xs font-medium text-muted-foreground">מתקשר</th>
+                    <th className="px-4 py-3 text-xs font-medium text-muted-foreground">מספר</th>
+                    <th className="px-4 py-3 text-xs font-medium text-muted-foreground">משך</th>
+                    <th className="px-4 py-3 text-xs font-medium text-muted-foreground">תאריך</th>
+                    <th className="px-4 py-3 text-xs font-medium text-muted-foreground">תאריך שליחה</th>
+                    <th className="px-4 py-3 text-xs font-medium text-muted-foreground text-center">פעולה</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading && (
                     <tr>
-                      <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                      <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground text-sm">
                         <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
                         טוען תוצאות...
                       </td>
@@ -280,7 +280,7 @@ export default function Home() {
                   )}
                   {!loading && recordings.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                      <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground text-sm">
                         לא נמצאו הקלטות למספר זה
                       </td>
                     </tr>
@@ -295,13 +295,13 @@ export default function Home() {
             {/* Cards - Mobile */}
             <div className="md:hidden space-y-3.5">
               {loading && (
-                <div className="text-center py-16 text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                <div className="text-center py-16 text-muted-foreground text-sm">
                   <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
                   טוען תוצאות...
                 </div>
               )}
               {!loading && recordings.length === 0 && (
-                <div className="text-center py-16 text-muted-foreground font-mono text-xs uppercase tracking-wider">לא נמצאו הקלטות למספר זה</div>
+                <div className="text-center py-16 text-muted-foreground text-sm">לא נמצאו הקלטות למספר זה</div>
               )}
               {!loading && recordings.map((r) => (
                 <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} />
@@ -310,7 +310,7 @@ export default function Home() {
 
             {hasMore && !loading && recordings.length > 0 && (
               <div className="flex justify-center mt-8">
-                <Button variant="outline" disabled={loadingMore} onClick={() => loadRecordings(false)} className="gap-2 rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider">
+                <Button variant="outline" disabled={loadingMore} onClick={() => loadRecordings(false)} className="gap-2 rounded-lg border border-border bg-card hover:bg-accent shadow-none text-sm">
                   {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronDown className="w-4 h-4" />}
                   טען עוד
                 </Button>
@@ -318,7 +318,7 @@ export default function Home() {
             )}
           </div>
         ) : (
-          <div className="mt-14 text-center font-mono text-xs uppercase tracking-wider text-muted-foreground">
+          <div className="mt-16 text-center text-sm text-muted-foreground">
             הקלידו מספר טלפון או שם כדי להתחיל
           </div>
         )}
