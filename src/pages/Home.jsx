@@ -59,11 +59,11 @@ export default function Home() {
     }
   }, [toast]);
 
-  // Reload when any filter changes
+  // Reload when search changes
   useEffect(() => {
     loadRecordings(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters.callType, filters.sent, filters.fromDate, filters.toDate, debouncedSearch]);
+  }, [debouncedSearch]);
 
   // Live updates: refresh the list when recordings change in the database
   useEffect(() => {
@@ -115,7 +115,6 @@ export default function Home() {
 
   const handleFilterChange = (field, value) =>
     setFilters((prev) => ({ ...prev, [field]: value }));
-  const handleReset = () => setFilters(DEFAULT_FILTERS);
 
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground">
@@ -142,7 +141,6 @@ export default function Home() {
         <RecordingFilters
           filters={filters}
           onChange={handleFilterChange}
-          onReset={handleReset}
           resultCount={recordings.length}
           loading={loading}
         />
