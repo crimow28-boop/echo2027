@@ -2,6 +2,7 @@ import React from "react";
 import { Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDuration, formatDate } from "@/lib/recordingUtils";
+import RecordingPlayer from "@/components/recordings/RecordingPlayer";
 
 export default function RecordingCard({ recording, sendingId, onSend }) {
   const r = recording;
@@ -17,6 +18,7 @@ export default function RecordingCard({ recording, sendingId, onSend }) {
         <span dir="ltr" className="font-mono">{formatDuration(r.duration)}</span>
         <span>{formatDate(r.callDate || r.created_date)}</span>
       </div>
+      <RecordingPlayer recording={r} />
       <div className="flex items-center justify-between gap-2 pt-3 border-t border-border">
         {r.sentAt ? (
           <span className="inline-flex items-center gap-2 text-xs text-primary">
