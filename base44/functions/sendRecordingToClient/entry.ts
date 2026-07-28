@@ -3,6 +3,7 @@ import { secrets } from "base44:runtime";
 import { getRecordingUrls } from "../../shared/exmApi.ts";
 
 const GREEN_API_URL = "https://7107.api.greenapi.com/waInstance710722692595/sendFileByUrl/48e0edeb455248518fdf9bd95850167cdc284422809b4e9e87";
+const GREEN_API_SEND_MESSAGE_URL = "https://7107.api.greenapi.com/waInstance710722692595/sendMessage/48e0edeb455248518fdf9bd95850167cdc284422809b4e9e87";
 
 // Convert an Israeli phone number to WhatsApp chat id format.
 // 0526331295 -> 972526331295 ; strips dashes/spaces ; removes leading 0 ; prepends 972.
@@ -84,14 +85,25 @@ export default async function(req) {
       `${businessName}`
     ].join("\n");
 
+    // Send the template as a dedicated text message first.
+    const msgResponse = await fetch(GREEN_API_SEND_MESSAGE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chatId: chatId, message: caption })
+    });
+    if (!msgResponse.ok) {
+      const errText = await msgResponse.text();
+      return Response.json({ error: `Green API message error: ${msgResponse.status} ${errText}` }, { status: 502 });
+    }
+
+    // Then send the recording file separately.
     const waResponse = await fetch(GREEN_API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         urlFile: recordingUrl,
         fileName: "recording.mp3",
-        chatId: chatId,
-        caption: caption
+        chatId: chatId
       })
     });
 
