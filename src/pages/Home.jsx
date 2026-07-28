@@ -1,49 +1,68 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { PhoneIncoming, PhoneOutgoing, Send, CheckCircle2, Clock, Loader2 } from "lucide-react";
+import { PhoneIncoming, Loader2, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-
-function formatDuration(seconds) {
-  if (!seconds && seconds !== 0) return "--:--";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return "—";
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return dateStr;
-  return d.toLocaleString("he-IL", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+import RecordingFilters from "@/components/recordings/RecordingFilters";
+import RecordingRow from "@/components/recordings/RecordingRow";
+import RecordingCard from "@/components/recordings/RecordingCard";
+import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE } from "@/lib/recordingUtils";
 
 export default function Home() {
   const [recordings, setRecordings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [sendingId, setSendingId] = useState(null);
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const { toast } = useToast();
 
-  const loadRecordings = useCallback(async () => {
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
+  const searchRef = useRef(debouncedSearch);
+  searchRef.current = debouncedSearch;
+  const recordingsRef = useRef(recordings);
+  recordingsRef.current = recordings;
+
+  // Debounce free-text search
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(filters.search), 450);
+    return () => clearTimeout(t);
+  }, [filters.search]);
+
+  const loadRecordings = useCallback(async (reset) => {
+    if (reset) {
+      setLoading(true);
+      setHasMore(true);
+    } else {
+      setLoadingMore(true);
+    }
     try {
-      const data = await base44.entities.CallRecording.list("-created_date");
-      setRecordings(data || []);
+      const effectiveFilters = { ...filtersRef.current, search: searchRef.current };
+      const query = buildQuery(effectiveFilters);
+      if (!reset) {
+        const list = recordingsRef.current;
+        const last = list.length > 0 ? list[list.length - 1].created_date : null;
+        if (last) query.created_date = { ...(query.created_date || {}), $lt: last };
+      }
+      const data = await base44.entities.CallRecording.filter(query, "-created_date", PAGE_SIZE);
+      const list = data || [];
+      setHasMore(list.length === PAGE_SIZE);
+      setRecordings((prev) => (reset ? list : [...prev, ...list]));
     } catch (error) {
       toast({ title: "שגיאה בטעינת הקלטות", description: error.message, variant: "destructive" });
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, [toast]);
 
+  // Reload when any filter changes
   useEffect(() => {
-    loadRecordings();
-  }, [loadRecordings]);
+    loadRecordings(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.callType, filters.sent, filters.fromDate, filters.toDate, debouncedSearch]);
 
   const handleSend = async (recordId) => {
     setSendingId(recordId);
@@ -64,11 +83,15 @@ export default function Home() {
     }
   };
 
+  const handleFilterChange = (field, value) =>
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  const handleReset = () => setFilters(DEFAULT_FILTERS);
+
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
-        <header className="mb-8">
+        <header className="mb-6">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
               <PhoneIncoming className="w-5 h-5 text-primary-foreground" />
@@ -79,6 +102,14 @@ export default function Home() {
             </div>
           </div>
         </header>
+
+        <RecordingFilters
+          filters={filters}
+          onChange={handleFilterChange}
+          onReset={handleReset}
+          resultCount={recordings.length}
+          loading={loading}
+        />
 
         {/* Table - Desktop */}
         <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden">
@@ -111,54 +142,7 @@ export default function Home() {
                 </tr>
               )}
               {!loading && recordings.map((r) => (
-                <tr key={r.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3 font-medium">{r.callerFriendly || "—"}</td>
-                  <td className="px-4 py-3 text-muted-foreground font-mono text-xs" dir="ltr">{r.callerNumber || "—"}</td>
-                  <td className="px-4 py-3">
-                    {r.callType === "outgoing" ? (
-                      <span className="inline-flex items-center gap-1.5 text-blue-400">
-                        <PhoneOutgoing className="w-4 h-4" />
-                        יוצאת
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 text-emerald-400">
-                        <PhoneIncoming className="w-4 h-4" />
-                        נכנסת
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 font-mono" dir="ltr">{formatDuration(r.duration)}</td>
-                  <td className="px-4 py-3 text-muted-foreground text-xs">{formatDate(r.callDate || r.created_date)}</td>
-                  <td className="px-4 py-3">
-                    {r.sent ? (
-                      <span className="inline-flex items-center gap-1.5 text-emerald-400 text-xs">
-                        <CheckCircle2 className="w-4 h-4" />
-                        נשלח
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 text-amber-400 text-xs">
-                        <Clock className="w-4 h-4" />
-                        ממתין
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <Button
-                      size="sm"
-                      variant={r.sent ? "secondary" : "default"}
-                      disabled={r.sent || sendingId === r.id}
-                      onClick={() => handleSend(r.id)}
-                      className="gap-1.5"
-                    >
-                      {sendingId === r.id ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <Send className="w-3.5 h-3.5" />
-                      )}
-                      שלח ללקוח
-                    </Button>
-                  </td>
-                </tr>
+                <RecordingRow key={r.id} recording={r} sendingId={sendingId} onSend={handleSend} />
               ))}
             </tbody>
           </table>
@@ -176,54 +160,19 @@ export default function Home() {
             <div className="text-center py-16 text-muted-foreground">אין הקלטות להצגה</div>
           )}
           {!loading && recordings.map((r) => (
-            <div key={r.id} className="rounded-xl border border-border bg-card p-4 space-y-3">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="font-medium">{r.callerFriendly || "—"}</div>
-                  <div className="text-xs text-muted-foreground font-mono" dir="ltr">{r.callerNumber || "—"}</div>
-                </div>
-                {r.callType === "outgoing" ? (
-                  <span className="inline-flex items-center gap-1 text-blue-400 text-xs">
-                    <PhoneOutgoing className="w-3.5 h-3.5" /> יוצאת
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 text-emerald-400 text-xs">
-                    <PhoneIncoming className="w-3.5 h-3.5" /> נכנסת
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span className="font-mono" dir="ltr">{formatDuration(r.duration)}</span>
-                <span>{formatDate(r.callDate || r.created_date)}</span>
-              </div>
-              <div className="flex items-center justify-between gap-2 pt-2 border-t border-border">
-                {r.sent ? (
-                  <span className="inline-flex items-center gap-1.5 text-emerald-400 text-xs">
-                    <CheckCircle2 className="w-4 h-4" /> נשלח
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 text-amber-400 text-xs">
-                    <Clock className="w-4 h-4" /> ממתין
-                  </span>
-                )}
-                <Button
-                  size="sm"
-                  variant={r.sent ? "secondary" : "default"}
-                  disabled={r.sent || sendingId === r.id}
-                  onClick={() => handleSend(r.id)}
-                  className="gap-1.5"
-                >
-                  {sendingId === r.id ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <Send className="w-3.5 h-3.5" />
-                  )}
-                  שלח
-                </Button>
-              </div>
-            </div>
+            <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={handleSend} />
           ))}
         </div>
+
+        {/* Load more */}
+        {hasMore && !loading && recordings.length > 0 && (
+          <div className="flex justify-center mt-6">
+            <Button variant="outline" disabled={loadingMore} onClick={() => loadRecordings(false)} className="gap-2">
+              {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronDown className="w-4 h-4" />}
+              טען עוד
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
