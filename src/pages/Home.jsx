@@ -170,48 +170,49 @@ export default function Home() {
     setFilters((prev) => ({ ...prev, [field]: value }));
 
   return (
-    <div dir="rtl" className="min-h-screen bg-background text-foreground">
+    <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Top bar */}
+        <div className="flex items-center justify-between border-b-2 border-foreground pb-3 mb-6">
+          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">CALLECT // RECORDINGS</span>
+          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">{recordings.length} REC</span>
+        </div>
+
         {/* Header */}
-        <header className="mb-8">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-2xl gradient-teal glow-teal-sm flex items-center justify-center">
-                <PhoneIncoming className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">הקלטות שיחות</h1>
-                <p className="text-sm text-muted-foreground">Callect — ניהול הקלטות שיחות</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Button onClick={handleExport} disabled={exporting} variant="outline" className="gap-2 border-border bg-card/60 hover:bg-accent hover:text-accent-foreground">
-                {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                <span className="hidden sm:inline font-medium">ייצוא לגיליון</span>
-              </Button>
-              <Button onClick={handleSync} disabled={syncing || !hasSettings} className="gap-2 border-0 gradient-teal text-primary-foreground glow-teal-sm hover:opacity-90">
-                {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                <span className="hidden sm:inline font-medium">סנכרון</span>
-              </Button>
-              <Button asChild variant="outline" className="gap-2 border-border bg-card/60 hover:bg-accent hover:text-accent-foreground">
-                <Link to="/settings">
-                  <SettingsIcon className="w-4 h-4" />
-                  <span className="hidden sm:inline font-medium">הגדרות</span>
-                </Link>
-              </Button>
-            </div>
+        <header className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none">הקלטות שיחות</h1>
+            <p className="mt-3 font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">ניהול · ארגון · שליחה ללקוחות</p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button onClick={handleExport} disabled={exporting} variant="outline" className="gap-2 rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider">
+              {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              <span className="hidden sm:inline">ייצוא</span>
+            </Button>
+            <Button onClick={handleSync} disabled={syncing || !hasSettings} className="gap-2 rounded-none border-2 border-foreground bg-primary text-primary-foreground shadow-none hover:bg-foreground hover:text-background font-mono text-[11px] uppercase tracking-wider">
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+              <span className="hidden sm:inline">סנכרון</span>
+            </Button>
+            <Button asChild variant="outline" className="gap-2 rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider">
+              <Link to="/settings">
+                <SettingsIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">הגדרות</span>
+              </Link>
+            </Button>
           </div>
         </header>
 
         {settingsLoaded && !hasSettings && (
-          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
-            <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0" />
-            <div className="flex-1 text-sm">
-              <p className="font-medium text-amber-200">הגדרת חיבור נדרשת</p>
-              <p className="text-amber-200/80 text-xs mt-0.5">כדי לסנכרן ולשלוח הקלטות, יש להזין את טוקן ה-EXM ופרטי Green API שלכם.</p>
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3 border-2 border-amber-400 p-4">
+            <div className="flex items-center gap-3 flex-1">
+              <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0" />
+              <div className="font-mono text-xs leading-relaxed text-amber-200">
+                <p className="uppercase tracking-wider font-bold">חיבור נדרש</p>
+                <p className="text-amber-200/80 mt-1">כדי לסנכרן ולשלוח הקלטות, יש להזין את טוקן ה-EXM ופרטי Green API.</p>
+              </div>
             </div>
-            <Button asChild size="sm" className="gap-2 border-0 gradient-teal text-primary-foreground glow-teal-sm">
-              <Link to="/onboarding">להגדרה</Link>
+            <Button asChild size="sm" className="gap-2 rounded-none border-2 border-amber-400 bg-amber-400 text-background shadow-none hover:bg-amber-300 hover:text-background font-mono text-[11px] uppercase tracking-wider">
+              <Link to="/onboarding">[ להגדרה → ]</Link>
             </Button>
           </div>
         )}
@@ -224,23 +225,23 @@ export default function Home() {
         />
 
         {/* Table - Desktop */}
-        <div className="hidden md:block rounded-2xl border border-border bg-card/70 overflow-hidden shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)] backdrop-blur-sm">
+        <div className="hidden md:block border-2 border-foreground bg-card overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-muted/30 border-b border-border">
+            <thead className="bg-muted/30 border-b-2 border-foreground">
               <tr className="text-right">
-                <th className="px-4 py-3.5 font-medium text-muted-foreground">מתקשר</th>
-                <th className="px-4 py-3.5 font-medium text-muted-foreground">מספר</th>
-                <th className="px-4 py-3.5 font-medium text-muted-foreground">סוג</th>
-                <th className="px-4 py-3.5 font-medium text-muted-foreground">משך</th>
-                <th className="px-4 py-3.5 font-medium text-muted-foreground">תאריך</th>
-                <th className="px-4 py-3.5 font-medium text-muted-foreground">סטטוס</th>
-                <th className="px-4 py-3.5 font-medium text-muted-foreground text-center">פעולה</th>
+                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">מתקשר</th>
+                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">מספר</th>
+                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">סוג</th>
+                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">משך</th>
+                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">תאריך</th>
+                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">סטטוס</th>
+                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium text-center">פעולה</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-16 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
                     <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
                     טוען הקלטות...
                   </td>
@@ -248,7 +249,7 @@ export default function Home() {
               )}
               {!loading && recordings.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-16 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
                     אין הקלטות להצגה
                   </td>
                 </tr>
@@ -263,13 +264,13 @@ export default function Home() {
         {/* Cards - Mobile */}
         <div className="md:hidden space-y-3.5">
           {loading && (
-            <div className="text-center py-16 text-muted-foreground">
+            <div className="text-center py-16 text-muted-foreground font-mono text-xs uppercase tracking-wider">
               <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
               טוען הקלטות...
             </div>
           )}
           {!loading && recordings.length === 0 && (
-            <div className="text-center py-16 text-muted-foreground">אין הקלטות להצגה</div>
+            <div className="text-center py-16 text-muted-foreground font-mono text-xs uppercase tracking-wider">אין הקלטות להצגה</div>
           )}
           {!loading && recordings.map((r) => (
             <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={handleSend} />
@@ -279,7 +280,7 @@ export default function Home() {
         {/* Load more */}
         {hasMore && !loading && recordings.length > 0 && (
           <div className="flex justify-center mt-8">
-            <Button variant="outline" disabled={loadingMore} onClick={() => loadRecordings(false)} className="gap-2 border-border bg-card/60 hover:bg-accent hover:text-accent-foreground">
+            <Button variant="outline" disabled={loadingMore} onClick={() => loadRecordings(false)} className="gap-2 rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider">
               {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronDown className="w-4 h-4" />}
               טען עוד
             </Button>
