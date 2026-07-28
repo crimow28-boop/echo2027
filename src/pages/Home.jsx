@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { downloadRecordingsCsv } from "@/lib/exportRecordings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import AppMenuSheet from "@/components/AppMenuSheet";
 import { useToast } from "@/components/ui/use-toast";
 import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
@@ -232,33 +232,13 @@ export default function Home() {
         <div className="flex items-start justify-between gap-4 mb-6">
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">מצאו כל שיחה, ברגע</h1>
           <div className="shrink-0">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border bg-card/70 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                >
-                  <Menu className="w-4 h-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-44">
-                <DropdownMenuItem onClick={handleSync} disabled={syncing || !hasSettings}>
-                  {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                  <span>סנכרון הקלטות</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleExport} disabled={exporting}>
-                  {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                  <span>ייצוא ל-CSV</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/settings" className="flex items-center gap-2">
-                    <SettingsIcon className="w-4 h-4" />
-                    <span>הגדרות</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <AppMenuSheet
+              onSync={handleSync}
+              onExport={handleExport}
+              syncing={syncing}
+              exporting={exporting}
+              hasSettings={hasSettings}
+            />
           </div>
         </div>
 
