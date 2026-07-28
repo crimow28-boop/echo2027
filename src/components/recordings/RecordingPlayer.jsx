@@ -3,7 +3,24 @@ import { base44 } from "@/api/base44Client";
 import { Play, Pause, Loader2, AudioLines } from "lucide-react";
 import { formatDuration } from "@/lib/recordingUtils";
 
+const BAR_COUNT = 40;
+
+// Stable pseudo-random amplitude bars per recording (WhatsApp-style waveform).
+function buildBars(seedStr) {
+  let seed = 0;
+  for (let i = 0; i < String(seedStr).length; i++) seed = (seed * 31 + String(seedStr).charCodeAt(i)) % 100000;
+  const bars = [];
+  for (let i = 0; i < BAR_COUNT; i++) {
+    seed = (seed * 1103515245 + 12345) % 2147483648;
+    const rnd = (seed / 2147483648);
+    const envelope = Math.sin((i / BAR_COUNT) * Math.PI) * 0.5 + 0.5;
+    bars.push(Math.round(25 + rnd * 75 * envelope));
+  }
+  return bars;
+}
+
 export default function RecordingPlayer({ recording }) {
+  const bars = React.useMemo(() => buildBars(recording.id || recording.externalId || "x"), [recording.id, recording.externalId]);
   const audioRef = useRef(null);
   const [url, setUrl] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -40,7 +57,7 @@ export default function RecordingPlayer({ recording }) {
     const el = audioRef.current;
     if (!el || !total) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const ratio = 1 - (e.clientX - rect.left) / rect.width; // RTL
+    const ratio = (e.clientX - rect.left) / rect.width;
     el.currentTime = Math.max(0, Math.min(total, ratio * total));
   };
 
@@ -62,17 +79,20 @@ export default function RecordingPlayer({ recording }) {
           )}
         </button>
 
-        <div className="flex-1 min-w-0">
-          <div
-            onClick={seek}
-            className="h-1.5 w-full rounded-full bg-border cursor-pointer overflow-hidden"
-          >
-            <div
-              className="h-full rounded-full bg-primary transition-[width] duration-200"
-              style={{ width: `${progress}%`, marginRight: 0, marginLeft: "auto" }}
-            />
+        <div className="flex-1 min-w-0" dir="ltr">
+          <div onClick={seek} className="flex items-center gap-[2px] h-8 cursor-pointer">
+            {bars.map((h, i) => {
+              const active = (i / bars.length) * 100 <= progress;
+              return (
+                <span
+                  key={i}
+                  className={`flex-1 rounded-full transition-colors ${active ? "bg-primary" : "bg-border"}`}
+                  style={{ height: `${h}%`, minWidth: 2 }}
+                />
+              );
+            })}
           </div>
-          <div className="mt-1.5 flex items-center justify-between text-[11px] text-muted-foreground font-mono" dir="ltr">
+          <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground font-mono" dir="ltr">
             <span>{formatDuration(Math.round(time))}</span>
             <span>{formatDuration(Math.round(total))}</span>
           </div>
