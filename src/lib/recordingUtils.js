@@ -18,6 +18,17 @@ export function formatDate(dateStr) {
   });
 }
 
+// Format a stored Israeli phone number for display: 972... -> 0..., grouped XXX-XXX-XXXX.
+export function formatPhoneDisplay(num) {
+  if (!num) return "";
+  let n = String(num).replace(/\D/g, "");
+  if (n.startsWith("972")) n = "0" + n.slice(3);
+  if (n.length === 10 && n.startsWith("0")) {
+    return `${n.slice(0, 3)}-${n.slice(3, 6)}-${n.slice(6)}`;
+  }
+  return String(num);
+}
+
 export const DEFAULT_FILTERS = {
   search: "",
 };

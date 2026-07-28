@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
 import SendConfirmDialog from "@/components/recordings/SendConfirmDialog";
-import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS } from "@/lib/recordingUtils";
+import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS, formatPhoneDisplay } from "@/lib/recordingUtils";
 
 export default function Home() {
   const [recordings, setRecordings] = useState([]);
@@ -24,6 +24,7 @@ export default function Home() {
   const [hasSettings, setHasSettings] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [suggestions, setSuggestions] = useState(SEARCH_SUGGESTIONS);
   const { toast } = useToast();
 
   const filtersRef = useRef(filters);
@@ -111,6 +112,33 @@ export default function Home() {
         setHasSettings(false);
       } finally {
         setSettingsLoaded(true);
+      }
+    })();
+  }, []);
+
+  // Build search suggestions from the user's most recent recordings (real data).
+  useEffect(() => {
+    (async () => {
+      try {
+        const rows = await base44.entities.CallRecording.filter({}, "-callDate", 30);
+        const seen = new Set();
+        const list = [];
+        for (const r of rows || []) {
+          const name = (r.callerFriendly || "").trim();
+          const number = (r.callerNumber || "").trim();
+          const key = name || number;
+          if (!key || seen.has(key)) continue;
+          seen.add(key);
+          list.push({
+            key,
+            label: name || formatPhoneDisplay(number),
+            hint: name ? "איש קשר" : "מספר טלפון",
+          });
+          if (list.length >= 5) break;
+        }
+        if (list.length > 0) setSuggestions(list);
+      } catch (_e) {
+        // keep static fallback suggestions
       }
     })();
   }, []);
@@ -235,21 +263,29 @@ export default function Home() {
               className="pr-12 h-14 text-base rounded-2xl border border-border bg-card shadow-sm focus-visible:ring-0 focus-visible:border-primary/50"
             />
           </div>
-          {/* Example suggestions */}
-          <div className="mt-5 flex flex-wrap items-center justify-start gap-2">
-            <span className="text-xs text-muted-foreground">אפשר לחפש לפי:</span>
-            {SEARCH_SUGGESTIONS.map((s) => (
-              <button
-                key={s.label}
-                type="button"
-                onClick={() => setFilters((prev) => ({ ...prev, search: s.label }))}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-foreground hover:bg-accent transition-colors"
-              >
-                <span>{s.label}</span>
-                <span className="text-xs text-muted-foreground">· {s.hint}</span>
-              </button>
-            ))}
-          </div>
+          {!hasSearch && (
+            <div className="mt-8 max-w-xl">
+              <p className="text-xs text-muted-foreground">התחילו בשם או במספר טלפון</p>
+              {suggestions.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-xs font-medium text-foreground/80">אפשר לחפש לפי:</p>
+                  <div className="mt-2.5 flex flex-wrap gap-2">
+                    {suggestions.map((s) => (
+                      <button
+                        key={s.key || s.label}
+                        type="button"
+                        onClick={() => setFilters((prev) => ({ ...prev, search: s.label }))}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-foreground hover:bg-accent hover:border-primary/30 transition-colors"
+                      >
+                        <span>{s.label}</span>
+                        <span className="text-xs text-muted-foreground">· {s.hint}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Results */}
@@ -325,11 +361,7 @@ export default function Home() {
               </div>
             )}
           </div>
-        ) : (
-          <div className="mt-16 text-right text-sm text-muted-foreground">
-            התחילו בשם או במספר טלפון
-          </div>
-        )}
+        ) : null}
       </div>
 
       <SendConfirmDialog
