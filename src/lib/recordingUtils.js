@@ -1,3 +1,5 @@
+import { parseSearchRequest, escapeRegex } from "@/lib/searchParser";
+
 export function formatDuration(seconds) {
   if (!seconds && seconds !== 0) return "--:--";
   const mins = Math.floor(seconds / 60);
@@ -35,40 +37,41 @@ export const DEFAULT_FILTERS = {
 
 export const PAGE_SIZE = 50;
 
-// Build a database query from a free-text search term.
-// The term can be a phone number (normalized to e164) or a contact name.
+// Build a database query from a chat-style, free-text search request.
+// Supports contact names (exactly as saved, punctuation included), phone
+// numbers, and date ranges written in plain language.
 export function buildQuery(filters) {
   const query = {};
-  if (!filters.search) return query;
+  const parsed = parseSearchRequest(filters.search);
+  const { text, digits, from, to } = parsed;
 
-  const term = String(filters.search).trim();
-  if (!term) return query;
+  if (from || to) {
+    query.callDate = {};
+    if (from) query.callDate.$gte = from.toISOString();
+    if (to) query.callDate.$lte = to.toISOString();
+  }
 
-  const digits = term.replace(/\D/g, "");
-  const namePart = term.replace(/\d/g, "").trim();
-  const conditions = [];
+  if (text) {
+    const conditions = [];
 
-  // Phone branch: normalize Israeli local numbers to e164 (drop leading 0).
-  if (digits.length >= 3) {
-    let normalized = digits;
-    if (normalized.startsWith("0")) {
-      normalized = "972" + normalized.slice(1);
+    // Contact name: match the subject exactly as typed, including characters
+    // like "#" that are part of the saved contact name.
+    if (text.replace(/\s/g, "").length >= 2) {
+      conditions.push({ callerFriendly: { $regex: escapeRegex(text), $options: "i" } });
     }
-    conditions.push({ callerNumber: { $regex: normalized, $options: "i" } });
-  }
 
-  // Contact name branch: match against the stored friendly name.
-  if (namePart.length >= 2) {
-    conditions.push({ callerFriendly: { $regex: namePart, $options: "i" } });
-  }
+    // Phone: normalize Israeli local numbers to e164 (drop the leading 0).
+    if (digits.length >= 3) {
+      const normalized = digits.startsWith("0") ? "972" + digits.slice(1) : digits;
+      conditions.push({ callerNumber: { $regex: normalized, $options: "i" } });
+      conditions.push({ callerNumber: { $regex: digits, $options: "i" } });
+    }
 
-  if (conditions.length === 0) {
-    // Fallback: only digits/short term — match the raw term anywhere.
-    query.callerNumber = { $regex: digits || term, $options: "i" };
-  } else if (conditions.length === 1) {
-    Object.assign(query, conditions[0]);
-  } else {
-    query.$or = conditions;
+    if (conditions.length === 1) {
+      Object.assign(query, conditions[0]);
+    } else if (conditions.length > 1) {
+      query.$or = conditions;
+    }
   }
 
   return query;
@@ -78,4 +81,12 @@ export function buildQuery(filters) {
 export const SEARCH_SUGGESTIONS = [
   { label: "דנה לוי", hint: "שם איש קשר" },
   { label: "050-123-4567", hint: "מספר טלפון" },
+];
+
+// Chat-style example requests shown under the search bar.
+export const SEARCH_EXAMPLES = [
+  "תמצא לי את כל השיחות עם דנה לוי",
+  "תראה לי את כל ההקלטות מ-01/07/2026 עד 15/07/2026",
+  "כל השיחות מהיום",
+  "052-633-1295",
 ];

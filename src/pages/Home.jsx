@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
 import SendConfirmDialog from "@/components/recordings/SendConfirmDialog";
-import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS, formatPhoneDisplay } from "@/lib/recordingUtils";
+import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS, SEARCH_EXAMPLES, formatPhoneDisplay } from "@/lib/recordingUtils";
 
 export default function Home() {
   const [recordings, setRecordings] = useState([]);
@@ -293,20 +293,32 @@ export default function Home() {
         {/* Search hero */}
         <div className="text-right">
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">מצאו כל שיחה, ברגע</h1>
-          <p className="mt-3 text-sm text-muted-foreground">חפשו בהקלטות לפי שם איש קשר או מספר טלפון</p>
+          <p className="mt-3 text-sm text-muted-foreground">כתבו בחופשיות — שם איש קשר, מספר טלפון או טווח תאריכים</p>
           <div className="relative mt-8 max-w-xl">
             <Search className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={filters.search}
               onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
-              placeholder="איזו שיחה תרצו למצוא?"
+              placeholder="למשל: תמצא לי את כל השיחות עם דנה לוי"
               dir="auto"
               className="pr-12 h-14 text-base rounded-2xl border border-border bg-card shadow-sm focus-visible:ring-0 focus-visible:border-primary/50"
             />
           </div>
           {!hasSearch && (
             <div className="mt-8 max-w-xl">
-              <p className="text-xs text-muted-foreground">התחילו בשם או במספר טלפון</p>
+              <p className="text-xs font-medium text-foreground/80">אפשר לבקש כך:</p>
+              <div className="mt-2.5 flex flex-col gap-2">
+                {SEARCH_EXAMPLES.map((ex) => (
+                  <button
+                    key={ex}
+                    type="button"
+                    onClick={() => setFilters((prev) => ({ ...prev, search: ex }))}
+                    className="text-right rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground hover:border-primary/30 transition-colors"
+                  >
+                    {ex}
+                  </button>
+                ))}
+              </div>
               {suggestions.length > 0 && (
                 <div className="mt-4">
                   <p className="text-xs font-medium text-foreground/80">אפשר לחפש לפי:</p>
