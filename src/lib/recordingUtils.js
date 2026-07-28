@@ -27,7 +27,17 @@ export const PAGE_SIZE = 50;
 export function buildQuery(filters) {
   const query = {};
   if (filters.search) {
-    query.callerNumber = { $regex: filters.search, $options: "i" };
+    // Normalize the search term to match the stored e164 format (+972...).
+    // Israeli local numbers start with 0 (e.g. 052-712-3456); the e164 form
+    // drops that 0 (972527123456). Convert so partial lookups match.
+    const digits = String(filters.search).replace(/\D/g, "");
+    let normalized = digits;
+    if (normalized.startsWith("0")) {
+      normalized = "972" + normalized.slice(1);
+    } else if (normalized.startsWith("972")) {
+      // already international, keep as-is
+    }
+    query.callerNumber = { $regex: normalized, $options: "i" };
   }
   return query;
 }
