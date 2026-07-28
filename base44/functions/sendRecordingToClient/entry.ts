@@ -47,6 +47,43 @@ export default async function(req) {
     }
     if (!recordingUrl) return Response.json({ error: 'No recording available for this call' }, { status: 400 });
 
+    // Build the client-facing message from the business template.
+    const businessName = user.full_name || "העסק שלנו";
+    const clientName = recording.callerFriendly || "לקוח יקר";
+    const callDateObj = recording.callDate ? new Date(recording.callDate) : null;
+    const dateStr = callDateObj ? callDateObj.toLocaleDateString("he-IL") : "—";
+    const timeStr = callDateObj
+      ? callDateObj.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })
+      : "—";
+    const secs = typeof recording.duration === "number" ? recording.duration : 0;
+    const mins = Math.floor(secs / 60);
+    const remSecs = secs % 60;
+    const durationStr =
+      mins > 0 ? `${mins} דקות ו-${remSecs} שניות` : `${remSecs} שניות`;
+    const digits = String(recording.callerNumber || "").replace(/\D/g, "");
+    const maskedPhone =
+      digits.length >= 5
+        ? `${digits.slice(0, 3)}${"*".repeat(digits.length - 5)}${digits.slice(-2)}`
+        : digits;
+
+    const caption = [
+      `שלום ${clientName},`,
+      ``,
+      `בהמשך לבקשתך, מצורפת הקלטת השיחה שהתקיימה עם נציג/ת ${businessName}.`,
+      ``,
+      `📅 תאריך השיחה: ${dateStr}`,
+      `🕒 שעת השיחה: ${timeStr}`,
+      `⏱️ משך השיחה: ${durationStr}`,
+      `📞 מספר הטלפון: ${maskedPhone}`,
+      ``,
+      `ההקלטה נמסרת לך ללא תשלום. מומלץ לשמור את הקובץ לצורך עיון עתידי.`,
+      ``,
+      `לכל שאלה או בקשה נוספת, ניתן להשיב להודעה זו.`,
+      ``,
+      `בברכה,`,
+      `${businessName}`
+    ].join("\n");
+
     const waResponse = await fetch(GREEN_API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -54,7 +91,7 @@ export default async function(req) {
         urlFile: recordingUrl,
         fileName: "recording.mp3",
         chatId: chatId,
-        caption: "📞 הקלטת שיחה"
+        caption: caption
       })
     });
 
