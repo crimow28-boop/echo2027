@@ -115,6 +115,12 @@ export default function Home() {
     }
   };
 
+  // Auto-sync from exm once on entry, so recordings are always up to date.
+  useEffect(() => {
+    handleSync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleExport = async () => {
     setExporting(true);
     try {
