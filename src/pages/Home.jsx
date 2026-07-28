@@ -218,9 +218,9 @@ export default function Home() {
         {/* Top bar */}
         <div className="relative flex items-center justify-center mb-12">
           <img
-            src="https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/a3b40e436_Screenshot2026-07-28at231744.png"
+            src="https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png"
             alt="echo"
-            className="h-8 w-auto"
+            className="h-11 w-auto"
           />
           <div className="absolute left-0">
             <DropdownMenu>
