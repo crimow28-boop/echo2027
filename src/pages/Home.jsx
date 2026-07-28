@@ -229,13 +229,9 @@ export default function Home() {
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Top bar */}
-        <div className="relative flex items-center justify-center mb-12">
-          <img
-            src="https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png"
-            alt="echo"
-            className="h-11 w-auto"
-          />
-          <div className="absolute left-0">
+        <div className="flex items-start justify-between gap-4 mb-6">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">מצאו כל שיחה, ברגע</h1>
+          <div className="shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
@@ -298,8 +294,7 @@ export default function Home() {
 
         {/* Search hero */}
         <div className="text-right">
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">מצאו כל שיחה, ברגע</h1>
-          <p className="mt-3 text-sm text-muted-foreground">כתבו בחופשיות — שם איש קשר, מספר טלפון או טווח תאריכים</p>
+          <p className="text-sm text-muted-foreground">כתבו בחופשיות — שם איש קשר, מספר טלפון או טווח תאריכים</p>
           <div className="relative mt-8 max-w-xl">
             <Search className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
