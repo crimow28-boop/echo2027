@@ -43,7 +43,7 @@ export default function RecordingRow({ recording, sendingId, onSend }) {
           className="gap-1.5"
         >
           {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-          שלח ללקוח
+          {r.sent ? "נשלח" : "שלח ללקוח"}
         </Button>
       </td>
     </tr>

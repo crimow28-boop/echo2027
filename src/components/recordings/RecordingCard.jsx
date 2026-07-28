@@ -45,7 +45,7 @@ export default function RecordingCard({ recording, sendingId, onSend }) {
           className="gap-1.5"
         >
           {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-          שלח
+          {r.sent ? "נשלח" : "שלח"}
         </Button>
       </div>
     </div>
