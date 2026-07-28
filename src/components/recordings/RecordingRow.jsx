@@ -37,13 +37,12 @@ export default function RecordingRow({ recording, sendingId, onSend }) {
       <td className="px-4 py-3.5 text-center">
         <Button
           size="sm"
-          variant={r.sent ? "secondary" : "default"}
-          disabled={r.sent || isSending}
+          disabled={isSending}
           onClick={() => onSend(r.id)}
-          className={`gap-1.5 ${r.sent ? "" : "gradient-teal border-0 text-primary-foreground glow-teal-sm hover:opacity-90"}`}
+          className="gap-1.5 gradient-teal border-0 text-primary-foreground glow-teal-sm hover:opacity-90"
         >
           {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-          {r.sent ? "נשלח" : "שלח ללקוח"}
+          שלח ללקוח
         </Button>
       </td>
     </tr>
