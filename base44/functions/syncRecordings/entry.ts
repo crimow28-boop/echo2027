@@ -9,7 +9,6 @@ export default async function(req) {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     const token = secrets.get("EXM_API_TOKEN");
     if (!token) return Response.json({ error: 'EXM_API_TOKEN secret not set' }, { status: 500 });
