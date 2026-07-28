@@ -17,13 +17,17 @@ export default function RecordingCard({ recording, sendingId, onSend }) {
         <span>{formatDate(r.callDate || r.created_date)}</span>
       </div>
       <div className="flex items-center justify-between gap-2 pt-3 border-t-2 border-border">
-        {r.sent ? (
+        {r.sentAt ? (
           <span className="inline-flex items-center gap-2 text-primary font-mono text-[11px] uppercase tracking-wider">
-            <span className="w-2.5 h-2.5 bg-primary"></span> נשלח
+            <span className="w-2.5 h-2.5 bg-primary"></span> נשלחה · {formatDate(r.sentAt)}
+          </span>
+        ) : r.sent ? (
+          <span className="inline-flex items-center gap-2 text-primary font-mono text-[11px] uppercase tracking-wider">
+            <span className="w-2.5 h-2.5 bg-primary"></span> נשלחה
           </span>
         ) : (
           <span className="inline-flex items-center gap-2 text-amber-600 font-mono text-[11px] uppercase tracking-wider">
-            <span className="w-2.5 h-2.5 bg-amber-500"></span> ממתין
+            <span className="w-2.5 h-2.5 bg-amber-500"></span> שלא נשלחה
           </span>
         )}
         <Button

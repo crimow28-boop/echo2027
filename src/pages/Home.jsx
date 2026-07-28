@@ -109,7 +109,7 @@ export default function Home() {
       const response = await base44.functions.invoke("sendRecordingToClient", { recordId });
       if (response.data?.success) {
         setRecordings((prev) =>
-          prev.map((r) => (r.id === recordId ? { ...r, sent: true } : r))
+          prev.map((r) => (r.id === recordId ? { ...r, sent: true, sentAt: new Date().toISOString() } : r))
         );
         toast({ title: "ההקלטה נשלחה ללקוח בהצלחה" });
       } else {
@@ -233,7 +233,7 @@ export default function Home() {
                 <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">מספר</th>
                 <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">משך</th>
                 <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">תאריך</th>
-                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">סטטוס</th>
+                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">תאריך שליחה</th>
                 <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium text-center">פעולה</th>
               </tr>
             </thead>

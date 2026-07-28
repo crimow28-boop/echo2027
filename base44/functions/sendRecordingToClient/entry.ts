@@ -95,7 +95,7 @@ export default async function(req) {
       return Response.json({ error: `Green API message error: ${msgResponse.status} ${errText}` }, { status: 502 });
     }
 
-    await base44.entities.CallRecording.update(recordId, { sent: true });
+    await base44.entities.CallRecording.update(recordId, { sent: true, sentAt: new Date().toISOString() });
 
     return Response.json({ success: true, sentTo: chatId.replace("@c.us", "") });
   } catch (error) {

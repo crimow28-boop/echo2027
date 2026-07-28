@@ -40,6 +40,11 @@
       "type": "boolean",
       "default": false,
       "title": "Sent to Client"
+    },
+    "sentAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Sent At"
     }
   },
   "required": [
