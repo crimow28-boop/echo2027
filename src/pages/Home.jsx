@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { PhoneIncoming, Loader2, ChevronDown, RefreshCw } from "lucide-react";
+import { PhoneIncoming, Loader2, ChevronDown, RefreshCw, Download } from "lucide-react";
+import { downloadRecordingsCsv } from "@/lib/exportRecordings";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import RecordingFilters from "@/components/recordings/RecordingFilters";
@@ -15,6 +16,7 @@ export default function Home() {
   const [hasMore, setHasMore] = useState(true);
   const [sendingId, setSendingId] = useState(null);
   const [syncing, setSyncing] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const { toast } = useToast();
@@ -113,6 +115,23 @@ export default function Home() {
     }
   };
 
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const response = await base44.functions.invoke("exportRecordings", {});
+      if (response.data?.success) {
+        downloadRecordingsCsv(response.data.rows);
+        toast({ title: `יוצאו ${response.data.count} הקלטות` });
+      } else {
+        throw new Error(response.data?.error || "ייצוא נכשל");
+      }
+    } catch (error) {
+      toast({ title: "שגיאה בייצוא", description: error.message, variant: "destructive" });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleFilterChange = (field, value) =>
     setFilters((prev) => ({ ...prev, [field]: value }));
 
@@ -131,10 +150,16 @@ export default function Home() {
                 <p className="text-sm text-muted-foreground">Callect — ניהול הקלטות שיחות</p>
               </div>
             </div>
-            <Button onClick={handleSync} disabled={syncing} className="gap-2 shrink-0 border-0 gradient-teal text-primary-foreground glow-teal-sm hover:opacity-90">
-              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-              <span className="hidden sm:inline font-medium">סנכרון</span>
-            </Button>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button onClick={handleExport} disabled={exporting} variant="outline" className="gap-2 border-border bg-card/60 hover:bg-accent hover:text-accent-foreground">
+                {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                <span className="hidden sm:inline font-medium">ייצוא לגיליון</span>
+              </Button>
+              <Button onClick={handleSync} disabled={syncing} className="gap-2 border-0 gradient-teal text-primary-foreground glow-teal-sm hover:opacity-90">
+                {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                <span className="hidden sm:inline font-medium">סנכרון</span>
+              </Button>
+            </div>
           </div>
         </header>
 
