@@ -129,21 +129,22 @@ export default function Home() {
       try {
         const rows = await base44.entities.CallRecording.filter({}, "-callDate", 30);
         setExamples(buildSearchExamples(rows));
+        const names = [];
+        const numbers = [];
         const seen = new Set();
-        const list = [];
         for (const r of rows || []) {
           const name = (r.callerFriendly || "").trim();
           const number = (r.callerNumber || "").trim();
-          const key = name || number;
-          if (!key || seen.has(key)) continue;
-          seen.add(key);
-          list.push({
-            key,
-            label: name || formatPhoneDisplay(number),
-            hint: name ? "איש קשר" : "מספר טלפון",
-          });
-          if (list.length >= 5) break;
+          if (name && !seen.has(name) && names.length < 3) {
+            seen.add(name);
+            names.push({ key: name, label: name, hint: "איש קשר" });
+          }
+          if (number && !seen.has(number) && numbers.length < 2) {
+            seen.add(number);
+            numbers.push({ key: number, label: formatPhoneDisplay(number), hint: "מספר טלפון" });
+          }
         }
+        const list = [...names, ...numbers];
         if (list.length > 0) setSuggestions(list);
       } catch (_e) {
         // keep static fallback suggestions
