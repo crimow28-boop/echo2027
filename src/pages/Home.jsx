@@ -11,6 +11,7 @@ import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
 import SendConfirmDialog from "@/components/recordings/SendConfirmDialog";
 import SearchSummary from "@/components/recordings/SearchSummary";
+import TypewriterPlaceholder from "@/components/recordings/TypewriterPlaceholder";
 import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS, formatPhoneDisplay } from "@/lib/recordingUtils";
 import { buildSearchExamples } from "@/lib/searchExamples";
 
@@ -303,10 +304,13 @@ export default function Home() {
             <Input
               value={filters.search}
               onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
-              placeholder="למשל: תמצא לי את כל השיחות עם דנה לוי"
+              placeholder=""
               dir="auto"
               className="pr-12 h-14 text-base rounded-2xl border border-border bg-card shadow-sm focus-visible:ring-0 focus-visible:border-primary/50"
             />
+            {filters.search.length === 0 && examples.length > 0 && (
+              <TypewriterPlaceholder examples={examples} />
+            )}
           </div>
           {!hasSearch && (
             <div className="mt-8 max-w-xl">
