@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
 import SendConfirmDialog from "@/components/recordings/SendConfirmDialog";
+import SearchSummary from "@/components/recordings/SearchSummary";
 import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS, SEARCH_EXAMPLES, formatPhoneDisplay } from "@/lib/recordingUtils";
 
 export default function Home() {
@@ -344,6 +345,7 @@ export default function Home() {
         {/* Results */}
         {hasSearch ? (
           <div className="mt-8">
+            <SearchSummary search={debouncedSearch} />
             <div className="flex items-center gap-2 mb-4 text-xs text-muted-foreground">
               <span className={`inline-block w-2 h-2 rounded-full ${loading ? "bg-muted-foreground animate-pulse" : "bg-primary"}`}></span>
               {loading ? "מחפשים את השיחות המתאימות..." : `נמצאו ${recordings.length} שיחות`}
