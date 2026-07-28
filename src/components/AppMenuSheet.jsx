@@ -18,7 +18,7 @@ export default function AppMenuSheet({ onSync, onExport, syncing, exporting, has
           <Menu className="w-4 h-4" />
         </button>
       </SheetTrigger>
-      <SheetContent side="right" dir="rtl" className="w-72 text-right">
+      <SheetContent side="left" dir="rtl" className="w-72 text-right">
         <SheetHeader className="text-right">
           <SheetTitle className="text-base font-semibold">תפריט</SheetTitle>
         </SheetHeader>
