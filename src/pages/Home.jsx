@@ -64,6 +64,15 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.callType, filters.sent, filters.fromDate, filters.toDate, debouncedSearch]);
 
+  // Live updates: refresh the list when recordings change in the database
+  useEffect(() => {
+    const unsubscribe = base44.entities.CallRecording.subscribe(() => {
+      loadRecordings(true);
+    });
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadRecordings]);
+
   const handleSend = async (recordId) => {
     setSendingId(recordId);
     try {
