@@ -121,10 +121,10 @@ export default function Home() {
     <div dir="rtl" className="min-h-screen bg-background text-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
-        <header className="mb-6">
+        <header className="mb-8">
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl gradient-teal glow-teal-sm flex items-center justify-center">
                 <PhoneIncoming className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
@@ -132,9 +132,9 @@ export default function Home() {
                 <p className="text-sm text-muted-foreground">Callect — ניהול הקלטות שיחות</p>
               </div>
             </div>
-            <Button variant="outline" onClick={handleSync} disabled={syncing} className="gap-2 shrink-0">
+            <Button onClick={handleSync} disabled={syncing} className="gap-2 shrink-0 border-0 gradient-teal text-primary-foreground glow-teal-sm hover:opacity-90">
               {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-              <span className="hidden sm:inline">סנכרון</span>
+              <span className="hidden sm:inline font-medium">סנכרון</span>
             </Button>
           </div>
         </header>
@@ -148,17 +148,17 @@ export default function Home() {
         />
 
         {/* Table - Desktop */}
-        <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden">
+        <div className="hidden md:block rounded-2xl border border-border bg-card/70 overflow-hidden shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)] backdrop-blur-sm">
           <table className="w-full text-sm">
-            <thead className="bg-muted/50 border-b border-border">
+            <thead className="bg-muted/30 border-b border-border">
               <tr className="text-right">
-                <th className="px-4 py-3 font-medium text-muted-foreground">מתקשר</th>
-                <th className="px-4 py-3 font-medium text-muted-foreground">מספר</th>
-                <th className="px-4 py-3 font-medium text-muted-foreground">סוג</th>
-                <th className="px-4 py-3 font-medium text-muted-foreground">משך</th>
-                <th className="px-4 py-3 font-medium text-muted-foreground">תאריך</th>
-                <th className="px-4 py-3 font-medium text-muted-foreground">סטטוס</th>
-                <th className="px-4 py-3 font-medium text-muted-foreground text-center">פעולה</th>
+                <th className="px-4 py-3.5 font-medium text-muted-foreground">מתקשר</th>
+                <th className="px-4 py-3.5 font-medium text-muted-foreground">מספר</th>
+                <th className="px-4 py-3.5 font-medium text-muted-foreground">סוג</th>
+                <th className="px-4 py-3.5 font-medium text-muted-foreground">משך</th>
+                <th className="px-4 py-3.5 font-medium text-muted-foreground">תאריך</th>
+                <th className="px-4 py-3.5 font-medium text-muted-foreground">סטטוס</th>
+                <th className="px-4 py-3.5 font-medium text-muted-foreground text-center">פעולה</th>
               </tr>
             </thead>
             <tbody>
@@ -185,7 +185,7 @@ export default function Home() {
         </div>
 
         {/* Cards - Mobile */}
-        <div className="md:hidden space-y-3">
+        <div className="md:hidden space-y-3.5">
           {loading && (
             <div className="text-center py-16 text-muted-foreground">
               <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
@@ -202,8 +202,8 @@ export default function Home() {
 
         {/* Load more */}
         {hasMore && !loading && recordings.length > 0 && (
-          <div className="flex justify-center mt-6">
-            <Button variant="outline" disabled={loadingMore} onClick={() => loadRecordings(false)} className="gap-2">
+          <div className="flex justify-center mt-8">
+            <Button variant="outline" disabled={loadingMore} onClick={() => loadRecordings(false)} className="gap-2 border-border bg-card/60 hover:bg-accent hover:text-accent-foreground">
               {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronDown className="w-4 h-4" />}
               טען עוד
             </Button>
