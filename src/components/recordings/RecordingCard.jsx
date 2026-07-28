@@ -31,13 +31,16 @@ export default function RecordingCard({ recording, sendingId, onSend }) {
           </span>
         )}
         <Button
-          size="sm"
           disabled={isSending}
           onClick={() => onSend(r.id)}
-          className="gap-1.5 rounded-none border-2 border-foreground bg-primary text-primary-foreground shadow-none hover:bg-foreground hover:text-background font-mono text-[11px] uppercase tracking-wider"
+          className={`gap-2 rounded-none border-2 border-foreground shadow-none hover:translate-y-[-1px] transition-transform font-mono text-[11px] uppercase tracking-wider ${
+            r.sent || r.sentAt
+              ? "h-8 px-2.5 bg-transparent text-foreground hover:bg-foreground hover:text-background"
+              : "h-9 px-5 bg-primary text-primary-foreground font-bold hover:bg-foreground hover:text-background"
+          }`}
         >
           {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-          שלח
+          {r.sent || r.sentAt ? "שלח שוב" : "שלח"}
         </Button>
       </div>
     </div>
