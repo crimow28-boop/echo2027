@@ -30,6 +30,8 @@ export default function Home() {
   searchRef.current = debouncedSearch;
   const recordingsRef = useRef(recordings);
   recordingsRef.current = recordings;
+  const inFlightRef = useRef(false);
+  const reloadTimerRef = useRef(null);
 
   // Debounce free-text search
   useEffect(() => {
@@ -38,6 +40,8 @@ export default function Home() {
   }, [filters.search]);
 
   const loadRecordings = useCallback(async (reset) => {
+    if (reset && inFlightRef.current) return;
+    inFlightRef.current = true;
     if (reset) {
       setLoading(true);
       setHasMore(true);
@@ -61,6 +65,7 @@ export default function Home() {
     } finally {
       setLoading(false);
       setLoadingMore(false);
+      inFlightRef.current = false;
     }
   }, [toast]);
 
@@ -70,12 +75,17 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
-  // Live updates: refresh the list when recordings change in the database
+  // Live updates: refresh the list when recordings change in the database.
+  // Debounce burst events (e.g. bulkCreate during sync) into a single reload.
   useEffect(() => {
     const unsubscribe = base44.entities.CallRecording.subscribe(() => {
-      loadRecordings(true);
+      if (reloadTimerRef.current) clearTimeout(reloadTimerRef.current);
+      reloadTimerRef.current = setTimeout(() => loadRecordings(true), 800);
     });
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      if (reloadTimerRef.current) clearTimeout(reloadTimerRef.current);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadRecordings]);
 
@@ -121,7 +131,6 @@ export default function Home() {
           title: `סונכרנו ${response.data.total} הקלטות`,
           description: `${response.data.created} חדשות · ${response.data.updated} עודכנו`
         });
-        loadRecordings(true);
       } else {
         throw new Error(response.data?.error || "סנכרון נכשל");
       }
