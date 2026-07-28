@@ -26,7 +26,7 @@ export default function TypewriterPlaceholder({ examples = [] }) {
   return (
     <div className="absolute inset-y-0 right-12 left-4 flex items-center pointer-events-none">
       <span className="text-base text-muted-foreground truncate">
-        למשל: {text}
+        {text}
         <span className="opacity-50">|</span>
       </span>
     </div>
