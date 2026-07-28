@@ -1,5 +1,5 @@
 import React from "react";
-import { PhoneIncoming, PhoneOutgoing, Send, Loader2 } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDuration, formatDate } from "@/lib/recordingUtils";
 
@@ -10,17 +10,6 @@ export default function RecordingRow({ recording, sendingId, onSend }) {
     <tr className="border-b border-border last:border-0 hover:bg-accent/40 transition-colors">
       <td className="px-4 py-3.5 font-medium text-foreground">{r.callerFriendly || "—"}</td>
       <td className="px-4 py-3.5 text-muted-foreground font-mono text-xs" dir="ltr">{r.callerNumber || "—"}</td>
-      <td className="px-4 py-3.5">
-        {r.callType === "outgoing" ? (
-          <span className="inline-flex items-center gap-1.5 text-[#0088ff] font-mono text-[11px] uppercase tracking-wider">
-            <PhoneOutgoing className="w-4 h-4" /> יוצאת
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1.5 text-primary font-mono text-[11px] uppercase tracking-wider">
-            <PhoneIncoming className="w-4 h-4" /> נכנסת
-          </span>
-        )}
-      </td>
       <td className="px-4 py-3.5 font-mono text-muted-foreground text-xs" dir="ltr">{formatDuration(r.duration)}</td>
       <td className="px-4 py-3.5 text-muted-foreground text-xs font-mono">{formatDate(r.callDate || r.created_date)}</td>
       <td className="px-4 py-3.5">

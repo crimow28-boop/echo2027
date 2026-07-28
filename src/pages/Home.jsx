@@ -231,7 +231,6 @@ export default function Home() {
               <tr className="text-right">
                 <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">מתקשר</th>
                 <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">מספר</th>
-                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">סוג</th>
                 <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">משך</th>
                 <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">תאריך</th>
                 <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">סטטוס</th>
@@ -241,7 +240,7 @@ export default function Home() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                  <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
                     <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
                     טוען הקלטות...
                   </td>
@@ -249,7 +248,7 @@ export default function Home() {
               )}
               {!loading && recordings.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                  <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
                     אין הקלטות להצגה
                   </td>
                 </tr>
