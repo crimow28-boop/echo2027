@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
 import SendConfirmDialog from "@/components/recordings/SendConfirmDialog";
+import { Image } from "@/components/ui/image";
 import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS } from "@/lib/recordingUtils";
 
 export default function Home() {
@@ -188,7 +189,12 @@ export default function Home() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Top bar */}
         <div className="flex items-center justify-between border-b border-border pb-4 mb-12">
-          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground/70">CALLECT</span>
+          <Image
+            src="https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/a3b40e436_Screenshot2026-07-28at231744.png"
+            alt="echo"
+            fittingType="fit"
+            className="h-8 w-auto"
+          />
           <div className="flex items-center gap-2">
             <Button onClick={handleExport} disabled={exporting} variant="ghost" size="icon" className="rounded-none shadow-none text-muted-foreground hover:text-foreground hover:bg-transparent h-9 w-9 disabled:opacity-40">
               {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
