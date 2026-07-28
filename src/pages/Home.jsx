@@ -314,25 +314,8 @@ export default function Home() {
           </div>
           {!hasSearch && (
             <div className="mt-8 max-w-xl">
-              {examples.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-foreground/80">אפשר לבקש כך:</p>
-                  <div className="mt-2.5 flex flex-col gap-2">
-                    {examples.map((ex) => (
-                      <button
-                        key={ex}
-                        type="button"
-                        onClick={() => setFilters((prev) => ({ ...prev, search: ex }))}
-                        className="text-right rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground hover:border-primary/30 transition-colors"
-                      >
-                        {ex}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
               {suggestions.length > 0 && (
-                <div className="mt-4">
+                <div>
                   <p className="text-xs font-medium text-foreground/80">אפשר לחפש לפי:</p>
                   <div className="mt-2.5 flex flex-wrap gap-2">
                     {suggestions.map((s) => (
