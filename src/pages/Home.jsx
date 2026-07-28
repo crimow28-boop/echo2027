@@ -205,13 +205,13 @@ export default function Home() {
         {settingsLoaded && !hasSettings && (
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3 border-2 border-amber-400 p-4">
             <div className="flex items-center gap-3 flex-1">
-              <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0" />
-              <div className="font-mono text-xs leading-relaxed text-amber-200">
+              <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0" />
+              <div className="font-mono text-xs leading-relaxed text-amber-700">
                 <p className="uppercase tracking-wider font-bold">חיבור נדרש</p>
-                <p className="text-amber-200/80 mt-1">כדי לסנכרן ולשלוח הקלטות, יש להזין את טוקן ה-EXM ופרטי Green API.</p>
+                <p className="text-amber-600 mt-1">כדי לסנכרן ולשלוח הקלטות, יש להזין את טוקן ה-EXM ופרטי Green API.</p>
               </div>
             </div>
-            <Button asChild size="sm" className="gap-2 rounded-none border-2 border-amber-400 bg-amber-400 text-background shadow-none hover:bg-amber-300 hover:text-background font-mono text-[11px] uppercase tracking-wider">
+            <Button asChild size="sm" className="gap-2 rounded-none border-2 border-amber-500 bg-amber-400 text-foreground shadow-none hover:bg-amber-300 hover:text-foreground font-mono text-[11px] uppercase tracking-wider">
               <Link to="/onboarding">[ להגדרה → ]</Link>
             </Button>
           </div>

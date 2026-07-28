@@ -33,8 +33,8 @@ export default function RecordingCard({ recording, sendingId, onSend }) {
             <span className="w-2.5 h-2.5 bg-primary"></span> נשלח
           </span>
         ) : (
-          <span className="inline-flex items-center gap-2 text-amber-400 font-mono text-[11px] uppercase tracking-wider">
-            <span className="w-2.5 h-2.5 bg-amber-400"></span> ממתין
+          <span className="inline-flex items-center gap-2 text-amber-600 font-mono text-[11px] uppercase tracking-wider">
+            <span className="w-2.5 h-2.5 bg-amber-500"></span> ממתין
           </span>
         )}
         <Button
