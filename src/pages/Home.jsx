@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
+import SendConfirmDialog from "@/components/recordings/SendConfirmDialog";
 import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE } from "@/lib/recordingUtils";
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [sendingId, setSendingId] = useState(null);
+  const [pending, setPending] = useState(null);
   const [syncing, setSyncing] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
@@ -129,7 +131,12 @@ export default function Home() {
       toast({ title: "שגיאה בשליחה", description: error.message, variant: "destructive" });
     } finally {
       setSendingId(null);
+      setPending(null);
     }
+  };
+
+  const confirmSend = () => {
+    if (pending) handleSend(pending.id);
   };
 
   const handleSync = async () => {
@@ -264,7 +271,7 @@ export default function Home() {
                     </tr>
                   )}
                   {!loading && recordings.map((r) => (
-                    <RecordingRow key={r.id} recording={r} sendingId={sendingId} onSend={handleSend} />
+                    <RecordingRow key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} />
                   ))}
                 </tbody>
               </table>
@@ -282,7 +289,7 @@ export default function Home() {
                 <div className="text-center py-16 text-muted-foreground font-mono text-xs uppercase tracking-wider">לא נמצאו הקלטות למספר זה</div>
               )}
               {!loading && recordings.map((r) => (
-                <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={handleSend} />
+                <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} />
               ))}
             </div>
 
@@ -301,6 +308,13 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      <SendConfirmDialog
+        recording={pending}
+        sending={pending && sendingId === pending.id}
+        onConfirm={confirmSend}
+        onClose={() => setPending(null)}
+      />
     </div>
   );
 }

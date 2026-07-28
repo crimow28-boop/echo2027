@@ -32,7 +32,7 @@ export default function RecordingCard({ recording, sendingId, onSend }) {
         )}
         <Button
           disabled={isSending}
-          onClick={() => onSend(r.id)}
+          onClick={() => onSend(r)}
           className={`gap-2 rounded-none border-2 border-foreground shadow-none hover:translate-y-[-1px] transition-transform font-mono text-[11px] uppercase tracking-wider ${
             r.sent || r.sentAt
               ? "h-8 px-2.5 bg-transparent text-foreground hover:bg-foreground hover:text-background"
