@@ -190,7 +190,7 @@ export default function Home() {
         <div className="flex items-center justify-between border-b-2 border-foreground pb-3 mb-10">
           <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">CALLECT</span>
           <div className="flex items-center gap-2">
-            <Button onClick={handleExport} disabled={exporting} variant="outline" className="rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider h-9 px-3">
+            <Button onClick={handleExport} disabled={exporting} variant="ghost" size="icon" className="rounded-none shadow-none text-muted-foreground hover:text-foreground hover:bg-transparent h-9 w-9 disabled:opacity-40">
               {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
             </Button>
             <Button onClick={handleSync} disabled={syncing || !hasSettings} variant="ghost" size="icon" className="rounded-none shadow-none text-muted-foreground hover:text-foreground hover:bg-transparent h-9 w-9 disabled:opacity-40">
