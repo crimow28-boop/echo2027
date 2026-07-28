@@ -68,14 +68,14 @@ export default function RecordingPlayer({ recording }) {
           type="button"
           onClick={toggle}
           disabled={loading}
-          className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-60"
+          className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full border border-border bg-card text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors disabled:opacity-60"
         >
           {loading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
           ) : playing ? (
-            <Pause className="w-4 h-4" />
+            <Pause className="w-3.5 h-3.5" />
           ) : (
-            <Play className="w-4 h-4" />
+            <Play className="w-3.5 h-3.5" />
           )}
         </button>
 
