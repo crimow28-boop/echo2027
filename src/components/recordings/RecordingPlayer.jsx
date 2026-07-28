@@ -63,7 +63,7 @@ export default function RecordingPlayer({ recording }) {
 
   return (
     <div className="rounded-xl border border-border bg-muted/30 px-3 py-2.5">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3" dir="ltr">
         <button
           type="button"
           onClick={toggle}
