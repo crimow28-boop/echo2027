@@ -14,6 +14,7 @@ import ScrollToTop from './components/ScrollToTop';
 // Add page imports here
 import Home from './pages/Home';
 import Settings from './pages/Settings';
+import Onboarding from './pages/Onboarding';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -46,6 +47,7 @@ const AuthenticatedApp = () => {
     <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
       <Route path="/" element={<Home />} />
     <Route path="/settings" element={<Settings />} />
+    <Route path="/onboarding" element={<Onboarding />} />
     </Route>
     <Route path="/login" element={<Login />} />
     <Route path="/register" element={<Register />} />

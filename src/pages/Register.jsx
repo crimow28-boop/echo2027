@@ -46,7 +46,8 @@ export default function Register() {
       if (result?.access_token) {
         base44.auth.setToken(result.access_token);
       }
-      window.location.href = safeReturnTo();
+      const dest = safeReturnTo();
+      window.location.href = dest === "/" ? "/onboarding" : dest;
     } catch (err) {
       setError(err.message || "Invalid verification code");
     } finally {
@@ -68,7 +69,8 @@ export default function Register() {
   };
 
   const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", safeReturnTo());
+    const dest = safeReturnTo();
+    base44.auth.loginWithProvider("google", dest === "/" ? "/onboarding" : dest);
   };
 
   if (showOtp) {

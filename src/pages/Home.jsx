@@ -211,7 +211,7 @@ export default function Home() {
               <p className="text-amber-200/80 text-xs mt-0.5">כדי לסנכרן ולשלוח הקלטות, יש להזין את טוקן ה-EXM ופרטי Green API שלכם.</p>
             </div>
             <Button asChild size="sm" className="gap-2 border-0 gradient-teal text-primary-foreground glow-teal-sm">
-              <Link to="/settings">להגדרות</Link>
+              <Link to="/onboarding">להגדרה</Link>
             </Button>
           </div>
         )}
