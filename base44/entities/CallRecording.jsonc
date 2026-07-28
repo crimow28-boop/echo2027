@@ -1,0 +1,46 @@
+{
+  "name": "CallRecording",
+  "type": "object",
+  "properties": {
+    "callDate": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Call Date"
+    },
+    "callerNumber": {
+      "type": "string",
+      "title": "Caller Number"
+    },
+    "callerFriendly": {
+      "type": "string",
+      "title": "Caller Friendly Name"
+    },
+    "callType": {
+      "type": "string",
+      "enum": [
+        "incoming",
+        "outgoing"
+      ],
+      "default": "incoming",
+      "title": "Call Type"
+    },
+    "duration": {
+      "type": "number",
+      "title": "Duration (seconds)"
+    },
+    "recordingUrl": {
+      "type": "string",
+      "title": "Recording URL"
+    },
+    "sent": {
+      "type": "boolean",
+      "default": false,
+      "title": "Sent to Client"
+    }
+  },
+  "required": [
+    "callerNumber",
+    "callType",
+    "duration"
+  ]
+}
