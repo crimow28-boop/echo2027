@@ -45,7 +45,7 @@ export function buildQuery(filters) {
     const d = new Date(filters.toDate + "T23:59:59");
     if (!isNaN(d.getTime())) dateFilter.$lte = d.toISOString();
   }
-  if (Object.keys(dateFilter).length) query.created_date = dateFilter;
+  if (Object.keys(dateFilter).length) query.callDate = dateFilter;
   if (filters.callType && filters.callType !== "all") query.callType = filters.callType;
   if (filters.sent === "sent") query.sent = true;
   if (filters.sent === "pending") query.sent = false;

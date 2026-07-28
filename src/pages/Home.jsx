@@ -43,10 +43,10 @@ export default function Home() {
       const query = buildQuery(effectiveFilters);
       if (!reset) {
         const list = recordingsRef.current;
-        const last = list.length > 0 ? list[list.length - 1].created_date : null;
-        if (last) query.created_date = { ...(query.created_date || {}), $lt: last };
+        const last = list.length > 0 ? list[list.length - 1].callDate : null;
+        if (last) query.callDate = { ...(query.callDate || {}), $lt: last };
       }
-      const data = await base44.entities.CallRecording.filter(query, "-created_date", PAGE_SIZE);
+      const data = await base44.entities.CallRecording.filter(query, "-callDate", PAGE_SIZE);
       const list = data || [];
       setHasMore(list.length === PAGE_SIZE);
       setRecordings((prev) => (reset ? list : [...prev, ...list]));
