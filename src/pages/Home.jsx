@@ -1,20 +1,20 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { PhoneIncoming, Loader2, ChevronDown, RefreshCw, Download, Settings as SettingsIcon, ShieldAlert } from "lucide-react";
+import { Loader2, ChevronDown, RefreshCw, Download, Settings as SettingsIcon, ShieldAlert, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { downloadRecordingsCsv } from "@/lib/exportRecordings";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import RecordingFilters from "@/components/recordings/RecordingFilters";
 import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
 import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE } from "@/lib/recordingUtils";
 
 export default function Home() {
   const [recordings, setRecordings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
   const [sendingId, setSendingId] = useState(null);
   const [syncing, setSyncing] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -33,13 +33,24 @@ export default function Home() {
   const inFlightRef = useRef(false);
   const reloadTimerRef = useRef(null);
 
-  // Debounce free-text search
+  const hasSearch = debouncedSearch.trim().length > 0;
+
+  // Debounce the search input
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(filters.search), 450);
+    const t = setTimeout(() => setDebouncedSearch(filters.search), 350);
     return () => clearTimeout(t);
   }, [filters.search]);
 
   const loadRecordings = useCallback(async (reset) => {
+    const term = searchRef.current.trim();
+    if (!term) {
+      if (reset) {
+        setRecordings([]);
+        setHasMore(false);
+      }
+      setLoading(false);
+      return;
+    }
     if (reset && inFlightRef.current) return;
     inFlightRef.current = true;
     if (reset) {
@@ -49,7 +60,7 @@ export default function Home() {
       setLoadingMore(true);
     }
     try {
-      const effectiveFilters = { ...filtersRef.current, search: searchRef.current };
+      const effectiveFilters = { ...filtersRef.current, search: term };
       const query = buildQuery(effectiveFilters);
       if (!reset) {
         const list = recordingsRef.current;
@@ -69,14 +80,13 @@ export default function Home() {
     }
   }, [toast]);
 
-  // Reload when search changes
+  // Reload when the debounced search changes
   useEffect(() => {
     loadRecordings(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
-  // Live updates: refresh the list when recordings change in the database.
-  // Debounce burst events (e.g. bulkCreate during sync) into a single reload.
+  // Live updates: refresh the active search when recordings change in the database.
   useEffect(() => {
     const unsubscribe = base44.entities.CallRecording.subscribe(() => {
       if (reloadTimerRef.current) clearTimeout(reloadTimerRef.current);
@@ -166,44 +176,27 @@ export default function Home() {
     }
   };
 
-  const handleFilterChange = (field, value) =>
-    setFilters((prev) => ({ ...prev, [field]: value }));
-
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Top bar */}
-        <div className="flex items-center justify-between border-b-2 border-foreground pb-3 mb-6">
-          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">CALLECT // RECORDINGS</span>
-          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">{recordings.length} REC</span>
+        <div className="flex items-center justify-between border-b-2 border-foreground pb-3 mb-10">
+          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">CALLECT</span>
+          <div className="flex items-center gap-2">
+            <Button onClick={handleExport} disabled={exporting} variant="outline" className="rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider h-9 px-3">
+              {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            </Button>
+            <Button onClick={handleSync} disabled={syncing || !hasSettings} className="rounded-none border-2 border-foreground bg-primary text-primary-foreground shadow-none hover:bg-foreground hover:text-background font-mono text-[11px] uppercase tracking-wider h-9 px-3">
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            </Button>
+            <Button asChild variant="outline" className="rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider h-9 px-3">
+              <Link to="/settings"><SettingsIcon className="w-4 h-4" /></Link>
+            </Button>
+          </div>
         </div>
 
-        {/* Header */}
-        <header className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-          <div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none">הקלטות שיחות</h1>
-            <p className="mt-3 font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">ניהול · ארגון · שליחה ללקוחות</p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <Button onClick={handleExport} disabled={exporting} variant="outline" className="gap-2 rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider">
-              {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              <span className="hidden sm:inline">ייצוא</span>
-            </Button>
-            <Button onClick={handleSync} disabled={syncing || !hasSettings} className="gap-2 rounded-none border-2 border-foreground bg-primary text-primary-foreground shadow-none hover:bg-foreground hover:text-background font-mono text-[11px] uppercase tracking-wider">
-              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-              <span className="hidden sm:inline">סנכרון</span>
-            </Button>
-            <Button asChild variant="outline" className="gap-2 rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider">
-              <Link to="/settings">
-                <SettingsIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">הגדרות</span>
-              </Link>
-            </Button>
-          </div>
-        </header>
-
         {settingsLoaded && !hasSettings && (
-          <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3 border-2 border-amber-400 p-4">
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-3 border-2 border-amber-400 p-4">
             <div className="flex items-center gap-3 flex-1">
               <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0" />
               <div className="font-mono text-xs leading-relaxed text-amber-700">
@@ -217,72 +210,94 @@ export default function Home() {
           </div>
         )}
 
-        <RecordingFilters
-          filters={filters}
-          onChange={handleFilterChange}
-          resultCount={recordings.length}
-          loading={loading}
-        />
+        {/* Search hero */}
+        <div className="text-center">
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none">חיפוש הקלטה</h1>
+          <p className="mt-3 font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">הקלידו מספר טלפון לשליפת שיחה</p>
+          <div className="relative mt-6 max-w-xl mx-auto">
+            <Search className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={filters.search}
+              onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
+              placeholder="05X-XXX-XXXX"
+              dir="ltr"
+              className="pr-12 h-14 sm:h-16 text-lg font-mono rounded-none border-2 border-foreground bg-card focus-visible:ring-0 focus-visible:border-primary"
+            />
+          </div>
+        </div>
 
-        {/* Table - Desktop */}
-        <div className="hidden md:block border-2 border-foreground bg-card overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/30 border-b-2 border-foreground">
-              <tr className="text-right">
-                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">מתקשר</th>
-                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">מספר</th>
-                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">משך</th>
-                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">תאריך</th>
-                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">תאריך שליחה</th>
-                <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium text-center">פעולה</th>
-              </tr>
-            </thead>
-            <tbody>
+        {/* Results */}
+        {hasSearch ? (
+          <div className="mt-8">
+            <div className="flex items-center gap-2 mb-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+              <span className={`inline-block w-2.5 h-2.5 ${loading ? "bg-muted-foreground animate-pulse" : "bg-primary"}`}></span>
+              {loading ? "טוען..." : `נמצאו ${recordings.length} תוצאות`}
+            </div>
+
+            {/* Table - Desktop */}
+            <div className="hidden md:block border-2 border-foreground bg-card overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/30 border-b-2 border-foreground">
+                  <tr className="text-right">
+                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">מתקשר</th>
+                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">מספר</th>
+                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">משך</th>
+                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">תאריך</th>
+                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium">תאריך שליחה</th>
+                    <th className="px-4 py-3.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium text-center">פעולה</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading && (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                        <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
+                        טוען תוצאות...
+                      </td>
+                    </tr>
+                  )}
+                  {!loading && recordings.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                        לא נמצאו הקלטות למספר זה
+                      </td>
+                    </tr>
+                  )}
+                  {!loading && recordings.map((r) => (
+                    <RecordingRow key={r.id} recording={r} sendingId={sendingId} onSend={handleSend} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Cards - Mobile */}
+            <div className="md:hidden space-y-3.5">
               {loading && (
-                <tr>
-                  <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
-                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
-                    טוען הקלטות...
-                  </td>
-                </tr>
+                <div className="text-center py-16 text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                  <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
+                  טוען תוצאות...
+                </div>
               )}
               {!loading && recordings.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider">
-                    אין הקלטות להצגה
-                  </td>
-                </tr>
+                <div className="text-center py-16 text-muted-foreground font-mono text-xs uppercase tracking-wider">לא נמצאו הקלטות למספר זה</div>
               )}
               {!loading && recordings.map((r) => (
-                <RecordingRow key={r.id} recording={r} sendingId={sendingId} onSend={handleSend} />
+                <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={handleSend} />
               ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Cards - Mobile */}
-        <div className="md:hidden space-y-3.5">
-          {loading && (
-            <div className="text-center py-16 text-muted-foreground font-mono text-xs uppercase tracking-wider">
-              <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
-              טוען הקלטות...
             </div>
-          )}
-          {!loading && recordings.length === 0 && (
-            <div className="text-center py-16 text-muted-foreground font-mono text-xs uppercase tracking-wider">אין הקלטות להצגה</div>
-          )}
-          {!loading && recordings.map((r) => (
-            <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={handleSend} />
-          ))}
-        </div>
 
-        {/* Load more */}
-        {hasMore && !loading && recordings.length > 0 && (
-          <div className="flex justify-center mt-8">
-            <Button variant="outline" disabled={loadingMore} onClick={() => loadRecordings(false)} className="gap-2 rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider">
-              {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronDown className="w-4 h-4" />}
-              טען עוד
-            </Button>
+            {hasMore && !loading && recordings.length > 0 && (
+              <div className="flex justify-center mt-8">
+                <Button variant="outline" disabled={loadingMore} onClick={() => loadRecordings(false)} className="gap-2 rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider">
+                  {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronDown className="w-4 h-4" />}
+                  טען עוד
+                </Button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="mt-14 text-center font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            הקלידו מספר טלפון כדי להתחיל
           </div>
         )}
       </div>
