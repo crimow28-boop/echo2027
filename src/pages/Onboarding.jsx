@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, CheckCircle2, ArrowLeft, ExternalLink, ShieldCheck, Phone, Plug } from "lucide-react";
+import { Loader2, ArrowLeft, ExternalLink, ShieldCheck, Phone, Plug } from "lucide-react";
 
 const EXM_HELP = "https://www.exm.co.il/";
 const GREEN_HELP = "https://console.green-api.com/";
@@ -140,53 +140,62 @@ export default function Onboarding() {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-background text-foreground">
-      <div className="max-w-xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
-        {/* Stepper */}
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-11 h-11 rounded-2xl gradient-teal glow-teal-sm flex items-center justify-center">
-            <Plug className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">הגדרת חשבון</h1>
-            <p className="text-sm text-muted-foreground">שלב {step} מתוך 2</p>
-          </div>
+    <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
+      <div className="max-w-2xl mx-auto px-4 sm:px-8 py-10 sm:py-14">
+        {/* Top bar */}
+        <div className="flex items-center justify-between border-b-2 border-foreground pb-3 mb-10">
+          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">CALLECT // ONBOARDING</span>
+          <span className="font-mono text-sm font-bold text-primary">0{step}/02</span>
         </div>
 
-        <div className="flex items-center gap-2 mb-8">
-          <div className={`h-1.5 flex-1 rounded-full transition-colors ${step >= 1 ? "bg-primary" : "bg-border"}`} />
-          <div className={`h-1.5 flex-1 rounded-full transition-colors ${step >= 2 ? "bg-primary" : "bg-border"}`} />
+        {/* Big heading + progress blocks */}
+        <div className="mb-10">
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none">הגדרת חשבון</h1>
+          <p className="mt-3 font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">
+            חיבור שירותים — שלב {step} מתוך 2
+          </p>
+          <div className="mt-6 grid grid-cols-2 gap-2">
+            <div className={`h-8 border-2 border-foreground flex items-center justify-center font-mono text-[11px] uppercase tracking-wider ${step >= 1 ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground"}`}>
+              01 · EXM
+            </div>
+            <div className={`h-8 border-2 border-foreground flex items-center justify-center font-mono text-[11px] uppercase tracking-wider ${step >= 2 ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground"}`}>
+              02 · WhatsApp
+            </div>
+          </div>
         </div>
 
         {step === 1 && (
-          <form onSubmit={handleExmNext} className="space-y-5">
-            <div className="flex items-start gap-3 rounded-2xl border border-border bg-card/60 p-4">
-              <CheckCircle2 className="w-5 h-5 text-[#00ffcc] shrink-0 mt-0.5" />
-              <div>
-                <p className="font-medium">חיבור ל-EXM</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  הזינו את טוקן ה-API שלכם מ-EXM כדי שנוכל למשוך את הקלטות השיחות שלכם אוטומטית.
-                </p>
+          <form onSubmit={handleExmNext} className="space-y-6">
+            <div className="border-2 border-foreground p-5">
+              <div className="flex items-center gap-2 border-b border-border pb-3 mb-4">
+                <Plug className="w-4 h-4 text-primary" />
+                <span className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">חיבור ל-EXM</span>
               </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                הזינו את טוקן ה-API שלכם מ-EXM כדי שנוכל למשוך את הקלטות השיחות שלכם אוטומטית.
+              </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="exm">טוקן EXM API</Label>
+            <div className="space-y-2.5">
+              <Label htmlFor="exm" className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">טוקן EXM API</Label>
               <Input
                 id="exm"
                 value={exmToken}
                 onChange={(e) => { setExmToken(e.target.value); setErrorExm(""); }}
-                placeholder="הדבקו את הטוקן מ-EXM"
+                placeholder="paste_token_here"
                 dir="ltr"
                 autoFocus
+                className="rounded-none font-mono border-2 border-foreground bg-transparent h-12 focus-visible:ring-0 focus-visible:border-primary"
               />
-              <a href={EXM_HELP} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-[#00ffcc] hover:underline">
-                איך מוצאים את הטוקן? כניסה למערכת EXM <ExternalLink className="w-3 h-3" />
+              <a href={EXM_HELP} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-primary hover:underline">
+                [ → איך מוצאים את הטוקן — EXM ] <ExternalLink className="w-3 h-3" />
               </a>
-              {errorExm && <p className="text-xs text-destructive">{errorExm}</p>}
+              {errorExm && (
+                <p className="border-2 border-destructive px-3 py-2 font-mono text-xs text-destructive">{errorExm}</p>
+              )}
             </div>
 
-            <Button type="submit" disabled={validating} className="w-full gap-2 border-0 gradient-teal text-primary-foreground glow-teal-sm hover:opacity-90">
+            <Button type="submit" disabled={validating} className="w-full rounded-none border-2 border-foreground bg-primary text-primary-foreground h-12 font-mono text-sm uppercase tracking-[0.15em] hover:bg-foreground hover:text-background transition-colors">
               {validating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" />}
               {validating ? "מאמת..." : "אימות והמשך"}
             </Button>
@@ -194,53 +203,57 @@ export default function Onboarding() {
         )}
 
         {step === 2 && (
-          <form onSubmit={handleGreenFinish} className="space-y-5">
-            <div className="flex items-start gap-3 rounded-2xl border border-border bg-card/60 p-4">
-              <Phone className="w-5 h-5 text-[#00ffcc] shrink-0 mt-0.5" />
-              <div>
-                <p className="font-medium">חיבור ל-WhatsApp</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  הזינו את פרטי המופע מ-Green API כדי שנוכל לשלוח הקלטות ללקוחות ישירות לוואטסאפ.
-                </p>
+          <form onSubmit={handleGreenFinish} className="space-y-6">
+            <div className="border-2 border-foreground p-5">
+              <div className="flex items-center gap-2 border-b border-border pb-3 mb-4">
+                <Phone className="w-4 h-4 text-primary" />
+                <span className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">חיבור ל-WhatsApp</span>
               </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                הזינו את פרטי המופע מ-Green API כדי שנוכל לשלוח הקלטות ללקוחות ישירות לוואטסאפ.
+              </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="gi">מזהה המופע (Instance ID)</Label>
+            <div className="space-y-2.5">
+              <Label htmlFor="gi" className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">מזהה המופע · ID INSTANCE</Label>
               <Input
                 id="gi"
                 value={greenInstanceId}
                 onChange={(e) => { setGreenInstanceId(e.target.value); setErrorGreen(""); }}
-                placeholder="לדוגמה: 710722692595"
+                placeholder="710722692595"
                 dir="ltr"
                 autoFocus
+                className="rounded-none font-mono border-2 border-foreground bg-transparent h-12 focus-visible:ring-0 focus-visible:border-primary"
               />
-              <p className="text-xs text-muted-foreground">מופיע בדאשבורד Green API תחת המופע שלכם, בשדה "idInstance".</p>
+              <p className="font-mono text-[11px] text-muted-foreground">מופיע בדאשבורד תחת המופע, בשדה idInstance.</p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="gt">טוקן API (apiTokenInstance)</Label>
+            <div className="space-y-2.5">
+              <Label htmlFor="gt" className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">טוקן API · APITOKENINSTANCE</Label>
               <Input
                 id="gt"
                 value={greenToken}
                 onChange={(e) => { setGreenToken(e.target.value); setErrorGreen(""); }}
-                placeholder="apiTokenInstance"
+                placeholder="api_token_here"
                 dir="ltr"
+                className="rounded-none font-mono border-2 border-foreground bg-transparent h-12 focus-visible:ring-0 focus-visible:border-primary"
               />
-              <a href={GREEN_HELP} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-[#00ffcc] hover:underline">
-                איך מוצאים את הפרטים? פתיחת דאשבורד Green API <ExternalLink className="w-3 h-3" />
+              <a href={GREEN_HELP} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-primary hover:underline">
+                [ → איך מוצאים את הפרטים — GREEN API ] <ExternalLink className="w-3 h-3" />
               </a>
-              {errorGreen && <p className="text-xs text-destructive">{errorGreen}</p>}
+              {errorGreen && (
+                <p className="border-2 border-destructive px-3 py-2 font-mono text-xs text-destructive">{errorGreen}</p>
+              )}
             </div>
 
-            <Button type="submit" disabled={validating} className="w-full gap-2 border-0 gradient-teal text-primary-foreground glow-teal-sm hover:opacity-90">
+            <Button type="submit" disabled={validating} className="w-full rounded-none border-2 border-foreground bg-primary text-primary-foreground h-12 font-mono text-sm uppercase tracking-[0.15em] hover:bg-foreground hover:text-background transition-colors">
               {validating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
               {validating ? "מאמת..." : "אימות וסיום"}
             </Button>
 
-            <div className="text-center">
-              <button type="button" onClick={handleSkipGreen} disabled={saving} className="text-xs text-muted-foreground hover:text-foreground hover:underline">
-                {saving ? "שומר..." : "אגדיר את WhatsApp אחר כך"}
+            <div className="text-center border-t-2 border-dashed border-border pt-5">
+              <button type="button" onClick={handleSkipGreen} disabled={saving} className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground hover:underline">
+                [ {saving ? "שומר..." : "אגדיר את WhatsApp אחר כך"} → ]
               </button>
             </div>
           </form>
