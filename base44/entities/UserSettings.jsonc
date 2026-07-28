@@ -1,0 +1,32 @@
+{
+  "name": "UserSettings",
+  "type": "object",
+  "properties": {
+    "exmToken": {
+      "type": "string",
+      "title": "EXM API Token"
+    },
+    "greenInstanceId": {
+      "type": "string",
+      "title": "Green API Instance ID"
+    },
+    "greenToken": {
+      "type": "string",
+      "title": "Green API Token"
+    }
+  },
+  "required": [
+    "exmToken"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

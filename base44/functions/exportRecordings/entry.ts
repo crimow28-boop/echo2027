@@ -1,26 +1,27 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { secrets } from "base44:runtime";
 import { getRecordingUrls } from "../../shared/exmApi.ts";
+import { getUserSettings } from "../../shared/userSettings.ts";
 
-// Export all CallRecording rows with permanent (public) recording links from exm,
-// so the spreadsheet stays usable over time. Returns rows for client-side CSV.
+// Export the calling user's CallRecording rows with permanent (public) recording
+// links from exm, so the spreadsheet stays usable over time. Returns rows for CSV.
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const token = secrets.get("EXM_API_TOKEN");
-    if (!token) return Response.json({ error: 'EXM_API_TOKEN secret not set' }, { status: 500 });
+    const settings = await getUserSettings(base44);
+    const token = settings?.exmToken;
+    if (!token) return Response.json({ error: 'NO_SETTINGS' }, { status: 400 });
 
-    // Pull all recordings, newest first, via callDate cursor pagination.
+    // Pull the user's own recordings (owner-only RLS), newest first, via callDate cursor.
     const all = [];
     let cursor = null;
     let hasMore = true;
     let guard = 0;
     while (hasMore && guard < 100) {
       const query = cursor ? { callDate: { $lt: cursor } } : {};
-      const batch = await base44.asServiceRole.entities.CallRecording.filter(query, "-callDate", 500);
+      const batch = await base44.entities.CallRecording.filter(query, "-callDate", 500);
       all.push(...batch);
       hasMore = batch.length === 500;
       if (hasMore) cursor = batch[batch.length - 1].callDate;

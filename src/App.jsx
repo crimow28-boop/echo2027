@@ -13,6 +13,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 // Add page imports here
 import Home from './pages/Home';
+import Settings from './pages/Settings';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -44,6 +45,7 @@ const AuthenticatedApp = () => {
     {/* Add your page Route elements here */}
     <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
       <Route path="/" element={<Home />} />
+    <Route path="/settings" element={<Settings />} />
     </Route>
     <Route path="/login" element={<Login />} />
     <Route path="/register" element={<Register />} />

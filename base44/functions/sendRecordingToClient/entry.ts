@@ -1,8 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { secrets } from "base44:runtime";
 import { getRecordingUrls } from "../../shared/exmApi.ts";
-
-const GREEN_API_SEND_MESSAGE_URL = "https://7107.api.greenapi.com/waInstance710722692595/sendMessage/48e0edeb455248518fdf9bd95850167cdc284422809b4e9e87";
+import { getUserSettings, greenApiUrl } from "../../shared/userSettings.ts";
 
 // Convert an Israeli phone number to WhatsApp chat id format.
 // 0526331295 -> 972526331295 ; strips dashes/spaces ; removes leading 0 ; prepends 972.
@@ -28,6 +26,9 @@ export default async function(req) {
     const recordId = body?.recordId;
     if (!recordId) return Response.json({ error: 'recordId is required' }, { status: 400 });
 
+    const settings = await getUserSettings(base44);
+    if (!settings?.exmToken) return Response.json({ error: 'NO_SETTINGS' }, { status: 400 });
+
     const recording = await base44.entities.CallRecording.get(recordId);
     if (!recording) return Response.json({ error: 'Recording not found' }, { status: 404 });
 
@@ -35,17 +36,17 @@ export default async function(req) {
     if (!chatId) return Response.json({ error: 'Missing callerNumber' }, { status: 400 });
 
     // Fetch a permanent public recording URL from exm.co.il (ttl=0, no time limit)
-    // so the client can open the link anytime.
+    // using the calling user's own EXM token, so the client can open the link anytime.
     let recordingUrl = recording.recordingUrl;
     if (recording.externalId) {
-      const token = secrets.get("EXM_API_TOKEN");
-      if (token) {
-        const urls = await getRecordingUrls(token, [recording.externalId], 0);
-        const found = urls.find((u) => u.id === recording.externalId && u.code === 0);
-        if (found && found.url) recordingUrl = found.url;
-      }
+      const urls = await getRecordingUrls(settings.exmToken, [recording.externalId], 0);
+      const found = urls.find((u) => u.id === recording.externalId && u.code === 0);
+      if (found && found.url) recordingUrl = found.url;
     }
     if (!recordingUrl) return Response.json({ error: 'No recording available for this call' }, { status: 400 });
+
+    const sendMessageUrl = greenApiUrl(settings, "sendMessage");
+    if (!sendMessageUrl) return Response.json({ error: 'NO_GREEN_API' }, { status: 400 });
 
     // Build the client-facing message from the business template.
     const businessName = user.full_name || "העסק שלנו";
@@ -83,8 +84,8 @@ export default async function(req) {
       `${businessName}`
     ].join("\n");
 
-    // Send the template as a dedicated text message first.
-    const msgResponse = await fetch(GREEN_API_SEND_MESSAGE_URL, {
+    // Send the template as a dedicated text message via the user's own Green API.
+    const msgResponse = await fetch(sendMessageUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chatId: chatId, message: caption })

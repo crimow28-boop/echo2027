@@ -1,8 +1,10 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { secrets } from "base44:runtime";
 import { listCalls, mapCall } from "../../shared/exmApi.ts";
+import { getUserSettings } from "../../shared/userSettings.ts";
 
-// Pull call history from exm.co.il and upsert into CallRecording by externalId.
+// Pull call history from exm.co.il using the calling user's own EXM token,
+// and upsert into CallRecording by externalId. Records are created/updated as
+// the user, so the owner-only RLS keeps each user's recordings private.
 // Newest-first; paginates with the opaque cursor. Default window: 2 years back.
 export default async function(req) {
   try {
@@ -10,19 +12,17 @@ export default async function(req) {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const token = secrets.get("EXM_API_TOKEN");
-    if (!token) return Response.json({ error: 'EXM_API_TOKEN secret not set' }, { status: 500 });
+    const settings = await getUserSettings(base44);
+    const token = settings?.exmToken;
+    if (!token) return Response.json({ error: 'NO_SETTINGS' }, { status: 400 });
 
     const body = await req.json().catch(() => ({}));
     const now = new Date();
     const from = body.from || new Date(now.getFullYear() - 2, now.getMonth(), now.getDate()).toISOString().slice(0, 10);
     const to = body.to || (now.toISOString().slice(0, 10) + " 23:59:59");
 
-    // Clean up pre-sync orphan records (created without externalId).
-    await base44.asServiceRole.entities.CallRecording.deleteMany({ externalId: null });
-
-    // Build externalId -> existing record id map for upsert.
-    const existing = await base44.asServiceRole.entities.CallRecording.filter({}, "-callDate", 5000);
+    // Build externalId -> existing record id map for upsert (user's own records only).
+    const existing = await base44.entities.CallRecording.filter({}, "-callDate", 5000);
     const idMap = new Map();
     for (const r of existing) {
       if (r.externalId) idMap.set(r.externalId, r.id);
@@ -55,10 +55,10 @@ export default async function(req) {
     } while (next && pages < MAX_PAGES);
 
     if (toCreate.length) {
-      await base44.asServiceRole.entities.CallRecording.bulkCreate(toCreate);
+      await base44.entities.CallRecording.bulkCreate(toCreate);
     }
     if (toUpdate.length) {
-      await base44.asServiceRole.entities.CallRecording.bulkUpdate(toUpdate);
+      await base44.entities.CallRecording.bulkUpdate(toUpdate);
     }
 
     return Response.json({

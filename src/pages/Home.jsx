@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { PhoneIncoming, Loader2, ChevronDown, RefreshCw, Download } from "lucide-react";
+import { PhoneIncoming, Loader2, ChevronDown, RefreshCw, Download, Settings as SettingsIcon, ShieldAlert } from "lucide-react";
+import { Link } from "react-router-dom";
 import { downloadRecordingsCsv } from "@/lib/exportRecordings";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -17,6 +18,8 @@ export default function Home() {
   const [sendingId, setSendingId] = useState(null);
   const [syncing, setSyncing] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const [hasSettings, setHasSettings] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const { toast } = useToast();
@@ -76,6 +79,20 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadRecordings]);
 
+  // Load the user's integration settings once on entry.
+  useEffect(() => {
+    (async () => {
+      try {
+        const rows = await base44.entities.UserSettings.filter({}, "-updated_date", 1);
+        setHasSettings(!!rows?.[0]?.exmToken);
+      } catch (_e) {
+        setHasSettings(false);
+      } finally {
+        setSettingsLoaded(true);
+      }
+    })();
+  }, []);
+
   const handleSend = async (recordId) => {
     setSendingId(recordId);
     try {
@@ -109,17 +126,19 @@ export default function Home() {
         throw new Error(response.data?.error || "סנכרון נכשל");
       }
     } catch (error) {
-      toast({ title: "שגיאה בסנכרון", description: error.message, variant: "destructive" });
+      if (error.message !== "NO_SETTINGS") {
+        toast({ title: "שגיאה בסנכרון", description: error.message, variant: "destructive" });
+      }
     } finally {
       setSyncing(false);
     }
   };
 
-  // Auto-sync from exm once on entry, so recordings are always up to date.
+  // Auto-sync from exm once on entry (only after the user's EXM token is set).
   useEffect(() => {
-    handleSync();
+    if (hasSettings) handleSync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [hasSettings]);
 
   const handleExport = async () => {
     setExporting(true);
@@ -161,13 +180,32 @@ export default function Home() {
                 {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                 <span className="hidden sm:inline font-medium">ייצוא לגיליון</span>
               </Button>
-              <Button onClick={handleSync} disabled={syncing} className="gap-2 border-0 gradient-teal text-primary-foreground glow-teal-sm hover:opacity-90">
+              <Button onClick={handleSync} disabled={syncing || !hasSettings} className="gap-2 border-0 gradient-teal text-primary-foreground glow-teal-sm hover:opacity-90">
                 {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
                 <span className="hidden sm:inline font-medium">סנכרון</span>
+              </Button>
+              <Button asChild variant="outline" className="gap-2 border-border bg-card/60 hover:bg-accent hover:text-accent-foreground">
+                <Link to="/settings">
+                  <SettingsIcon className="w-4 h-4" />
+                  <span className="hidden sm:inline font-medium">הגדרות</span>
+                </Link>
               </Button>
             </div>
           </div>
         </header>
+
+        {settingsLoaded && !hasSettings && (
+          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
+            <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0" />
+            <div className="flex-1 text-sm">
+              <p className="font-medium text-amber-200">הגדרת חיבור נדרשת</p>
+              <p className="text-amber-200/80 text-xs mt-0.5">כדי לסנכרן ולשלוח הקלטות, יש להזין את טוקן ה-EXM ופרטי Green API שלכם.</p>
+            </div>
+            <Button asChild size="sm" className="gap-2 border-0 gradient-teal text-primary-foreground glow-teal-sm">
+              <Link to="/settings">להגדרות</Link>
+            </Button>
+          </div>
+        )}
 
         <RecordingFilters
           filters={filters}
