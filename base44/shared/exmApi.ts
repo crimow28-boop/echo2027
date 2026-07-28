@@ -70,10 +70,15 @@ export function mapCall(call) {
     if (!isNaN(d.getTime())) callDate = d.toISOString();
   }
 
+  // exm returns the contact name (from the phonebook) under call.contact.name
+  // when the other party is a saved contact; otherwise contact is `false`.
+  const contactName = call.contact && call.contact.name ? call.contact.name : null;
+  const friendlyNumber = other?.friendly || other?.e164 || "";
+
   return {
     externalId: call.id,
     callerNumber: other?.e164 || "",
-    callerFriendly: other?.friendly || "",
+    callerFriendly: contactName || friendlyNumber,
     callType: isOutgoing ? "outgoing" : "incoming",
     duration: call.duration || 0,
     callDate
