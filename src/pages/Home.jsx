@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, ChevronDown, RefreshCw, Download, Settings as SettingsIcon, ShieldAlert, Search } from "lucide-react";
+import { Loader2, ChevronDown, RefreshCw, Download, Settings as SettingsIcon, ShieldAlert, Search, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { downloadRecordingsCsv } from "@/lib/exportRecordings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
 import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
@@ -215,22 +216,40 @@ export default function Home() {
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Top bar */}
-        <div className="flex items-center justify-between border-b border-border pb-4 mb-12">
+        <div className="relative flex items-center justify-center mb-12">
           <img
             src="https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/a3b40e436_Screenshot2026-07-28at231744.png"
             alt="echo"
             className="h-8 w-auto"
           />
-          <div className="flex items-center gap-2">
-            <Button onClick={handleExport} disabled={exporting} variant="ghost" size="icon" className="rounded-none shadow-none text-muted-foreground hover:text-foreground hover:bg-transparent h-9 w-9 disabled:opacity-40">
-              {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            </Button>
-            <Button onClick={handleSync} disabled={syncing || !hasSettings} variant="ghost" size="icon" className="rounded-none shadow-none text-muted-foreground hover:text-foreground hover:bg-transparent h-9 w-9 disabled:opacity-40">
-              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-            </Button>
-            <Button asChild variant="ghost" size="icon" className="rounded-none shadow-none text-muted-foreground hover:text-foreground hover:bg-transparent h-9 w-9">
-              <Link to="/settings"><SettingsIcon className="w-4 h-4" /></Link>
-            </Button>
+          <div className="absolute left-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border bg-card/70 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                >
+                  <Menu className="w-4 h-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-44">
+                <DropdownMenuItem onClick={handleSync} disabled={syncing || !hasSettings}>
+                  {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                  <span>סנכרון הקלטות</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExport} disabled={exporting}>
+                  {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  <span>ייצוא ל-CSV</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/settings" className="flex items-center gap-2">
+                    <SettingsIcon className="w-4 h-4" />
+                    <span>הגדרות</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
