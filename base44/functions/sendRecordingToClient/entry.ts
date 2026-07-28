@@ -1,4 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { secrets } from "base44:runtime";
+import { getRecordingUrls } from "../../shared/exmApi.ts";
 
 const GREEN_API_URL = "https://7107.api.greenapi.com/waInstance710722692595/sendFileByUrl/48e0edeb455248518fdf9bd95850167cdc284422809b4e9e87";
 
@@ -9,7 +11,6 @@ function toWhatsAppChatId(phone) {
   const cleaned = String(phone).replace(/[\s\-+()]/g, "");
   let normalized = cleaned;
   if (normalized.startsWith("972")) {
-    // already international, drop leading 0 after country code if present
     normalized = normalized.replace(/^9720?/, "972");
   } else if (normalized.startsWith("0")) {
     normalized = "972" + normalized.slice(1);
@@ -30,10 +31,21 @@ export default async function(req) {
     const recording = await base44.entities.CallRecording.get(recordId);
     if (!recording) return Response.json({ error: 'Recording not found' }, { status: 404 });
 
-    const recordingUrl = recording.recordingUrl;
     const chatId = toWhatsAppChatId(recording.callerNumber);
-    if (!recordingUrl) return Response.json({ error: 'Missing recordingUrl' }, { status: 400 });
     if (!chatId) return Response.json({ error: 'Missing callerNumber' }, { status: 400 });
+
+    // Fetch a fresh signed recording URL from exm.co.il (valid 10 min) at send time,
+    // so we never rely on a stored URL that may have expired.
+    let recordingUrl = recording.recordingUrl;
+    if (recording.externalId) {
+      const token = secrets.get("EXM_API_TOKEN");
+      if (token) {
+        const urls = await getRecordingUrls(token, [recording.externalId], 10);
+        const found = urls.find((u) => u.id === recording.externalId && u.code === 0);
+        if (found && found.url) recordingUrl = found.url;
+      }
+    }
+    if (!recordingUrl) return Response.json({ error: 'No recording available for this call' }, { status: 400 });
 
     const waResponse = await fetch(GREEN_API_URL, {
       method: "POST",
@@ -42,7 +54,7 @@ export default async function(req) {
         urlFile: recordingUrl,
         fileName: "recording.mp3",
         chatId: chatId,
-        caption: "📞 הקלטת שיחה מתדהר"
+        caption: "📞 הקלטת שיחה"
       })
     });
 

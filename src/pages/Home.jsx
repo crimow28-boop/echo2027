@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { PhoneIncoming, Loader2, ChevronDown } from "lucide-react";
+import { PhoneIncoming, Loader2, ChevronDown, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import RecordingFilters from "@/components/recordings/RecordingFilters";
@@ -14,6 +14,7 @@ export default function Home() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [sendingId, setSendingId] = useState(null);
+  const [syncing, setSyncing] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const { toast } = useToast();
@@ -92,6 +93,26 @@ export default function Home() {
     }
   };
 
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const response = await base44.functions.invoke("syncRecordings", {});
+      if (response.data?.success) {
+        toast({
+          title: `סונכרנו ${response.data.total} הקלטות`,
+          description: `${response.data.created} חדשות · ${response.data.updated} עודכנו`
+        });
+        loadRecordings(true);
+      } else {
+        throw new Error(response.data?.error || "סנכרון נכשל");
+      }
+    } catch (error) {
+      toast({ title: "שגיאה בסנכרון", description: error.message, variant: "destructive" });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const handleFilterChange = (field, value) =>
     setFilters((prev) => ({ ...prev, [field]: value }));
   const handleReset = () => setFilters(DEFAULT_FILTERS);
@@ -101,14 +122,20 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
         <header className="mb-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-              <PhoneIncoming className="w-5 h-5 text-primary-foreground" />
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+                <PhoneIncoming className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">הקלטות שיחות</h1>
+                <p className="text-sm text-muted-foreground">Callect — ניהול הקלטות שיחות</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">הקלטות שיחות</h1>
-              <p className="text-sm text-muted-foreground">Callect — ניהול הקלטות שיחות</p>
-            </div>
+            <Button variant="outline" onClick={handleSync} disabled={syncing} className="gap-2 shrink-0">
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+              <span className="hidden sm:inline">סנכרון</span>
+            </Button>
           </div>
         </header>
 

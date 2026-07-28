@@ -2,6 +2,10 @@
   "name": "CallRecording",
   "type": "object",
   "properties": {
+    "externalId": {
+      "type": "string",
+      "title": "External Call ID"
+    },
     "callDate": {
       "type": "string",
       "format": "date-time",
