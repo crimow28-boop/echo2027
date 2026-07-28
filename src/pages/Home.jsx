@@ -196,7 +196,7 @@ export default function Home() {
             <Button onClick={handleSync} disabled={syncing || !hasSettings} className="rounded-none border-2 border-foreground bg-primary text-primary-foreground shadow-none hover:bg-foreground hover:text-background font-mono text-[11px] uppercase tracking-wider h-9 px-3">
               {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
             </Button>
-            <Button asChild variant="outline" className="rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none font-mono text-[11px] uppercase tracking-wider h-9 px-3">
+            <Button asChild variant="ghost" size="icon" className="rounded-none shadow-none text-muted-foreground hover:text-foreground hover:bg-transparent h-9 w-9">
               <Link to="/settings"><SettingsIcon className="w-4 h-4" /></Link>
             </Button>
           </div>
