@@ -376,8 +376,8 @@ export default function Home() {
                   {!loading && recordings.length === 0 && (
                     <tr>
                       <td colSpan={6} className="px-4 py-16 text-right text-muted-foreground text-sm">
-                        <p>לא מצאנו שיחות שתואמות לחיפוש</p>
-                        <p className="mt-1 text-xs text-muted-foreground/80">נסו לחפש בשם אחר או לבדוק את מספר הטלפון</p>
+                        <p>אין שיחות כאלה</p>
+                        <p className="mt-1 text-xs text-muted-foreground/80">נסו שם אחר, מספר טלפון או טווח תאריכים אחר</p>
                       </td>
                     </tr>
                   )}
@@ -398,8 +398,8 @@ export default function Home() {
               )}
               {!loading && recordings.length === 0 && (
                 <div className="py-16 text-right text-muted-foreground text-sm">
-                  <p>לא מצאנו שיחות שתואמות לחיפוש</p>
-                  <p className="mt-1 text-xs text-muted-foreground/80">נסו לחפש בשם אחר או לבדוק את מספר הטלפון</p>
+                  <p>אין שיחות כאלה</p>
+                  <p className="mt-1 text-xs text-muted-foreground/80">נסו שם אחר, מספר טלפון או טווח תאריכים אחר</p>
                 </div>
               )}
               {!loading && recordings.map((r) => (
