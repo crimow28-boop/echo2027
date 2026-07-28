@@ -90,9 +90,10 @@ export default async function(req) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chatId: chatId, message: caption })
     });
-    if (!msgResponse.ok) {
-      const errText = await msgResponse.text();
-      return Response.json({ error: `Green API message error: ${msgResponse.status} ${errText}` }, { status: 502 });
+    const msgData = await msgResponse.json().catch(() => null);
+    if (!msgResponse.ok || (msgData && msgData.error)) {
+      const detail = msgData?.error || `HTTP ${msgResponse.status}`;
+      return Response.json({ error: `Green API: ${detail}` }, { status: 502 });
     }
 
     await base44.entities.CallRecording.update(recordId, { sent: true, sentAt: new Date().toISOString() });

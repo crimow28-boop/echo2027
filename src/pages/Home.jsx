@@ -23,6 +23,7 @@ export default function Home() {
   const [exporting, setExporting] = useState(false);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [hasSettings, setHasSettings] = useState(false);
+  const [hasGreen, setHasGreen] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [suggestions, setSuggestions] = useState(SEARCH_SUGGESTIONS);
@@ -109,6 +110,7 @@ export default function Home() {
       try {
         const rows = await base44.entities.UserSettings.filter({}, "-updated_date", 1);
         setHasSettings(!!rows?.[0]?.exmToken);
+        setHasGreen(!!(rows?.[0]?.greenInstanceId && rows?.[0]?.greenToken));
       } catch (_e) {
         setHasSettings(false);
       } finally {
@@ -157,7 +159,12 @@ export default function Home() {
         throw new Error(response.data?.error || "שליחה נכשלה");
       }
     } catch (error) {
-      toast({ title: "שגיאה בשליחה", description: error.message, variant: "destructive" });
+      const raw = error?.response?.data?.error || error?.message || "שליחה נכשלה";
+      const friendly =
+        raw === "NO_GREEN_API" ? "Green API אינו מוגדר — הגדירו אותו בהגדרות"
+        : raw === "NO_SETTINGS" ? "חסרות הגדרות חיבור — הגדירו אותן בהגדרות"
+        : raw;
+      toast({ title: "שגיאה בשליחה", description: friendly, variant: "destructive" });
     } finally {
       setSendingId(null);
       setPending(null);
@@ -260,6 +267,21 @@ export default function Home() {
               <div className="text-sm leading-relaxed text-amber-800">
                 <p className="font-medium">חיבור נדרש</p>
                 <p className="text-amber-700 mt-1">כדי לסנכרן ולשלוח הקלטות, יש להזין את טוקן ה-EXM ופרטי Green API.</p>
+              </div>
+            </div>
+            <Button asChild size="sm" className="gap-2 rounded-lg border border-amber-300 bg-amber-100 text-amber-800 shadow-none hover:bg-amber-200 text-xs font-medium">
+              <Link to="/onboarding">להגדרה →</Link>
+            </Button>
+          </div>
+        )}
+
+        {settingsLoaded && hasSettings && !hasGreen && (
+          <div className="mb-10 flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <div className="flex items-center gap-3 flex-1">
+              <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0" />
+              <div className="text-sm leading-relaxed text-amber-800">
+                <p className="font-medium">חסר חיבור WhatsApp</p>
+                <p className="text-amber-700 mt-1">כדי לשלוח הקלטות ללקוחות, יש להזין את פרטי Green API.</p>
               </div>
             </div>
             <Button asChild size="sm" className="gap-2 rounded-lg border border-amber-300 bg-amber-100 text-amber-800 shadow-none hover:bg-amber-200 text-xs font-medium">
