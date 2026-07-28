@@ -2,7 +2,6 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { secrets } from "base44:runtime";
 import { getRecordingUrls } from "../../shared/exmApi.ts";
 
-const GREEN_API_URL = "https://7107.api.greenapi.com/waInstance710722692595/sendFileByUrl/48e0edeb455248518fdf9bd95850167cdc284422809b4e9e87";
 const GREEN_API_SEND_MESSAGE_URL = "https://7107.api.greenapi.com/waInstance710722692595/sendMessage/48e0edeb455248518fdf9bd95850167cdc284422809b4e9e87";
 
 // Convert an Israeli phone number to WhatsApp chat id format.
@@ -35,13 +34,13 @@ export default async function(req) {
     const chatId = toWhatsAppChatId(recording.callerNumber);
     if (!chatId) return Response.json({ error: 'Missing callerNumber' }, { status: 400 });
 
-    // Fetch a fresh signed recording URL from exm.co.il (valid 10 min) at send time,
-    // so we never rely on a stored URL that may have expired.
+    // Fetch a permanent public recording URL from exm.co.il (ttl=0, no time limit)
+    // so the client can open the link anytime.
     let recordingUrl = recording.recordingUrl;
     if (recording.externalId) {
       const token = secrets.get("EXM_API_TOKEN");
       if (token) {
-        const urls = await getRecordingUrls(token, [recording.externalId], 10);
+        const urls = await getRecordingUrls(token, [recording.externalId], 0);
         const found = urls.find((u) => u.id === recording.externalId && u.code === 0);
         if (found && found.url) recordingUrl = found.url;
       }
@@ -69,13 +68,14 @@ export default async function(req) {
 
     const caption = [
       `שלום,`,
-      `מצורפת הקלטת השיחה שהתקיימה עם נציג/ת ${businessName}.`,
+      `להלן הקישור להקלטת השיחה שהתקיימה עם נציג/ת ${businessName}:`,
+      `${recordingUrl}`,
       ``,
       `📅 תאריך השיחה: ${dateStr}`,
       `🕒 שעת השיחה: ${timeStr}`,
       `⏱️ משך השיחה: ${durationStr}`,
       ``,
-      `ההקלטה נמסרת לך ללא תשלום. מומלץ לשמור את הקובץ לצורך עיון עתידי.`,
+      `הקישור נשמר ללא מגבלת זמן — מומלץ לשמור אותו לצורך עיון עתידי.`,
       ``,
       `לכל שאלה או בקשה נוספת, ניתן להשיב להודעה זו.`,
       ``,
@@ -92,22 +92,6 @@ export default async function(req) {
     if (!msgResponse.ok) {
       const errText = await msgResponse.text();
       return Response.json({ error: `Green API message error: ${msgResponse.status} ${errText}` }, { status: 502 });
-    }
-
-    // Then send the recording file separately.
-    const waResponse = await fetch(GREEN_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        urlFile: recordingUrl,
-        fileName: "recording.mp3",
-        chatId: chatId
-      })
-    });
-
-    if (!waResponse.ok) {
-      const errText = await waResponse.text();
-      return Response.json({ error: `Green API error: ${waResponse.status} ${errText}` }, { status: 502 });
     }
 
     await base44.entities.CallRecording.update(recordId, { sent: true });
