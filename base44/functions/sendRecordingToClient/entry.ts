@@ -67,7 +67,12 @@ export default async function(req) {
         ? `${digits.slice(0, 3)}${"*".repeat(digits.length - 5)}${digits.slice(-2)}`
         : digits;
 
-    const caption = [
+    const customMessage = typeof body?.message === "string" ? body.message.trim() : "";
+    const caption = customMessage
+      ? (customMessage.includes("{{link}}")
+          ? customMessage.replaceAll("{{link}}", recordingUrl)
+          : `${customMessage}\n\n${recordingUrl}`)
+      : [
       `שלום,`,
       `להלן הקישור להקלטת השיחה שהתקיימה עם נציג/ת ${businessName}:`,
       `${recordingUrl}`,

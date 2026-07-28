@@ -152,10 +152,10 @@ export default function Home() {
     })();
   }, []);
 
-  const handleSend = async (recordId) => {
+  const handleSend = async (recordId, message) => {
     setSendingId(recordId);
     try {
-      const response = await base44.functions.invoke("sendRecordingToClient", { recordId });
+      const response = await base44.functions.invoke("sendRecordingToClient", { recordId, message });
       if (response.data?.success) {
         setRecordings((prev) =>
           prev.map((r) => (r.id === recordId ? { ...r, sent: true, sentAt: new Date().toISOString() } : r))
@@ -177,8 +177,8 @@ export default function Home() {
     }
   };
 
-  const confirmSend = () => {
-    if (pending) handleSend(pending.id);
+  const confirmSend = (message) => {
+    if (pending) handleSend(pending.id, message);
   };
 
   const handleSync = async () => {
