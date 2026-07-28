@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
 import SendConfirmDialog from "@/components/recordings/SendConfirmDialog";
-import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE } from "@/lib/recordingUtils";
+import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS } from "@/lib/recordingUtils";
 
 export default function Home() {
   const [recordings, setRecordings] = useState([]);
@@ -220,16 +220,31 @@ export default function Home() {
         {/* Search hero */}
         <div className="text-center">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none">חיפוש הקלטה</h1>
-          <p className="mt-3 font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">הקלידו מספר טלפון לשליפת שיחה</p>
+          <p className="mt-3 font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">בקשו הקלטות לפי מספר טלפון או שם איש קשר</p>
           <div className="relative mt-6 max-w-xl mx-auto">
             <Search className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={filters.search}
               onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
-              placeholder="05X-XXX-XXXX"
-              dir="ltr"
+              placeholder="מה תרצו לחפש?"
+              dir="auto"
               className="pr-12 h-14 sm:h-16 text-lg font-mono rounded-none border-2 border-foreground bg-card focus-visible:ring-0 focus-visible:border-primary"
             />
+          </div>
+          {/* Example suggestions */}
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/70">לדוגמה:</span>
+            {SEARCH_SUGGESTIONS.map((s) => (
+              <button
+                key={s.label}
+                type="button"
+                onClick={() => setFilters((prev) => ({ ...prev, search: s.label }))}
+                className="group inline-flex items-baseline gap-1.5 rounded-none border border-foreground/30 bg-card px-2.5 py-1 font-mono text-xs hover:border-foreground hover:bg-muted transition-colors"
+              >
+                <span className="text-foreground">{s.label}</span>
+                <span className="text-[9px] uppercase tracking-wider text-muted-foreground/70 group-hover:text-muted-foreground">· {s.hint}</span>
+              </button>
+            ))}
           </div>
         </div>
 
@@ -304,7 +319,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="mt-14 text-center font-mono text-xs uppercase tracking-wider text-muted-foreground">
-            הקלידו מספר טלפון כדי להתחיל
+            הקלידו מספר טלפון או שם כדי להתחיל
           </div>
         )}
       </div>

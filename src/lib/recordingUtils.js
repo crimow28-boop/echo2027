@@ -24,20 +24,48 @@ export const DEFAULT_FILTERS = {
 
 export const PAGE_SIZE = 50;
 
+// Build a database query from a free-text search term.
+// The term can be a phone number (normalized to e164) or a contact name.
 export function buildQuery(filters) {
   const query = {};
-  if (filters.search) {
-    // Normalize the search term to match the stored e164 format (+972...).
-    // Israeli local numbers start with 0 (e.g. 052-712-3456); the e164 form
-    // drops that 0 (972527123456). Convert so partial lookups match.
-    const digits = String(filters.search).replace(/\D/g, "");
+  if (!filters.search) return query;
+
+  const term = String(filters.search).trim();
+  if (!term) return query;
+
+  const digits = term.replace(/\D/g, "");
+  const namePart = term.replace(/\d/g, "").trim();
+  const conditions = [];
+
+  // Phone branch: normalize Israeli local numbers to e164 (drop leading 0).
+  if (digits.length >= 3) {
     let normalized = digits;
     if (normalized.startsWith("0")) {
       normalized = "972" + normalized.slice(1);
-    } else if (normalized.startsWith("972")) {
-      // already international, keep as-is
     }
-    query.callerNumber = { $regex: normalized, $options: "i" };
+    conditions.push({ callerNumber: { $regex: normalized, $options: "i" } });
   }
+
+  // Contact name branch: match against the stored friendly name.
+  if (namePart.length >= 2) {
+    conditions.push({ callerFriendly: { $regex: namePart, $options: "i" } });
+  }
+
+  if (conditions.length === 0) {
+    // Fallback: only digits/short term — match the raw term anywhere.
+    query.callerNumber = { $regex: digits || term, $options: "i" };
+  } else if (conditions.length === 1) {
+    Object.assign(query, conditions[0]);
+  } else {
+    query.$or = conditions;
+  }
+
   return query;
 }
+
+// Example suggestions shown under the search bar to guide users.
+export const SEARCH_SUGGESTIONS = [
+  { label: "050-712-3456", hint: "מספר טלפון" },
+  { label: "דני כהן", hint: "איש קשר" },
+  { label: "052-880-1122", hint: "מספר נוסף" },
+];
