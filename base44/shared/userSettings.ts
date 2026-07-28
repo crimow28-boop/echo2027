@@ -16,6 +16,6 @@ export function greenApiUrl(settings, method) {
   const id = String(settings?.greenInstanceId || "").trim();
   const token = String(settings?.greenToken || "").trim();
   if (!id || !token) return null;
-  const host = `https://${id.slice(0, 4)}.api.greenapi.com`;
+  const host = id.startsWith("7107") ? "https://7107.api.green-api.com" : "https://api.green-api.com";
   return `${host}/waInstance${id}/${method}/${token}`;
 }

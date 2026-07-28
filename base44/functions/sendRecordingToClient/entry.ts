@@ -92,8 +92,10 @@ export default async function(req) {
     });
     const msgData = await msgResponse.json().catch(() => null);
     if (!msgResponse.ok || (msgData && msgData.error)) {
-      const detail = msgData?.error || `HTTP ${msgResponse.status}`;
-      return Response.json({ error: `Green API: ${detail}` }, { status: 502 });
+      const friendly = msgResponse.status === 401
+        ? "פרטי Green API שגויים או פגי תוקף — בדקו את המזהה והטוקן בהגדרות"
+        : `Green API: ${msgData?.error || "HTTP " + msgResponse.status}`;
+      return Response.json({ error: friendly }, { status: 502 });
     }
 
     await base44.entities.CallRecording.update(recordId, { sent: true, sentAt: new Date().toISOString() });
