@@ -218,22 +218,22 @@ export default function Home() {
         )}
 
         {/* Search hero */}
-        <div className="text-center">
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">חיפוש הקלטה</h1>
-          <p className="mt-3 text-sm text-muted-foreground">בקשו הקלטות לפי מספר טלפון או שם איש קשר</p>
-          <div className="relative mt-8 max-w-xl mx-auto">
+        <div className="text-right">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">מצאו כל שיחה, ברגע</h1>
+          <p className="mt-3 text-sm text-muted-foreground">חפשו בהקלטות לפי שם איש קשר או מספר טלפון</p>
+          <div className="relative mt-8 max-w-xl">
             <Search className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={filters.search}
               onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
-              placeholder="מה תרצו לחפש?"
+              placeholder="איזו שיחה תרצו למצוא?"
               dir="auto"
               className="pr-12 h-14 text-base rounded-2xl border border-border bg-card shadow-sm focus-visible:ring-0 focus-visible:border-primary/50"
             />
           </div>
           {/* Example suggestions */}
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-            <span className="text-xs text-muted-foreground">לדוגמה:</span>
+          <div className="mt-5 flex flex-wrap items-center justify-start gap-2">
+            <span className="text-xs text-muted-foreground">אפשר לחפש לפי:</span>
             {SEARCH_SUGGESTIONS.map((s) => (
               <button
                 key={s.label}
@@ -253,7 +253,7 @@ export default function Home() {
           <div className="mt-8">
             <div className="flex items-center gap-2 mb-4 text-xs text-muted-foreground">
               <span className={`inline-block w-2 h-2 rounded-full ${loading ? "bg-muted-foreground animate-pulse" : "bg-primary"}`}></span>
-              {loading ? "טוען..." : `נמצאו ${recordings.length} תוצאות`}
+              {loading ? "מחפשים את השיחות המתאימות..." : `נמצאו ${recordings.length} שיחות`}
             </div>
 
             {/* Table - Desktop */}
@@ -274,14 +274,15 @@ export default function Home() {
                     <tr>
                       <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground text-sm">
                         <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
-                        טוען תוצאות...
+                        מחפשים את השיחות המתאימות...
                       </td>
                     </tr>
                   )}
                   {!loading && recordings.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground text-sm">
-                        לא נמצאו הקלטות למספר זה
+                      <td colSpan={6} className="px-4 py-16 text-right text-muted-foreground text-sm">
+                        <p>לא מצאנו שיחות שתואמות לחיפוש</p>
+                        <p className="mt-1 text-xs text-muted-foreground/80">נסו לחפש בשם אחר או לבדוק את מספר הטלפון</p>
                       </td>
                     </tr>
                   )}
@@ -297,11 +298,14 @@ export default function Home() {
               {loading && (
                 <div className="text-center py-16 text-muted-foreground text-sm">
                   <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
-                  טוען תוצאות...
+                  מחפשים את השיחות המתאימות...
                 </div>
               )}
               {!loading && recordings.length === 0 && (
-                <div className="text-center py-16 text-muted-foreground text-sm">לא נמצאו הקלטות למספר זה</div>
+                <div className="py-16 text-right text-muted-foreground text-sm">
+                  <p>לא מצאנו שיחות שתואמות לחיפוש</p>
+                  <p className="mt-1 text-xs text-muted-foreground/80">נסו לחפש בשם אחר או לבדוק את מספר הטלפון</p>
+                </div>
               )}
               {!loading && recordings.map((r) => (
                 <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} />
@@ -318,8 +322,8 @@ export default function Home() {
             )}
           </div>
         ) : (
-          <div className="mt-16 text-center text-sm text-muted-foreground">
-            הקלידו מספר טלפון או שם כדי להתחיל
+          <div className="mt-16 text-right text-sm text-muted-foreground">
+            התחילו בשם או במספר טלפון
           </div>
         )}
       </div>

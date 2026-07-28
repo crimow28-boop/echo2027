@@ -65,7 +65,6 @@ export function buildQuery(filters) {
 
 // Example suggestions shown under the search bar to guide users.
 export const SEARCH_SUGGESTIONS = [
-  { label: "050-712-3456", hint: "מספר טלפון" },
-  { label: "דני כהן", hint: "איש קשר" },
-  { label: "052-880-1122", hint: "מספר נוסף" },
+  { label: "דנה לוי", hint: "שם איש קשר" },
+  { label: "050-123-4567", hint: "מספר טלפון" },
 ];
