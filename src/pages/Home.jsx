@@ -11,7 +11,8 @@ import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
 import SendConfirmDialog from "@/components/recordings/SendConfirmDialog";
 import SearchSummary from "@/components/recordings/SearchSummary";
-import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS, SEARCH_EXAMPLES, formatPhoneDisplay } from "@/lib/recordingUtils";
+import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS, formatPhoneDisplay } from "@/lib/recordingUtils";
+import { buildSearchExamples } from "@/lib/searchExamples";
 
 export default function Home() {
   const [recordings, setRecordings] = useState([]);
@@ -28,6 +29,7 @@ export default function Home() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [suggestions, setSuggestions] = useState(SEARCH_SUGGESTIONS);
+  const [examples, setExamples] = useState([]);
   const { toast } = useToast();
 
   const filtersRef = useRef(filters);
@@ -125,6 +127,7 @@ export default function Home() {
     (async () => {
       try {
         const rows = await base44.entities.CallRecording.filter({}, "-callDate", 30);
+        setExamples(buildSearchExamples(rows));
         const seen = new Set();
         const list = [];
         for (const r of rows || []) {
@@ -307,19 +310,23 @@ export default function Home() {
           </div>
           {!hasSearch && (
             <div className="mt-8 max-w-xl">
-              <p className="text-xs font-medium text-foreground/80">אפשר לבקש כך:</p>
-              <div className="mt-2.5 flex flex-col gap-2">
-                {SEARCH_EXAMPLES.map((ex) => (
-                  <button
-                    key={ex}
-                    type="button"
-                    onClick={() => setFilters((prev) => ({ ...prev, search: ex }))}
-                    className="text-right rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground hover:border-primary/30 transition-colors"
-                  >
-                    {ex}
-                  </button>
-                ))}
-              </div>
+              {examples.length > 0 && (
+                <div>
+                  <p className="text-xs font-medium text-foreground/80">אפשר לבקש כך:</p>
+                  <div className="mt-2.5 flex flex-col gap-2">
+                    {examples.map((ex) => (
+                      <button
+                        key={ex}
+                        type="button"
+                        onClick={() => setFilters((prev) => ({ ...prev, search: ex }))}
+                        className="text-right rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground hover:border-primary/30 transition-colors"
+                      >
+                        {ex}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               {suggestions.length > 0 && (
                 <div className="mt-4">
                   <p className="text-xs font-medium text-foreground/80">אפשר לחפש לפי:</p>
