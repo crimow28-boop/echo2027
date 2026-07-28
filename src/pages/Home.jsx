@@ -316,7 +316,7 @@ export default function Home() {
             <div className="mt-8 max-w-xl">
               {suggestions.length > 0 && (
                 <div>
-                  <p className="text-xs font-medium text-foreground/80">אפשר לחפש לפי:</p>
+                  <p className="text-xs font-medium text-foreground/80">אפשר גם לחפש לפי:</p>
                   <div className="mt-2.5 flex flex-wrap gap-2">
                     {suggestions.map((s) => (
                       <button
