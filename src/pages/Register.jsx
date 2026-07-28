@@ -81,7 +81,7 @@ export default function Register() {
         subtitle={`We sent a code to ${email}`}
       >
         {error && (
-          <div className="mb-4 p-3 border-2 border-destructive font-mono text-xs text-destructive">
+          <div className="mb-4 p-3 rounded-lg border border-destructive/30 bg-destructive/5 text-sm text-destructive">
             {error}
           </div>
         )}
@@ -104,7 +104,7 @@ export default function Register() {
           </InputOTP>
         </div>
         <Button
-          className="w-full h-12 font-mono text-sm uppercase tracking-[0.15em] rounded-none border-2 border-foreground bg-primary text-primary-foreground shadow-none hover:bg-foreground hover:text-background"
+          className="w-full h-11 rounded-lg"
           onClick={handleVerify}
           disabled={loading || otpCode.length < 6}
         >
@@ -117,9 +117,9 @@ export default function Register() {
             "Verify"
           )}
         </Button>
-        <p className="text-center font-mono text-xs text-muted-foreground mt-4">
+        <p className="text-center text-sm text-muted-foreground mt-4">
           Didn't receive the code?{" "}
-          <button onClick={handleResend} className="text-primary font-medium hover:underline uppercase tracking-wider">
+          <button onClick={handleResend} className="text-primary font-medium hover:underline">
             Resend
           </button>
         </p>
@@ -146,7 +146,7 @@ export default function Register() {
     >
       <Button
         variant="outline"
-        className="w-full h-12 text-sm font-medium mb-5 rounded-none border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background shadow-none"
+        className="w-full h-11 text-sm font-medium mb-5 rounded-lg border border-border bg-card hover:bg-accent shadow-none"
         onClick={handleGoogle}
       >
         <GoogleIcon className="w-5 h-5 mr-2" />
@@ -155,22 +155,22 @@ export default function Register() {
 
       <div className="relative mb-5">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t-2 border-border" />
+          <div className="w-full border-t border-border" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 font-mono tracking-widest text-muted-foreground">or</span>
+        <div className="relative flex justify-center text-xs">
+          <span className="bg-card px-3 text-muted-foreground">or</span>
         </div>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 border-2 border-destructive font-mono text-xs text-destructive">
+        <div className="mb-4 p-3 rounded-lg border border-destructive/30 bg-destructive/5 text-sm text-destructive">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email" className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">Email</Label>
+          <Label htmlFor="email" className="text-sm font-medium text-foreground/80">Email</Label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -181,13 +181,13 @@ export default function Register() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 h-12 rounded-none font-mono border-2 border-foreground bg-transparent focus-visible:ring-0 focus-visible:border-primary"
+              className="pl-10 h-11 rounded-lg border border-border bg-card focus-visible:ring-0 focus-visible:border-primary/50"
               required
             />
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password" className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">Password</Label>
+          <Label htmlFor="password" className="text-sm font-medium text-foreground/80">Password</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -197,13 +197,13 @@ export default function Register() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 h-12 rounded-none font-mono border-2 border-foreground bg-transparent focus-visible:ring-0 focus-visible:border-primary"
+              className="pl-10 h-11 rounded-lg border border-border bg-card focus-visible:ring-0 focus-visible:border-primary/50"
               required
             />
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="confirm" className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">Confirm Password</Label>
+          <Label htmlFor="confirm" className="text-sm font-medium text-foreground/80">Confirm Password</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -213,12 +213,12 @@ export default function Register() {
               placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="pl-10 h-12 rounded-none font-mono border-2 border-foreground bg-transparent focus-visible:ring-0 focus-visible:border-primary"
+              className="pl-10 h-11 rounded-lg border border-border bg-card focus-visible:ring-0 focus-visible:border-primary/50"
               required
             />
           </div>
         </div>
-        <Button type="submit" className="w-full h-12 font-mono text-sm uppercase tracking-[0.15em] rounded-none border-2 border-foreground bg-primary text-primary-foreground shadow-none hover:bg-foreground hover:text-background" disabled={loading}>
+        <Button type="submit" className="w-full h-11 rounded-lg" disabled={loading}>
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
