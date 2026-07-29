@@ -14,6 +14,7 @@ import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Settings from './pages/Settings';
 import Onboarding from './pages/Onboarding';
+import HistoryPage from './pages/History';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -47,6 +48,7 @@ const AuthenticatedApp = () => {
       <Route path="/" element={<Home />} />
     <Route path="/settings" element={<Settings />} />
     <Route path="/onboarding" element={<Onboarding />} />
+    <Route path="/history" element={<HistoryPage />} />
     </Route>
     <Route path="/login" element={<Login />} />
     <Route path="/register" element={<Register />} />

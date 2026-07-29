@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Loader2, RefreshCw, Download, Settings as SettingsIcon } from "lucide-react";
+import { Menu, Loader2, RefreshCw, Download, History, Settings as SettingsIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export default function AppMenuSheet({ onSync, onExport, syncing, exporting, hasSettings }) {
@@ -23,6 +23,10 @@ export default function AppMenuSheet({ onSync, onExport, syncing, exporting, has
           <SheetTitle className="text-base font-semibold">תפריט</SheetTitle>
         </SheetHeader>
         <div className="mt-6 space-y-1">
+          <Link to="/history" onClick={() => setOpen(false)} className={itemClass}>
+            <History className="w-4 h-4" />
+            <span>היסטוריית שיחות</span>
+          </Link>
           <button
             type="button"
             className={itemClass}
