@@ -78,9 +78,6 @@ export default function DemoPlayer({ duration, audioUrl }) {
           }
         }}
       />
-      <span className="text-[11px] leading-none text-muted-foreground font-mono shrink-0 whitespace-nowrap" dir="ltr">
-        {fmt(pos)} / {fmt(total)}
-      </span>
     </div>
   );
 }
