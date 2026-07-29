@@ -14,7 +14,7 @@ export default function DemoCtaButtons({ size = "lg" }) {
           פתיחת חשבון חדש
         </Link>
       </Button>
-      <Button asChild variant="outline" className={`gap-2 ${h} rounded-full px-7 text-sm w-full sm:w-auto`}>
+      <Button asChild variant="outline" className={`gap-2 ${h} rounded-full bg-card px-7 text-sm w-full sm:w-auto`}>
         <Link to="/client-login">
           <LogIn className="w-4 h-4" />
           כבר יש לי חשבון
