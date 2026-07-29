@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DemoHeader from "@/components/demo/DemoHeader";
-import DemoSearchPreview from "@/components/demo/DemoSearchPreview";
+import DemoPlayground from "@/components/demo/DemoPlayground";
 import DemoFeatures from "@/components/demo/DemoFeatures";
 
 export default function Demo() {
@@ -30,7 +30,7 @@ export default function Demo() {
         </section>
 
         <section>
-          <DemoSearchPreview />
+          <DemoPlayground />
         </section>
 
         <section>
