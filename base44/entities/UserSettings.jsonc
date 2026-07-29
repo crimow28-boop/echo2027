@@ -2,6 +2,18 @@
   "name": "UserSettings",
   "type": "object",
   "properties": {
+    "clientName": {
+      "type": "string",
+      "title": "Client Name"
+    },
+    "clientEmail": {
+      "type": "string",
+      "title": "Client Login Email"
+    },
+    "ownerUserId": {
+      "type": "string",
+      "title": "Owner User Id"
+    },
     "exmToken": {
       "type": "string",
       "title": "EXM API Token"
@@ -20,13 +32,37 @@
   ],
   "rls": {
     "read": {
-      "created_by_id": "{{user.id}}"
+      "$or": [
+        {
+          "data.ownerUserId": "{{user.id}}"
+        },
+        {
+          "data.clientEmail": "{{user.email}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "update": {
-      "created_by_id": "{{user.id}}"
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "delete": {
-      "created_by_id": "{{user.id}}"
+      "user_condition": {
+        "role": "admin"
+      }
     }
   }
 }
