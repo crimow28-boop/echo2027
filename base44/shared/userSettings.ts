@@ -2,13 +2,26 @@
 // UserSettings has owner-only RLS, so the user-authenticated client only ever
 // returns the calling user's own record.
 
-// Fetch the calling user's stored credentials, or null if not configured yet.
+// Fetch the credentials configured for the calling user, or null if not set up yet.
+// Configs are created centrally by an admin and linked to a client either by
+// ownerUserId or by the client's login email.
 export async function getUserSettings(base44) {
-  const rows = await base44.entities.UserSettings.filter({}, "-updated_date", 10);
-  if (!rows || rows.length === 0) return null;
-  // Prefer a record that actually holds WhatsApp credentials, so an older/partial
-  // duplicate record never hides a fully configured one.
-  return rows.find((r) => r.greenInstanceId && r.greenToken) || rows[0];
+  const user = await base44.auth.me();
+  if (!user) return null;
+  const svc = base44.asServiceRole.entities.UserSettings;
+  const queries = [
+    { ownerUserId: user.id },
+    ...(user.email ? [{ clientEmail: user.email }] : []),
+    { created_by_id: user.id }
+  ];
+  for (const q of queries) {
+    const rows = await svc.filter(q, "-updated_date", 10);
+    if (rows && rows.length > 0) {
+      // Prefer a record that actually holds WhatsApp credentials.
+      return rows.find((r) => r.greenInstanceId && r.greenToken) || rows[0];
+    }
+  }
+  return null;
 }
 
 // Build a Green API endpoint URL from the user's instance id + api token.
