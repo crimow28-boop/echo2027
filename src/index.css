@@ -88,6 +88,12 @@
 }
 
 @layer components {
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.7) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.7) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
   .gradient-teal {
     background-image: linear-gradient(135deg, #00ffcc, #0088ff);
   }
