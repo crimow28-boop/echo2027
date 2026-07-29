@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import DemoCtaButtons from "@/components/demo/DemoCtaButtons";
 import DemoHeader from "@/components/demo/DemoHeader";
 import DemoPlayground from "@/components/demo/DemoPlayground";
-import DemoFeatures from "@/components/demo/DemoFeatures";
 
 export default function Demo() {
   return (
@@ -27,13 +26,6 @@ export default function Demo() {
 
         <section>
           <DemoPlayground />
-        </section>
-
-        <section>
-          <h2 className="font-heading text-2xl tracking-tight text-center">מה אפשר לעשות</h2>
-          <div className="mt-6">
-            <DemoFeatures />
-          </div>
         </section>
 
         <section className="rounded-2xl border border-border bg-card p-6 text-center">
