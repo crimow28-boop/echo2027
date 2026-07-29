@@ -17,6 +17,7 @@ import Onboarding from './pages/Onboarding';
 import HistoryPage from './pages/History';
 import Admin from './pages/Admin';
 import ClientLogin from './pages/ClientLogin';
+import Demo from './pages/Demo';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -46,7 +47,8 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
     {/* Add your page Route elements here */}
-    <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/client-login" replace />} />}>
+    <Route path="/demo" element={<Demo />} />
+    <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/demo" replace />} />}>
       <Route path="/" element={<Home />} />
     <Route path="/settings" element={<Settings />} />
     <Route path="/onboarding" element={<Onboarding />} />
