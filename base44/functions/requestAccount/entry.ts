@@ -1,4 +1,31 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { greenApiUrl } from "../../shared/userSettings.ts";
+import { normalizePhone } from "../../shared/clientLogin.ts";
+
+// Notify the system admin over WhatsApp about a new account request.
+async function notifyAdmin(base44, details) {
+  const adminPhone = normalizePhone(Deno.env.get("ADMIN_ALERT_PHONE"));
+  if (!adminPhone) return;
+
+  const rows = await base44.asServiceRole.entities.UserSettings.filter({}, "-updated_date", 20);
+  const creds = (rows || []).find((r) => r.greenInstanceId && r.greenToken);
+  const url = creds && greenApiUrl(creds, "sendMessage");
+  if (!url) return;
+
+  const message = [
+    "🔔 בקשה חדשה לפתיחת חשבון",
+    `עסק: ${details.businessName}`,
+    `איש קשר: ${details.contactName}`,
+    `טלפון: ${details.phone}`,
+    details.notes ? `הערות: ${details.notes}` : null
+  ].filter(Boolean).join("\n");
+
+  await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chatId: `${adminPhone}@c.us`, message })
+  });
+}
 
 export default async function (req) {
   try {
@@ -20,6 +47,10 @@ export default async function (req) {
       notes,
       handled: false
     });
+
+    try {
+      await notifyAdmin(base44, { businessName, contactName, phone, notes });
+    } catch (_) { /* notification failure must not fail the request */ }
 
     return Response.json({ success: true });
   } catch (error) {
