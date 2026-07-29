@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Check, Loader2, Phone, Plus } from "lucide-react";
+import { Check, Loader2, Phone, Plus, Trash2 } from "lucide-react";
 
 export default function LeadRow({ lead, onChanged, onCreateClient }) {
   const [working, setWorking] = useState(false);
@@ -10,6 +10,16 @@ export default function LeadRow({ lead, onChanged, onCreateClient }) {
     setWorking(true);
     try {
       await base44.entities.AccountRequest.update(lead.id, { handled: !lead.handled });
+      await onChanged();
+    } finally {
+      setWorking(false);
+    }
+  };
+
+  const remove = async () => {
+    setWorking(true);
+    try {
+      await base44.entities.AccountRequest.delete(lead.id);
       await onChanged();
     } finally {
       setWorking(false);
@@ -40,6 +50,18 @@ export default function LeadRow({ lead, onChanged, onCreateClient }) {
           >
             <Plus className="w-3.5 h-3.5" /> לקוח חדש
           </Button>
+          {lead.handled && (
+            <Button
+              size="sm"
+              variant="outline"
+              title="מחיקת הליד"
+              disabled={working}
+              onClick={remove}
+              className="h-8 w-8 p-0 rounded-lg shadow-none text-destructive"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </Button>
+          )}
         </div>
       </div>
     </div>
