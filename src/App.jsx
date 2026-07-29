@@ -18,6 +18,7 @@ import HistoryPage from './pages/History';
 import Admin from './pages/Admin';
 import ClientLogin from './pages/ClientLogin';
 import Demo from './pages/Demo';
+import RequestAccount from './pages/RequestAccount';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -48,6 +49,7 @@ const AuthenticatedApp = () => {
     <Routes>
     {/* Add your page Route elements here */}
     <Route path="/demo" element={<Demo />} />
+    <Route path="/signup" element={<RequestAccount />} />
     <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/demo" replace />} />}>
       <Route path="/" element={<Home />} />
     <Route path="/settings" element={<Settings />} />
