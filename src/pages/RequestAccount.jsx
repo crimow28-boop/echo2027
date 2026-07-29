@@ -45,7 +45,7 @@ export default function RequestAccount() {
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               ניצור איתכם קשר בוואטסאפ עם פרטי הכניסה למערכת.
             </p>
-            <Button asChild variant="outline" className="mt-7 w-full gap-2 h-12 rounded-2xl text-sm">
+            <Button asChild variant="outline" className="mt-7 w-full gap-2 h-12 rounded-full text-sm">
               <Link to="/demo">
                 <ArrowRight className="w-4 h-4" />
                 חזרה לדף הבית
@@ -72,7 +72,7 @@ export default function RequestAccount() {
                   <Textarea value={form.notes} onChange={set("notes")} rows={3} placeholder="משהו שכדאי שנדע?" className="text-sm rounded-2xl" />
                 </div>
                 {error && <p className="text-xs text-destructive">{error}</p>}
-                <Button type="submit" disabled={busy} className="w-full gap-3 h-14 rounded-2xl text-base font-medium shadow-[0_8px_20px_-10px_rgba(0,0,0,0.35)]">
+                <Button type="submit" disabled={busy} className="w-full gap-3 h-14 rounded-full text-base font-medium shadow-[0_8px_20px_-10px_rgba(0,0,0,0.35)]">
                   שליחת הבקשה
                   {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                 </Button>

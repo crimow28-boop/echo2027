@@ -70,7 +70,7 @@ export default function ClientLogin() {
     }
   };
 
-  const buttonClass = "w-full gap-3 h-14 rounded-2xl text-base font-medium shadow-[0_8px_20px_-10px_rgba(0,0,0,0.35)]";
+  const buttonClass = "w-full gap-3 h-14 rounded-full text-base font-medium shadow-[0_8px_20px_-10px_rgba(0,0,0,0.35)]";
 
   if (entering || checking) return <EchoLoadingScreen message="מארגנים את השיחות שלך..." />;
 
@@ -146,7 +146,7 @@ export default function ClientLogin() {
           <div className="mt-6 rounded-2xl bg-card p-5 text-center shadow-[0_10px_30px_-22px_rgba(0,0,0,0.25)]">
             <p className="text-sm font-medium">אין לי חשבון עדיין</p>
             <p className="mt-1.5 text-xs text-muted-foreground">משאירים פרטים ואנחנו פותחים לכם חשבון.</p>
-            <Button asChild variant="outline" className="mt-4 w-full gap-2 h-12 rounded-2xl text-sm">
+            <Button asChild variant="outline" className="mt-4 w-full gap-2 h-12 rounded-full text-sm">
               <Link to="/signup">
                 <Sparkles className="w-4 h-4" />
                 פתיחת חשבון חדש

@@ -44,7 +44,7 @@ export default function Admin() {
       <div dir="rtl" className="min-h-screen flex flex-col items-center justify-center gap-4 text-center px-6 font-body">
         <ShieldAlert className="w-8 h-8 text-amber-500" />
         <p className="text-sm text-muted-foreground">הדף הזה זמין למנהלי המערכת בלבד.</p>
-        <Button variant="outline" onClick={() => navigate("/")} className="gap-2 rounded-lg shadow-none">
+        <Button variant="outline" onClick={() => navigate("/")} className="gap-2 rounded-full shadow-none">
           <ArrowRight className="w-4 h-4" /> חזרה
         </Button>
       </div>
@@ -78,7 +78,7 @@ export default function Admin() {
             }}
           />
         ) : (
-          <Button onClick={() => setEditing("new")} className="gap-2 h-10 rounded-lg text-sm">
+          <Button onClick={() => setEditing("new")} className="gap-2 h-10 rounded-full text-sm">
             <Plus className="w-4 h-4" /> לקוח חדש
           </Button>
         )}

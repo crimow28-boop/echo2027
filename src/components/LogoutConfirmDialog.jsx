@@ -13,10 +13,10 @@ export default function LogoutConfirmDialog({ open, onConfirm, onClose }) {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex-row-reverse gap-2 sm:justify-start">
-          <Button variant="destructive" className="rounded-lg" onClick={onConfirm}>
+          <Button variant="destructive" className="rounded-full" onClick={onConfirm}>
             התנתקות
           </Button>
-          <Button variant="outline" className="rounded-lg shadow-none" onClick={onClose}>
+          <Button variant="outline" className="rounded-full shadow-none" onClick={onClose}>
             ביטול
           </Button>
         </DialogFooter>

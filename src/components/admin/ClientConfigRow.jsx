@@ -75,10 +75,10 @@ export default function ClientConfigRow({ config, onEdit, onChanged }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => onEdit(config)} className="gap-1.5 h-8 rounded-lg shadow-none text-xs">
+          <Button variant="outline" size="sm" onClick={() => onEdit(config)} className="gap-1.5 h-8 rounded-full shadow-none text-xs">
             <Pencil className="w-3.5 h-3.5" /> עריכה
           </Button>
-          <Button variant="outline" size="sm" disabled={busy} onClick={remove} className="h-8 w-8 p-0 rounded-lg shadow-none text-destructive">
+          <Button variant="outline" size="sm" disabled={busy} onClick={remove} className="h-8 w-8 p-0 rounded-full shadow-none text-destructive">
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
         </div>
@@ -90,11 +90,11 @@ export default function ClientConfigRow({ config, onEdit, onChanged }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border">
-        <Button variant="outline" size="sm" disabled={checking} onClick={validate} className="gap-1.5 h-8 rounded-lg shadow-none text-xs">
+        <Button variant="outline" size="sm" disabled={checking} onClick={validate} className="gap-1.5 h-8 rounded-full shadow-none text-xs">
           {checking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
           בדיקת חיבורים
         </Button>
-        <Button variant="outline" size="sm" disabled={sendingWelcome} onClick={sendWelcome} className="gap-1.5 h-8 rounded-lg shadow-none text-xs">
+        <Button variant="outline" size="sm" disabled={sendingWelcome} onClick={sendWelcome} className="gap-1.5 h-8 rounded-full shadow-none text-xs">
           {sendingWelcome ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MessageCircle className="w-3.5 h-3.5" />}
           שליחת הודעת פתיחה
         </Button>

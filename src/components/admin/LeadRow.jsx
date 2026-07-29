@@ -41,7 +41,7 @@ export default function LeadRow({ lead, onChanged, onCreateClient }) {
           {lead.notes && <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{lead.notes}</p>}
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Button size="sm" variant={lead.handled ? "secondary" : "outline"} disabled={working} onClick={toggleHandled} className="gap-1.5 rounded-lg shadow-none text-xs">
+          <Button size="sm" variant={lead.handled ? "secondary" : "outline"} disabled={working} onClick={toggleHandled} className="gap-1.5 rounded-full shadow-none text-xs">
             {working ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
             {lead.handled ? "טופל" : "סמן כטופל"}
           </Button>
@@ -49,7 +49,7 @@ export default function LeadRow({ lead, onChanged, onCreateClient }) {
             size="sm"
             title="פתיחת כרטיס לקוח חדש"
             onClick={() => onCreateClient(lead)}
-            className="gap-1.5 rounded-lg text-xs"
+            className="gap-1.5 rounded-full text-xs"
           >
             <Plus className="w-3.5 h-3.5" /> לקוח חדש
           </Button>
@@ -60,7 +60,7 @@ export default function LeadRow({ lead, onChanged, onCreateClient }) {
               title="מחיקת הליד"
               disabled={working}
               onClick={remove}
-              className="h-8 w-8 p-0 rounded-lg shadow-none text-destructive"
+              className="h-8 w-8 p-0 rounded-full shadow-none text-destructive"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </Button>

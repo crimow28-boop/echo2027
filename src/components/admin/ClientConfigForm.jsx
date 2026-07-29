@@ -75,11 +75,11 @@ export default function ClientConfigForm({ initial, onDone, onCancel }) {
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}
       <div className="flex items-center gap-3">
-        <Button type="submit" disabled={saving} className="gap-2 h-10 rounded-lg text-sm">
+        <Button type="submit" disabled={saving} className="gap-2 h-10 rounded-full text-sm">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           שמירה
         </Button>
-        <Button type="button" variant="outline" onClick={onCancel} className="gap-2 h-10 rounded-lg shadow-none text-sm">
+        <Button type="button" variant="outline" onClick={onCancel} className="gap-2 h-10 rounded-full shadow-none text-sm">
           <X className="w-4 h-4" /> ביטול
         </Button>
       </div>
