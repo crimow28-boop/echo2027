@@ -12,14 +12,17 @@ export default async function(req) {
     const body = await req.json().catch(() => ({}));
     const id = String(body?.instanceId || "").trim();
     const token = String(body?.apiToken || "").trim();
-    const url = greenApiUrl({ greenInstanceId: id, greenToken: token }, "getSettings");
+    const url = greenApiUrl({ greenInstanceId: id, greenToken: token }, "getStateInstance");
     if (!url) return Response.json({ valid: false, error: 'נדרשים מזהה מופע וטוקן API' });
 
     const res = await fetch(url);
     let data = {};
     try { data = await res.json(); } catch (_e) {}
-    if (!res.ok || data.state === undefined) {
+    if (!res.ok) {
       return Response.json({ valid: false, error: data?.message || 'פרטי Green API לא תקינים — ודאו את המזהה והטוקן' });
+    }
+    if (data.stateInstance !== "authorized") {
+      return Response.json({ valid: false, error: `מופע Green API אינו מחובר (${data.stateInstance || "לא ידוע"})` });
     }
     return Response.json({ valid: true });
   } catch (error) {

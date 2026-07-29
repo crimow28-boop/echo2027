@@ -94,7 +94,6 @@ export default function ClientConfigRow({ config, onEdit, onChanged }) {
           {checking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
           בדיקת חיבורים
         </Button>
-        {result?.exm !== undefined && badge("EXM", result.exm)}
         <Button variant="outline" size="sm" disabled={sendingWelcome} onClick={sendWelcome} className="gap-1.5 h-8 rounded-lg shadow-none text-xs">
           {sendingWelcome ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MessageCircle className="w-3.5 h-3.5" />}
           שליחת הודעת פתיחה
