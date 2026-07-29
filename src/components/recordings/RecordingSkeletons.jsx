@@ -23,7 +23,7 @@ export function RecordingCardsSkeleton({ cards = 4 }) {
   return (
     <div className="space-y-3.5">
       {Array.from({ length: cards }).map((_, i) => (
-        <div key={i} className="rounded-xl border border-border bg-card p-4 space-y-3">
+        <div key={i} className="rounded-2xl border border-white/70 surface-premium p-4 space-y-3">
           <div className="flex items-center justify-between gap-3">
             <div className={`${bar} h-4 w-32`} />
             <div className={`${bar} h-3 w-16`} />

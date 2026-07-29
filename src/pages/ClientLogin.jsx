@@ -54,7 +54,7 @@ export default function ClientLogin() {
   if (entering) return <EchoLoadingScreen message="מארגנים את השיחות שלך..." />;
 
   return (
-    <div dir="rtl" className="min-h-screen bg-background text-foreground font-body flex items-center justify-center px-5 py-14">
+    <div dir="rtl" className="min-h-screen bg-app-gradient text-foreground font-body flex items-center justify-center px-5 py-14">
       <div className="w-full max-w-md text-right">
         <img src={LOGO} alt="echo" className="h-16 w-auto mx-auto" />
 

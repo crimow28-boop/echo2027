@@ -240,7 +240,7 @@ export default function Home() {
   };
 
   return (
-    <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
+    <div dir="rtl" className="min-h-screen bg-app-gradient text-foreground font-body">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
         {/* Top bar */}
         <div className="flex items-start justify-start gap-4 -mt-6 mb-10">
@@ -248,7 +248,7 @@ export default function Home() {
             <AppMenuSheet onExport={handleExport} exporting={exporting} />
           </div>
           {syncing && (
-            <span className="inline-flex items-center gap-2 h-9 rounded-full bg-card px-3.5 text-xs text-muted-foreground shadow-[0_2px_10px_-6px_rgba(0,0,0,0.15)] animate-in fade-in duration-200">
+            <span className="inline-flex items-center gap-2 h-9 rounded-full border border-white/70 surface-premium px-3.5 text-xs text-muted-foreground animate-in fade-in duration-200">
               <RefreshCw className="w-3.5 h-3.5 animate-spin motion-reduce:animate-none" />
               מסנכרנים שיחות חדשות...
             </span>
@@ -309,7 +309,7 @@ export default function Home() {
               onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
               placeholder=""
               dir="auto"
-              className="pr-6 pl-14 h-16 text-base rounded-[2rem] border-0 bg-card shadow-[0_2px_16px_-6px_rgba(0,0,0,0.12)] focus-visible:ring-0"
+              className="pr-6 pl-14 h-16 text-base rounded-[2rem] border border-white/70 surface-premium-lg focus-visible:ring-0"
             />
             {filters.search.length === 0 && examples.length > 0 && (
               <TypewriterPlaceholder examples={examples} />
@@ -332,7 +332,7 @@ export default function Home() {
                       key={s.key || s.label}
                       type="button"
                       onClick={() => setFilters((prev) => ({ ...prev, search: s.label }))}
-                      className="inline-flex flex-row-reverse items-center gap-2.5 rounded-full bg-card px-5 py-3.5 text-sm text-foreground shadow-[0_2px_10px_-6px_rgba(0,0,0,0.15)] hover:bg-accent transition-colors"
+                      className="inline-flex flex-row-reverse items-center gap-2.5 rounded-full border border-white/70 surface-premium px-5 py-3.5 text-sm text-foreground hover:bg-accent transition-all hover:-translate-y-0.5"
                     >
                       <Icon className="w-4 h-4 text-primary shrink-0" />
                       <span>{s.label}</span>
@@ -354,7 +354,7 @@ export default function Home() {
             </div>
 
             {/* Table - Desktop */}
-            <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden">
+            <div className="hidden md:block rounded-2xl border border-border/60 surface-premium overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-muted/40 border-b border-border">
                   <tr className="text-right">

@@ -10,7 +10,7 @@ export default function RecordingCard({ recording, sendingId, onSend }) {
   const isSending = sendingId === r.id;
   const sent = r.sent || r.sentAt;
   return (
-    <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+    <div className="rounded-2xl border border-white/70 surface-premium p-4 space-y-3">
       <div>
         <div className="font-medium text-foreground">{r.callerFriendly || "—"}</div>
         <div className="text-sm text-muted-foreground font-mono mt-0.5" dir="ltr">{r.callerNumber || "—"}</div>

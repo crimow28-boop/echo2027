@@ -8,7 +8,7 @@ export default function EchoLoadingScreen({ message = "מארגנים את הש�
       dir="rtl"
       role="status"
       aria-live="polite"
-      className="fixed inset-0 z-50 bg-background text-foreground font-body flex flex-col items-center justify-center gap-8 px-6 animate-in fade-in duration-300"
+      className="fixed inset-0 z-50 bg-app-gradient text-foreground font-body flex flex-col items-center justify-center gap-8 px-6 animate-in fade-in duration-300"
     >
       <div className="relative flex items-center justify-center">
         <span className="absolute w-32 h-32 rounded-full bg-primary/10 animate-ping motion-reduce:animate-none" />
