@@ -6,6 +6,7 @@ import { ArrowRight, Loader2, Plus, ShieldAlert } from "lucide-react";
 import ClientConfigForm from "@/components/admin/ClientConfigForm";
 import ClientConfigRow from "@/components/admin/ClientConfigRow";
 import useIsSystemAdmin from "@/hooks/useIsSystemAdmin";
+import LeadsSection from "@/components/admin/LeadsSection";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -90,6 +91,8 @@ export default function Admin() {
             <ClientConfigRow key={c.id} config={c} onEdit={setEditing} onChanged={load} />
           ))}
         </div>
+
+        <LeadsSection />
       </div>
     </div>
   );

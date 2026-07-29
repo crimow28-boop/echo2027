@@ -26,6 +26,42 @@ async function notifyAdmin(base44, details) {
   return { sent: emails.length };
 }
 
+function toChatId(phone) {
+  let p = (phone || "").replace(/\D/g, "");
+  if (p.startsWith("972")) return `${p}@c.us`;
+  if (p.startsWith("0")) return `972${p.slice(1)}@c.us`;
+  return `${p}@c.us`;
+}
+
+// Notify the system admin on WhatsApp about a new lead (via Green API).
+async function notifyAdminWhatsApp(base44, details) {
+  const target = Deno.env.get("ADMIN_ALERT_PHONE");
+  if (!target) return { skipped: "no ADMIN_ALERT_PHONE" };
+
+  const rows = await base44.asServiceRole.entities.UserSettings.list("-updated_date", 200);
+  const creds = (rows || []).find((r) => r.greenInstanceId && r.greenToken);
+  if (!creds) return { skipped: "no green api credentials" };
+
+  const message = [
+    "🔔 ליד חדש ב-echo",
+    "",
+    `עסק: ${details.businessName}`,
+    `איש קשר: ${details.contactName}`,
+    `טלפון: ${details.phone}`,
+    details.notes ? `הערות: ${details.notes}` : null
+  ].filter(Boolean).join("\n");
+
+  const res = await fetch(
+    `https://api.green-api.com/waInstance${creds.greenInstanceId}/sendMessage/${creds.greenToken}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chatId: toChatId(target), message })
+    }
+  );
+  return { status: res.status };
+}
+
 export default async function (req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -50,6 +86,10 @@ export default async function (req) {
     try {
       await notifyAdmin(base44, { businessName, contactName, phone, notes });
     } catch (_e) { /* request is saved even if the email fails */ }
+
+    try {
+      await notifyAdminWhatsApp(base44, { businessName, contactName, phone, notes });
+    } catch (_e) { /* request is saved even if the WhatsApp alert fails */ }
 
     return Response.json({ success: true });
   } catch (error) {
