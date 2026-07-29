@@ -24,7 +24,7 @@ export default function Demo() {
           </div>
         </section>
 
-        <section>
+        <section id="playground">
           <DemoPlayground />
         </section>
 
