@@ -40,7 +40,7 @@ export default function DemoPlayer({ duration, audioUrl }) {
   const pct = total ? Math.min(100, (pos / total) * 100) : 0;
 
   return (
-    <div dir="rtl" className="flex items-center gap-3 min-w-0 w-full overflow-hidden">
+    <div dir="ltr" className="flex items-center gap-3 min-w-0 w-full overflow-hidden">
       {audioUrl && (
         <audio
           ref={audioRef}
