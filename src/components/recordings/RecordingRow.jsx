@@ -1,7 +1,7 @@
 import React from "react";
 import { Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatDuration, formatDate } from "@/lib/recordingUtils";
+import { formatDuration, formatDate, displayContactName, formatPhoneDisplay } from "@/lib/recordingUtils";
 import DownloadRecordingButton from "@/components/recordings/DownloadRecordingButton";
 
 export default function RecordingRow({ recording, sendingId, onSend }) {
@@ -10,8 +10,8 @@ export default function RecordingRow({ recording, sendingId, onSend }) {
   const sent = r.sent || r.sentAt;
   return (
     <tr className="border-b border-border last:border-0 hover:bg-accent/40 transition-colors">
-      <td className="px-4 py-3.5 font-medium text-foreground">{r.callerFriendly || "—"}</td>
-      <td className="px-4 py-3.5 text-muted-foreground text-sm font-mono" dir="ltr">{r.callerNumber || "—"}</td>
+      <td className="px-4 py-3.5 font-medium text-foreground">{displayContactName(r)}</td>
+      <td className="px-4 py-3.5 text-muted-foreground text-sm font-mono" dir="ltr">{formatPhoneDisplay(r.callerNumber) || "—"}</td>
       <td className="px-4 py-3.5 text-muted-foreground text-sm font-mono" dir="ltr">{formatDuration(r.duration)}</td>
       <td className="px-4 py-3.5 text-muted-foreground text-sm">{formatDate(r.callDate || r.created_date)}</td>
       <td className="px-4 py-3.5">

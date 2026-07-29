@@ -31,6 +31,15 @@ export function formatPhoneDisplay(num) {
   return String(num);
 }
 
+// A contact name is only a real name when it isn't just the phone number.
+export function displayContactName(recording) {
+  const name = (recording?.callerFriendly || "").trim();
+  if (!name) return "ללא שם";
+  const digitsOnly = name.replace(/[^\d]/g, "");
+  if (digitsOnly.length >= 7 && digitsOnly.length === name.replace(/[\s\-+()]/g, "").length) return "ללא שם";
+  return name;
+}
+
 export const DEFAULT_FILTERS = {
   search: "",
 };
