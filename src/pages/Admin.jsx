@@ -92,7 +92,12 @@ export default function Admin() {
           ))}
         </div>
 
-        <LeadsSection />
+        <LeadsSection
+          onCreateClient={(lead) => {
+            setEditing({ clientName: lead.businessName || "", clientPhone: lead.phone || "" });
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
       </div>
     </div>
   );

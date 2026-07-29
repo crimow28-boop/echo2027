@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Loader2 } from "lucide-react";
 import LeadRow from "@/components/admin/LeadRow";
 
-export default function LeadsSection() {
+export default function LeadsSection({ onCreateClient }) {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +30,7 @@ export default function LeadsSection() {
       ) : (
         <div className="mt-5 space-y-3">
           {leads.map((lead) => (
-            <LeadRow key={lead.id} lead={lead} onChanged={load} />
+            <LeadRow key={lead.id} lead={lead} onChanged={load} onCreateClient={onCreateClient} />
           ))}
         </div>
       )}

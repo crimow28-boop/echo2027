@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Check, Loader2, Phone } from "lucide-react";
+import { Check, Loader2, Phone, Plus } from "lucide-react";
 
-export default function LeadRow({ lead, onChanged }) {
+export default function LeadRow({ lead, onChanged, onCreateClient }) {
   const [working, setWorking] = useState(false);
 
   const toggleHandled = async () => {
@@ -27,10 +27,20 @@ export default function LeadRow({ lead, onChanged }) {
           </a>
           {lead.notes && <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{lead.notes}</p>}
         </div>
-        <Button size="sm" variant={lead.handled ? "secondary" : "outline"} disabled={working} onClick={toggleHandled} className="gap-1.5 shrink-0 rounded-lg shadow-none text-xs">
-          {working ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-          {lead.handled ? "טופל" : "סמן כטופל"}
-        </Button>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button size="sm" variant={lead.handled ? "secondary" : "outline"} disabled={working} onClick={toggleHandled} className="gap-1.5 rounded-lg shadow-none text-xs">
+            {working ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+            {lead.handled ? "טופל" : "סמן כטופל"}
+          </Button>
+          <Button
+            size="sm"
+            title="פתיחת כרטיס לקוח חדש"
+            onClick={() => onCreateClient(lead)}
+            className="gap-1.5 rounded-lg text-xs"
+          >
+            <Plus className="w-3.5 h-3.5" /> לקוח חדש
+          </Button>
+        </div>
       </div>
     </div>
   );
