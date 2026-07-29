@@ -40,7 +40,7 @@ export default function DemoPlayer({ duration, audioUrl }) {
   const pct = total ? Math.min(100, (pos / total) * 100) : 0;
 
   return (
-    <div className="flex items-center gap-3">
+    <div dir="rtl" className="flex items-center gap-3 min-w-0 w-full overflow-hidden">
       {audioUrl && (
         <audio
           ref={audioRef}
@@ -78,7 +78,7 @@ export default function DemoPlayer({ duration, audioUrl }) {
           }
         }}
       />
-      <span className="text-xs text-muted-foreground font-mono shrink-0" dir="ltr">
+      <span className="text-[11px] leading-none text-muted-foreground font-mono shrink-0 whitespace-nowrap" dir="ltr">
         {fmt(pos)} / {fmt(total)}
       </span>
     </div>

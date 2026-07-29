@@ -28,7 +28,7 @@ export default function AudioWaveform({ seed = "a", progress = 0, bars = 42, onS
     <div
       dir="ltr"
       onClick={handleClick}
-      className={`flex-1 flex items-center gap-[2px] h-8 ${onSeek ? "cursor-pointer" : ""}`}
+      className={`flex-1 min-w-0 flex items-center gap-[2px] h-8 ${onSeek ? "cursor-pointer" : ""}`}
     >
       {heights.map((h, i) => {
         const played = i / heights.length <= progress;
