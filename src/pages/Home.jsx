@@ -242,15 +242,7 @@ export default function Home() {
         {/* Top bar */}
         <div className="flex items-start justify-start gap-4 -mt-6 mb-10">
           <div className="shrink-0">
-            <AppMenuSheet
-              onSync={handleSync}
-              onExport={handleExport}
-              onEnrichNames={handleEnrichNames}
-              syncing={syncing}
-              exporting={exporting}
-              enriching={enriching}
-              hasSettings={hasSettings}
-            />
+            <AppMenuSheet onExport={handleExport} exporting={exporting} />
           </div>
         </div>
 
