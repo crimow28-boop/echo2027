@@ -64,6 +64,29 @@ async function notifyAdminWhatsApp(base44, details) {
   return { status: res.status };
 }
 
+// Immediate WhatsApp welcome to the person who just requested an account.
+async function notifyLeadWhatsApp(base44, details) {
+  const rows = await base44.asServiceRole.entities.UserSettings.list("-updated_date", 200);
+  const creds = (rows || []).find((r) => r.greenInstanceId && r.greenToken);
+  if (!creds) return { skipped: "no green api credentials" };
+
+  const message =
+    `היי ${details.contactName}, ברוכים הבאים ל־Echo 👋\n\n` +
+    `החשבון שלך נפתח בהצלחה.\n\n` +
+    `כדי להשלים את ההגדרה ולחבר את הקלטות השיחות, נציג שלנו יצור איתך קשר בקרוב וילווה אותך בתהליך.\n\n` +
+    `בינתיים אין צורך לעשות דבר - אנחנו נדאג להכול יחד איתך.`;
+
+  const res = await fetch(
+    `https://api.green-api.com/waInstance${creds.greenInstanceId}/sendMessage/${creds.greenToken}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chatId: toChatId(details.phone), message })
+    }
+  );
+  return { status: res.status };
+}
+
 export default async function (req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -94,6 +117,10 @@ export default async function (req) {
     try {
       await notifyAdminWhatsApp(base44, { businessName, businessId, contactName, phone, notes });
     } catch (_e) { /* request is saved even if the WhatsApp alert fails */ }
+
+    try {
+      await notifyLeadWhatsApp(base44, { contactName, phone });
+    } catch (_e) { /* request is saved even if the welcome message fails */ }
 
     return Response.json({ success: true });
   } catch (error) {
