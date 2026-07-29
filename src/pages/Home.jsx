@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, ChevronDown, RefreshCw, Download, Settings as SettingsIcon, ShieldAlert, Search, Menu } from "lucide-react";
+import { Loader2, ChevronDown, RefreshCw, Download, Settings as SettingsIcon, ShieldAlert, Search, Menu, Lightbulb, Phone, User, CalendarDays } from "lucide-react";
 import { Link } from "react-router-dom";
 import { downloadRecordingsCsv } from "@/lib/exportRecordings";
 import { Button } from "@/components/ui/button";
@@ -229,8 +229,7 @@ export default function Home() {
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
         {/* Top bar */}
-        <div className="flex items-start justify-between gap-4 mb-6">
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">מצאו כל שיחה, ברגע</h1>
+        <div className="flex items-start justify-start gap-4 -mt-6 mb-10">
           <div className="shrink-0">
             <AppMenuSheet
               onSync={handleSync}
@@ -273,41 +272,52 @@ export default function Home() {
         )}
 
         {/* Search hero */}
-        <div className="text-right">
-          <p className="text-sm text-muted-foreground">כתבו בחופשיות — שם איש קשר, מספר טלפון או טווח תאריכים</p>
-          <div className="relative mt-8 max-w-xl">
-            <Search className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <div className="text-center">
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.15]">
+            מצאו כל שיחה,
+            <br />
+            <span className="text-primary">ברגע.</span>
+          </h1>
+          <p className="mt-6 text-sm sm:text-base text-muted-foreground">חפשו לפי איש קשר, מספר טלפון או תאריך.</p>
+
+          <div className="relative mt-9 mx-auto max-w-xl">
+            <Search className="w-5 h-5 absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={filters.search}
               onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
               placeholder=""
               dir="auto"
-              className="pr-12 h-14 text-base rounded-2xl border border-border bg-card shadow-sm focus-visible:ring-0 focus-visible:border-primary/50"
+              className="pr-6 pl-14 h-16 text-base rounded-[2rem] border-0 bg-card shadow-[0_2px_16px_-6px_rgba(0,0,0,0.12)] focus-visible:ring-0"
             />
             {filters.search.length === 0 && examples.length > 0 && (
               <TypewriterPlaceholder examples={examples} />
             )}
           </div>
-          {!hasSearch && (
-            <div className="mt-8 max-w-xl">
-              {suggestions.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-foreground/80">אפשר גם לחפש לפי:</p>
-                  <div className="mt-2.5 flex flex-wrap gap-2">
-                    {suggestions.map((s) => (
-                      <button
-                        key={s.key || s.label}
-                        type="button"
-                        onClick={() => setFilters((prev) => ({ ...prev, search: s.label }))}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-foreground hover:bg-accent hover:border-primary/30 transition-colors"
-                      >
-                        <span>{s.label}</span>
-                        <span className="text-xs text-muted-foreground">· {s.hint}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+
+          <p className="mt-5 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <span>אפשר לכתוב גם חלק ממספר טלפון, שם או תאריך.</span>
+            <Lightbulb className="w-4 h-4 text-primary shrink-0" />
+          </p>
+
+          {!hasSearch && suggestions.length > 0 && (
+            <div className="mt-12">
+              <p className="text-sm text-foreground/80">נסו למשל</p>
+              <div className="mt-4 flex flex-wrap justify-center gap-3">
+                {suggestions.map((s) => {
+                  const Icon = s.hint === "מספר טלפון" ? Phone : s.hint === "תאריך" ? CalendarDays : User;
+                  return (
+                    <button
+                      key={s.key || s.label}
+                      type="button"
+                      onClick={() => setFilters((prev) => ({ ...prev, search: s.label }))}
+                      className="inline-flex flex-row-reverse items-center gap-2.5 rounded-full bg-card px-5 py-3.5 text-sm text-foreground shadow-[0_2px_10px_-6px_rgba(0,0,0,0.15)] hover:bg-accent transition-colors"
+                    >
+                      <Icon className="w-4 h-4 text-primary shrink-0" />
+                      <span>{s.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
