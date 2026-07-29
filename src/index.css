@@ -121,5 +121,10 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.45) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.45) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-attachment: fixed;
   }
 }
