@@ -51,7 +51,7 @@ export default function History() {
           חזרה לחיפוש
         </Link>
 
-        <h1 className="mt-6 text-2xl sm:text-3xl font-bold tracking-tight">היסטוריית שיחות</h1>
+        <h1 className="font-heading mt-6 text-2xl sm:text-3xl font-bold tracking-tight">היסטוריית שיחות</h1>
         <p className="mt-2 text-sm text-muted-foreground">כל השיחות לפי סדר כרונולוגי — מהחדשה לישנה.</p>
 
         {loading ? (
