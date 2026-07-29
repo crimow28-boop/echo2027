@@ -15,12 +15,7 @@ export default async function(req) {
       return Response.json({ error: 'NO_GREEN_API' }, { status: 400 });
     }
 
-    const body = await req.json().catch(() => ({}));
-    const requested = Array.isArray(body?.numbers) ? body.numbers.map(String) : null;
-
-    const rows = requested?.length
-      ? await base44.entities.CallRecording.filter({ callerNumber: { $in: requested } }, "-callDate", 500)
-      : await base44.entities.CallRecording.filter({}, "-callDate", 2000);
+    const rows = await base44.entities.CallRecording.filter({}, "-callDate", 2000);
     const numbers = [];
     const byNumber = new Map();
     for (const r of rows || []) {

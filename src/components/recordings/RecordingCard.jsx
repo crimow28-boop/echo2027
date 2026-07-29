@@ -1,7 +1,7 @@
 import React from "react";
 import { Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatDuration, formatDate, displayContactName, formatPhoneDisplay } from "@/lib/recordingUtils";
+import { formatDuration, formatDate } from "@/lib/recordingUtils";
 import RecordingPlayer from "@/components/recordings/RecordingPlayer";
 import DownloadRecordingButton from "@/components/recordings/DownloadRecordingButton";
 
@@ -12,8 +12,8 @@ export default function RecordingCard({ recording, sendingId, onSend }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4 space-y-3">
       <div>
-        <div className="font-medium text-foreground">{displayContactName(r)}</div>
-        <div className="text-sm text-muted-foreground font-mono mt-0.5" dir="ltr">{formatPhoneDisplay(r.callerNumber) || "—"}</div>
+        <div className="font-medium text-foreground">{r.callerFriendly || "—"}</div>
+        <div className="text-sm text-muted-foreground font-mono mt-0.5" dir="ltr">{r.callerNumber || "—"}</div>
       </div>
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span dir="ltr" className="font-mono">{formatDuration(r.duration)}</span>

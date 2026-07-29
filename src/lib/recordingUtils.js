@@ -31,17 +31,6 @@ export function formatPhoneDisplay(num) {
   return String(num);
 }
 
-// A real contact name contains letters; digit-only values are just the number.
-export function hasRealName(recording) {
-  return /\p{L}/u.test(String(recording?.callerFriendly || ""));
-}
-
-export function displayContactName(recording) {
-  const name = String(recording?.callerFriendly || "").trim();
-  if (hasRealName(recording)) return name;
-  return formatPhoneDisplay(recording?.callerNumber) || name || "—";
-}
-
 export const DEFAULT_FILTERS = {
   search: "",
 };
