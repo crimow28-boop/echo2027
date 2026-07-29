@@ -19,7 +19,7 @@ export default function Demo() {
             <span className="text-primary">וגם לך.</span>
           </h1>
           <p className="mt-5 text-sm sm:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-            echo מרכזת את כל הקלטות השיחות של העסק שלך במקום אחד — מחפשים לפי שם, מספר או תאריך ושולחים ללקוח בוואטסאפ בלחיצה.
+            echo מקליטה ומרכזת את כל השיחות של העסק שלך במקום אחד - מחפשים לפי שם, מספר או תאריך ושולחים ללקוח בוואטסאפ בלחיצה.
           </p>
           <Button asChild className="mt-7 gap-2 h-12 rounded-full px-7 text-sm">
             <Link to="/client-login">
