@@ -8,6 +8,7 @@ import RecordingCard from "@/components/recordings/RecordingCard";
 import SendConfirmDialog from "@/components/recordings/SendConfirmDialog";
 import useSendRecording from "@/hooks/useSendRecording";
 import { PAGE_SIZE } from "@/lib/recordingUtils";
+import useAutoEnrichNames from "@/hooks/useAutoEnrichNames";
 
 export default function History() {
   const [recordings, setRecordings] = useState([]);
@@ -42,6 +43,8 @@ export default function History() {
   useEffect(() => {
     load(true);
   }, [load]);
+
+  useAutoEnrichNames(recordings, () => load(true));
 
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">

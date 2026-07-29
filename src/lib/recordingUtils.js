@@ -31,13 +31,15 @@ export function formatPhoneDisplay(num) {
   return String(num);
 }
 
-// A contact name is only a real name when it isn't just the phone number.
+// A real contact name contains letters; digit-only values are just the number.
+export function hasRealName(recording) {
+  return /\p{L}/u.test(String(recording?.callerFriendly || ""));
+}
+
 export function displayContactName(recording) {
-  const name = (recording?.callerFriendly || "").trim();
-  if (!name) return "ללא שם";
-  const digitsOnly = name.replace(/[^\d]/g, "");
-  if (digitsOnly.length >= 7 && digitsOnly.length === name.replace(/[\s\-+()]/g, "").length) return "ללא שם";
-  return name;
+  const name = String(recording?.callerFriendly || "").trim();
+  if (hasRealName(recording)) return name;
+  return formatPhoneDisplay(recording?.callerNumber) || name || "—";
 }
 
 export const DEFAULT_FILTERS = {

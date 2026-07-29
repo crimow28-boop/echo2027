@@ -14,6 +14,7 @@ import SearchSummary from "@/components/recordings/SearchSummary";
 import TypewriterPlaceholder from "@/components/recordings/TypewriterPlaceholder";
 import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS, formatPhoneDisplay } from "@/lib/recordingUtils";
 import { buildSearchExamples } from "@/lib/searchExamples";
+import useAutoEnrichNames from "@/hooks/useAutoEnrichNames";
 
 export default function Home() {
   const [recordings, setRecordings] = useState([]);
@@ -89,6 +90,8 @@ export default function Home() {
       inFlightRef.current = false;
     }
   }, [toast]);
+
+  useAutoEnrichNames(recordings, () => loadRecordings(true));
 
   // Reload when the debounced search changes
   useEffect(() => {
