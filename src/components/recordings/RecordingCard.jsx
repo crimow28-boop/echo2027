@@ -3,6 +3,7 @@ import { Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDuration, formatDate } from "@/lib/recordingUtils";
 import RecordingPlayer from "@/components/recordings/RecordingPlayer";
+import DownloadRecordingButton from "@/components/recordings/DownloadRecordingButton";
 
 export default function RecordingCard({ recording, sendingId, onSend }) {
   const r = recording;
@@ -33,6 +34,8 @@ export default function RecordingCard({ recording, sendingId, onSend }) {
             <span className="w-2 h-2 rounded-full bg-amber-500"></span> לא נשלחה
           </span>
         )}
+        <div className="flex items-center gap-2">
+        <DownloadRecordingButton recording={r} />
         <Button
           disabled={isSending}
           onClick={() => onSend(r)}
@@ -44,6 +47,7 @@ export default function RecordingCard({ recording, sendingId, onSend }) {
           {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
           {sent ? "שלח שוב" : "שלח"}
         </Button>
+        </div>
       </div>
     </div>
   );

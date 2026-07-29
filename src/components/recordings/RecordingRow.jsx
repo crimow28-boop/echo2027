@@ -2,6 +2,7 @@ import React from "react";
 import { Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDuration, formatDate } from "@/lib/recordingUtils";
+import DownloadRecordingButton from "@/components/recordings/DownloadRecordingButton";
 
 export default function RecordingRow({ recording, sendingId, onSend }) {
   const r = recording;
@@ -28,7 +29,9 @@ export default function RecordingRow({ recording, sendingId, onSend }) {
           </span>
         )}
       </td>
-      <td className="px-4 py-2.5 text-center">
+      <td className="px-4 py-2.5">
+        <div className="flex items-center justify-center gap-2">
+        <DownloadRecordingButton recording={r} />
         <Button
           disabled={isSending}
           onClick={() => onSend(r)}
@@ -40,6 +43,7 @@ export default function RecordingRow({ recording, sendingId, onSend }) {
           {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
           {sent ? "שלח שוב" : "שלח"}
         </Button>
+        </div>
       </td>
     </tr>
   );
