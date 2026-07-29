@@ -71,7 +71,7 @@ export default function AppMenuSheet({ onExport, exporting }) {
           <button
             type="button"
             className={`${itemClass} text-destructive hover:bg-destructive/10`}
-            onClick={() => base44.auth.logout("/client-login")}
+            onClick={() => base44.auth.logout("/demo")}
           >
             <LogOut className="w-4 h-4" />
             <span>התנתקות</span>
