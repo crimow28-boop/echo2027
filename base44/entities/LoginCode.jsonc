@@ -1,0 +1,39 @@
+{
+  "name": "LoginCode",
+  "type": "object",
+  "properties": {
+    "accountNumber": {
+      "type": "string",
+      "title": "Account Number"
+    },
+    "phone": {
+      "type": "string",
+      "title": "Phone"
+    },
+    "code": {
+      "type": "string",
+      "title": "One Time Code"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Expires At"
+    },
+    "used": {
+      "type": "boolean",
+      "default": false,
+      "title": "Used"
+    }
+  },
+  "required": [
+    "accountNumber",
+    "code",
+    "expiresAt"
+  ],
+  "rls": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  }
+}

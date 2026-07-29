@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Loader2, Pencil, Trash2, CheckCircle2, XCircle, ShieldCheck, Mail } from "lucide-react";
+import { Loader2, Pencil, Trash2, CheckCircle2, XCircle, ShieldCheck } from "lucide-react";
+import CreateLoginAccount from "@/components/admin/CreateLoginAccount";
 
 export default function ClientConfigRow({ config, onEdit, onChanged }) {
   const [checking, setChecking] = useState(false);
@@ -28,18 +29,6 @@ export default function ClientConfigRow({ config, onEdit, onChanged }) {
     }
   };
 
-  const invite = async () => {
-    setBusy(true);
-    try {
-      await base44.users.inviteUser(config.clientEmail, "user");
-      setResult({ invited: true });
-    } catch (e) {
-      setResult({ inviteError: e.message });
-    } finally {
-      setBusy(false);
-    }
-  };
-
   const remove = async () => {
     setBusy(true);
     try {
@@ -62,7 +51,9 @@ export default function ClientConfigRow({ config, onEdit, onChanged }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="font-medium">{config.clientName || "ללא שם"}</div>
-          <div className="text-xs text-muted-foreground font-mono mt-0.5" dir="ltr">{config.clientEmail || "—"}</div>
+          <div className="text-xs text-muted-foreground font-mono mt-0.5" dir="ltr">
+            #{config.accountNumber || "—"} · {config.clientPhone || "—"}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => onEdit(config)} className="gap-1.5 h-8 rounded-lg shadow-none text-xs">
@@ -84,14 +75,11 @@ export default function ClientConfigRow({ config, onEdit, onChanged }) {
           {checking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
           בדיקת חיבורים
         </Button>
-        <Button variant="outline" size="sm" disabled={busy || !config.clientEmail} onClick={invite} className="gap-1.5 h-8 rounded-lg shadow-none text-xs">
-          <Mail className="w-3.5 h-3.5" /> הזמנת הלקוח
-        </Button>
         {result?.exm !== undefined && badge("EXM", result.exm)}
         {result?.green !== undefined && result.green !== null && badge("Green API", result.green)}
-        {result?.invited && <span className="text-xs text-primary">ההזמנה נשלחה</span>}
-        {result?.inviteError && <span className="text-xs text-destructive">{result.inviteError}</span>}
       </div>
+
+      <CreateLoginAccount config={config} onDone={onChanged} />
     </div>
   );
 }

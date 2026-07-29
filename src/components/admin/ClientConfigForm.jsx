@@ -5,10 +5,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Save, X } from "lucide-react";
 
-const EMPTY = { clientName: "", clientEmail: "", exmToken: "", greenInstanceId: "", greenToken: "" };
+const EMPTY = { clientName: "", accountNumber: "", clientPhone: "", exmToken: "", greenInstanceId: "", greenToken: "" };
+
+const randomAccountNumber = () => String(Math.floor(100000 + Math.random() * 900000));
 
 export default function ClientConfigForm({ initial, onDone, onCancel }) {
-  const [form, setForm] = useState({ ...EMPTY, ...(initial || {}) });
+  const [form, setForm] = useState({
+    ...EMPTY,
+    accountNumber: initial?.accountNumber || randomAccountNumber(),
+    ...(initial || {})
+  });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -18,12 +24,13 @@ export default function ClientConfigForm({ initial, onDone, onCancel }) {
     e.preventDefault();
     setError("");
     if (!form.exmToken.trim()) return setError("חובה להזין טוקן EXM");
-    if (!form.clientEmail.trim()) return setError("חובה להזין אימייל לקוח");
+    if (!form.clientPhone.trim()) return setError("חובה להזין טלפון לקוח");
     setSaving(true);
     try {
       const payload = {
         clientName: form.clientName.trim(),
-        clientEmail: form.clientEmail.trim().toLowerCase(),
+        accountNumber: form.accountNumber.trim(),
+        clientPhone: form.clientPhone.trim(),
         exmToken: form.exmToken.trim(),
         greenInstanceId: form.greenInstanceId.trim(),
         greenToken: form.greenToken.trim()
@@ -56,7 +63,8 @@ export default function ClientConfigForm({ initial, onDone, onCancel }) {
     <form onSubmit={submit} className="rounded-xl border border-border bg-card p-4 space-y-4 text-right">
       <div className="grid sm:grid-cols-2 gap-4">
         {field("cname", "שם הלקוח", "clientName", "עסק לדוגמה")}
-        {field("cemail", "אימייל התחברות", "clientEmail", "client@example.com")}
+        {field("acc", "מספר חשבון", "accountNumber", "104233")}
+        {field("cphone", "טלפון הלקוח (לקוד בוואטסאפ)", "clientPhone", "0501234567")}
         {field("exm", "טוקן EXM", "exmToken", "exm_token")}
         {field("gi", "מזהה מופע Green API", "greenInstanceId", "710722692595")}
         {field("gt", "טוקן Green API", "greenToken", "api_token")}

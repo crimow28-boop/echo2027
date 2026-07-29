@@ -6,9 +6,21 @@
       "type": "string",
       "title": "Client Name"
     },
+    "accountNumber": {
+      "type": "string",
+      "title": "Account Number"
+    },
+    "clientPhone": {
+      "type": "string",
+      "title": "Client Phone"
+    },
     "clientEmail": {
       "type": "string",
       "title": "Client Login Email"
+    },
+    "loginPassword": {
+      "type": "string",
+      "title": "Generated Login Password"
     },
     "ownerUserId": {
       "type": "string",
