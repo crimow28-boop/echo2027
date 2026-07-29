@@ -94,7 +94,11 @@ export default function Admin() {
 
         <LeadsSection
           onCreateClient={(lead) => {
-            setEditing({ clientName: lead.businessName || "", clientPhone: lead.phone || "" });
+            setEditing({
+              clientName: lead.businessName || lead.contactName || "",
+              accountNumber: lead.businessId || "",
+              clientPhone: lead.phone || ""
+            });
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
         />

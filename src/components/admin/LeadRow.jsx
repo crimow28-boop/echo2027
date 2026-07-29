@@ -30,8 +30,11 @@ export default function LeadRow({ lead, onChanged, onCreateClient }) {
     <div className={`rounded-xl border border-border bg-card p-4 ${lead.handled ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-medium truncate">{lead.businessName}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{lead.contactName}</p>
+          <p className="text-sm font-medium truncate">{lead.businessName || lead.contactName}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {lead.contactName}
+            {lead.businessId ? ` · ח.פ ${lead.businessId}` : ""}
+          </p>
           <a href={`tel:${lead.phone}`} className="mt-1 inline-flex items-center gap-1.5 text-xs font-mono text-primary" dir="ltr">
             <Phone className="w-3 h-3" /> {lead.phone}
           </a>

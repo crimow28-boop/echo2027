@@ -6,6 +6,10 @@
       "type": "string",
       "title": "Business Name"
     },
+    "businessId": {
+      "type": "string",
+      "title": "Business ID (\u05d7.\u05e4)"
+    },
     "contactName": {
       "type": "string",
       "title": "Contact Name"
@@ -25,7 +29,7 @@
     }
   },
   "required": [
-    "businessName",
+    "businessId",
     "contactName",
     "phone"
   ],

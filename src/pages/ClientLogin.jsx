@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import LoginField from "@/components/auth/LoginField";
 import EchoLoadingScreen from "@/components/loading/EchoLoadingScreen";
 import { Link } from "react-router-dom";
-import { Loader2, ArrowRight, MessageCircle, LogIn, User, Phone, KeyRound, ShieldCheck, Sparkles } from "lucide-react";
+import { Loader2, ArrowRight, MessageCircle, LogIn, Hash, Phone, KeyRound, ShieldCheck, Sparkles } from "lucide-react";
 
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
 
@@ -85,7 +85,7 @@ export default function ClientLogin() {
           </h1>
           <p className="mt-4 text-sm sm:text-base leading-relaxed text-muted-foreground max-w-xs mx-auto">
             {step === "identify"
-              ? "הזינו את מספר החשבון והטלפון שקיבלתם כדי להתחבר ל-Echo."
+              ? "הזינו את ח.פ העסק ומספר הטלפון שלכם כדי להתחבר ל-Echo."
               : `שלחנו קוד בוואטסאפ למספר שמסתיים ב-${hint}. הקוד בתוקף ל-5 דקות.`}
           </p>
         </div>
@@ -95,11 +95,11 @@ export default function ClientLogin() {
             <form onSubmit={sendCode} className="space-y-6">
               <LoginField
                 id="acc"
-                label="מספר חשבון"
-                icon={User}
+                label="ח.פ העסק"
+                icon={Hash}
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
-                placeholder="1042"
+                placeholder="512345678"
               />
               <LoginField
                 id="phone"

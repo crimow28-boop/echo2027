@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Send, CheckCircle2, Building2, User, Phone, ArrowRight, LogIn, ShieldCheck } from "lucide-react";
+import { Loader2, Send, CheckCircle2, Building2, Hash, User, Phone, ArrowRight, LogIn, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import LoginField from "@/components/auth/LoginField";
@@ -9,7 +9,7 @@ import LoginField from "@/components/auth/LoginField";
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
 
 export default function RequestAccount() {
-  const [form, setForm] = useState({ businessName: "", contactName: "", phone: "", notes: "" });
+  const [form, setForm] = useState({ businessName: "", businessId: "", contactName: "", phone: "", notes: "" });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
@@ -43,7 +43,7 @@ export default function RequestAccount() {
             </span>
             <h1 className="mt-5 font-heading text-2xl tracking-tight">הבקשה נשלחה</h1>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              ניצור איתכם קשר בוואטסאפ עם מספר החשבון ופרטי הכניסה למערכת.
+              ניצור איתכם קשר בוואטסאפ עם פרטי הכניסה למערכת.
             </p>
             <Button asChild variant="outline" className="mt-7 w-full gap-2 h-12 rounded-2xl text-sm">
               <Link to="/demo">
@@ -57,14 +57,15 @@ export default function RequestAccount() {
             <div className="mt-10 text-center">
               <h1 className="font-heading text-4xl tracking-tight">פתיחת חשבון</h1>
               <p className="mt-4 text-sm sm:text-base leading-relaxed text-muted-foreground max-w-xs mx-auto">
-                השאירו פרטים ונחזור אליכם בוואטסאפ עם מספר חשבון וכל מה שצריך כדי להתחיל.
+                השאירו פרטים ונחזור אליכם בוואטסאפ עם כל מה שצריך כדי להתחיל.
               </p>
             </div>
 
             <div className="mt-10 rounded-[2rem] bg-card p-6 sm:p-7 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.22)]">
               <form onSubmit={submit} className="space-y-6">
-                <LoginField id="biz" label="שם העסק" icon={Building2} value={form.businessName} onChange={set("businessName")} placeholder="מוסך אלון" />
-                <LoginField id="contact" label="איש קשר" icon={User} value={form.contactName} onChange={set("contactName")} placeholder="ישראל ישראלי" />
+                <LoginField id="biz" label="שם העסק (לא חובה)" icon={Building2} value={form.businessName} onChange={set("businessName")} placeholder="מוסך אלון" />
+                <LoginField id="bizid" label="ח.פ / עוסק מורשה" icon={Hash} value={form.businessId} onChange={set("businessId")} placeholder="512345678" />
+                <LoginField id="contact" label="שם מלא" icon={User} value={form.contactName} onChange={set("contactName")} placeholder="ישראל ישראלי" />
                 <LoginField id="reqphone" label="טלפון" icon={Phone} value={form.phone} onChange={set("phone")} placeholder="0501234567" />
                 <div className="space-y-2">
                   <p className="text-sm font-medium">הערות (לא חובה)</p>

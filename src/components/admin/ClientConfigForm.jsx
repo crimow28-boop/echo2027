@@ -7,14 +7,8 @@ import { Loader2, Save, X } from "lucide-react";
 
 const EMPTY = { clientName: "", accountNumber: "", clientPhone: "", exmToken: "", greenInstanceId: "", greenToken: "" };
 
-const randomAccountNumber = () => String(Math.floor(100000 + Math.random() * 900000));
-
 export default function ClientConfigForm({ initial, onDone, onCancel }) {
-  const [form, setForm] = useState({
-    ...EMPTY,
-    accountNumber: initial?.accountNumber || randomAccountNumber(),
-    ...(initial || {})
-  });
+  const [form, setForm] = useState({ ...EMPTY, ...(initial || {}) });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -25,6 +19,7 @@ export default function ClientConfigForm({ initial, onDone, onCancel }) {
     setError("");
     if (!form.exmToken.trim()) return setError("חובה להזין טוקן EXM");
     if (!form.clientPhone.trim()) return setError("חובה להזין טלפון לקוח");
+    if (!form.accountNumber.trim()) return setError("חובה להזין ח.פ העסק");
     setSaving(true);
     try {
       const payload = {
@@ -72,7 +67,7 @@ export default function ClientConfigForm({ initial, onDone, onCancel }) {
     <form onSubmit={submit} className="rounded-xl border border-border bg-card p-4 space-y-4 text-right">
       <div className="grid sm:grid-cols-2 gap-4">
         {field("cname", "שם הלקוח", "clientName", "עסק לדוגמה")}
-        {field("acc", "מספר חשבון", "accountNumber", "104233")}
+        {field("acc", "ח.פ העסק (מזהה כניסה)", "accountNumber", "512345678")}
         {field("cphone", "טלפון הלקוח (לקוד בוואטסאפ)", "clientPhone", "0501234567")}
         {field("exm", "טוקן EXM", "exmToken", "exm_token")}
         {field("gi", "מזהה מופע Green API", "greenInstanceId", "710722692595")}

@@ -9,7 +9,8 @@ async function notifyAdmin(base44, details) {
   const body = [
     "בקשה חדשה לפתיחת חשבון ב-echo",
     "",
-    `עסק: ${details.businessName}`,
+    details.businessName ? `עסק: ${details.businessName}` : null,
+    `ח.פ: ${details.businessId}`,
     `איש קשר: ${details.contactName}`,
     `טלפון: ${details.phone}`,
     details.notes ? `הערות: ${details.notes}` : null
@@ -18,7 +19,7 @@ async function notifyAdmin(base44, details) {
   for (const to of emails) {
     await base44.asServiceRole.integrations.Core.SendEmail({
       to,
-      subject: `בקשה חדשה לפתיחת חשבון — ${details.businessName}`,
+      subject: `בקשה חדשה לפתיחת חשבון — ${details.businessName || details.businessId}`,
       body,
       from_name: "echo"
     });
@@ -45,7 +46,8 @@ async function notifyAdminWhatsApp(base44, details) {
   const message = [
     "🔔 ליד חדש ב-echo",
     "",
-    `עסק: ${details.businessName}`,
+    details.businessName ? `עסק: ${details.businessName}` : null,
+    `ח.פ: ${details.businessId}`,
     `איש קשר: ${details.contactName}`,
     `טלפון: ${details.phone}`,
     details.notes ? `הערות: ${details.notes}` : null
@@ -67,16 +69,18 @@ export default async function (req) {
     const base44 = createClientFromRequest(req);
     const body = await req.json();
     const businessName = (body.businessName || "").trim();
+    const businessId = (body.businessId || "").trim();
     const contactName = (body.contactName || "").trim();
     const phone = (body.phone || "").trim();
     const notes = (body.notes || "").trim();
 
-    if (!businessName || !contactName || !phone) {
-      return Response.json({ success: false, error: "יש למלא שם עסק, איש קשר וטלפון" }, { status: 400 });
+    if (!businessId || !contactName || !phone) {
+      return Response.json({ success: false, error: "יש למלא ח.פ, שם מלא וטלפון" }, { status: 400 });
     }
 
     await base44.asServiceRole.entities.AccountRequest.create({
       businessName,
+      businessId,
       contactName,
       phone,
       notes,
@@ -84,11 +88,11 @@ export default async function (req) {
     });
 
     try {
-      await notifyAdmin(base44, { businessName, contactName, phone, notes });
+      await notifyAdmin(base44, { businessName, businessId, contactName, phone, notes });
     } catch (_e) { /* request is saved even if the email fails */ }
 
     try {
-      await notifyAdminWhatsApp(base44, { businessName, contactName, phone, notes });
+      await notifyAdminWhatsApp(base44, { businessName, businessId, contactName, phone, notes });
     } catch (_e) { /* request is saved even if the WhatsApp alert fails */ }
 
     return Response.json({ success: true });
