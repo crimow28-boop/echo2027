@@ -1,32 +1,29 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { greenApiUrl } from "../../shared/userSettings.ts";
-import { normalizePhone } from "../../shared/clientLogin.ts";
 
-// Notify the system admin over WhatsApp about a new account request.
+// Notify the system admins by email about a new account request.
 async function notifyAdmin(base44, details) {
-  const rawPhone = Deno.env.get("ADMIN_ALERT_PHONE");
-  const adminPhone = normalizePhone(rawPhone);
-  if (!adminPhone) return { error: "no admin phone", rawPhone };
+  const users = await base44.asServiceRole.entities.User.filter({ role: "admin" });
+  const emails = (users || []).map((u) => u.email).filter(Boolean);
+  if (emails.length === 0) return { error: "no admin email" };
 
-  const rows = await base44.asServiceRole.entities.UserSettings.filter({}, "-updated_date", 20);
-  const creds = (rows || []).find((r) => r.greenInstanceId && r.greenToken);
-  const url = creds && greenApiUrl(creds, "sendMessage");
-  if (!url) return { error: "no green creds" };
-
-  const message = [
-    "🔔 בקשה חדשה לפתיחת חשבון",
+  const body = [
+    "בקשה חדשה לפתיחת חשבון ב-echo",
+    "",
     `עסק: ${details.businessName}`,
     `איש קשר: ${details.contactName}`,
     `טלפון: ${details.phone}`,
     details.notes ? `הערות: ${details.notes}` : null
   ].filter(Boolean).join("\n");
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chatId: `${adminPhone}@c.us`, message })
-  });
-  return { status: res.status, to: adminPhone };
+  for (const to of emails) {
+    await base44.asServiceRole.integrations.Core.SendEmail({
+      to,
+      subject: `בקשה חדשה לפתיחת חשבון — ${details.businessName}`,
+      body,
+      from_name: "echo"
+    });
+  }
+  return { sent: emails.length };
 }
 
 export default async function (req) {
@@ -50,12 +47,11 @@ export default async function (req) {
       handled: false
     });
 
-    let debug = null;
     try {
-      debug = await notifyAdmin(base44, { businessName, contactName, phone, notes });
-    } catch (e) { debug = { error: e?.message }; }
+      await notifyAdmin(base44, { businessName, contactName, phone, notes });
+    } catch (_e) { /* request is saved even if the email fails */ }
 
-    return Response.json({ success: true, debug });
+    return Response.json({ success: true });
   } catch (error) {
     return Response.json({ success: false, error: error.message }, { status: 500 });
   }
