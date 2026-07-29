@@ -22,8 +22,8 @@ export default async function(req) {
       const number = String(r.callerNumber || "").trim();
       if (!number) continue;
       const name = String(r.callerFriendly || "").trim();
-      // Missing name, or a name that's just the number itself.
-      if (name && name.replace(/\D/g, "") !== number.replace(/\D/g, "")) continue;
+      // A real name contains letters; digit-only values are just the phone number.
+      if (/\p{L}/u.test(name)) continue;
       if (!byNumber.has(number)) {
         byNumber.set(number, []);
         numbers.push(number);
@@ -31,7 +31,7 @@ export default async function(req) {
       byNumber.get(number).push(r.id);
     }
 
-    const MAX_LOOKUPS = 60;
+    const MAX_LOOKUPS = 25;
     const targets = numbers.slice(0, MAX_LOOKUPS);
     const toUpdate = [];
     let found = 0;
