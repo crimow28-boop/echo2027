@@ -3,13 +3,16 @@ import { Play, Pause } from "lucide-react";
 
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
-export default function DemoPlayer({ duration }) {
+export default function DemoPlayer({ duration, audioUrl }) {
   const [playing, setPlaying] = useState(false);
   const [pos, setPos] = useState(0);
+  const [total, setTotal] = useState(duration);
   const timer = useRef(null);
+  const audioRef = useRef(null);
 
+  // Simulated playback (no real audio attached)
   useEffect(() => {
-    if (!playing) return;
+    if (audioUrl || !playing) return;
     timer.current = setInterval(() => {
       setPos((p) => {
         if (p + 1 >= duration) {
@@ -20,15 +23,44 @@ export default function DemoPlayer({ duration }) {
       });
     }, 250);
     return () => clearInterval(timer.current);
-  }, [playing, duration]);
+  }, [playing, duration, audioUrl]);
 
-  const pct = Math.min(100, (pos / duration) * 100);
+  const toggle = () => {
+    if (!audioUrl) {
+      setPlaying((p) => !p);
+      return;
+    }
+    const el = audioRef.current;
+    if (!el) return;
+    if (el.paused) el.play();
+    else el.pause();
+  };
+
+  const pct = total ? Math.min(100, (pos / total) * 100) : 0;
 
   return (
     <div className="flex items-center gap-3">
+      {audioUrl && (
+        <audio
+          ref={audioRef}
+          src={audioUrl}
+          preload="metadata"
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          onLoadedMetadata={(e) => {
+            if (Number.isFinite(e.currentTarget.duration)) setTotal(e.currentTarget.duration);
+          }}
+          onTimeUpdate={(e) => setPos(e.currentTarget.currentTime)}
+          onEnded={() => {
+            setPlaying(false);
+            setPos(0);
+          }}
+          className="hidden"
+        />
+      )}
       <button
         type="button"
-        onClick={() => setPlaying((p) => !p)}
+        onClick={toggle}
         className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
       >
         {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -37,7 +69,7 @@ export default function DemoPlayer({ duration }) {
         <div className="h-full rounded-full bg-primary transition-[width] duration-200" style={{ width: `${pct}%` }} />
       </div>
       <span className="text-xs text-muted-foreground font-mono shrink-0" dir="ltr">
-        {fmt(pos)} / {fmt(duration)}
+        {fmt(pos)} / {fmt(total)}
       </span>
     </div>
   );

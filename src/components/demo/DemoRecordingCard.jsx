@@ -22,7 +22,7 @@ export default function DemoRecordingCard({ recording, sent, onSend }) {
         <p className="text-[11px] text-muted-foreground shrink-0">{fmtDate(recording.callDate)}</p>
       </div>
 
-      <DemoPlayer duration={recording.duration} />
+      <DemoPlayer duration={recording.duration} audioUrl={recording.audioUrl} />
 
       <div className="flex items-center justify-between gap-3">
         {sent ? (
