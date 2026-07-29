@@ -1,0 +1,50 @@
+{
+  "name": "AccountRequest",
+  "type": "object",
+  "properties": {
+    "businessName": {
+      "type": "string",
+      "title": "Business Name"
+    },
+    "contactName": {
+      "type": "string",
+      "title": "Contact Name"
+    },
+    "phone": {
+      "type": "string",
+      "title": "Phone"
+    },
+    "notes": {
+      "type": "string",
+      "title": "Notes"
+    },
+    "handled": {
+      "type": "boolean",
+      "default": false,
+      "title": "Handled"
+    }
+  },
+  "required": [
+    "businessName",
+    "contactName",
+    "phone"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": false,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

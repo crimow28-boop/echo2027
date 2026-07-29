@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import LoginField from "@/components/auth/LoginField";
 import EchoLoadingScreen from "@/components/loading/EchoLoadingScreen";
+import RequestAccountDialog from "@/components/auth/RequestAccountDialog";
 import { Loader2, ArrowRight, MessageCircle, LogIn, User, Phone, KeyRound, ShieldCheck } from "lucide-react";
 
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
@@ -16,6 +17,7 @@ export default function ClientLogin() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [entering, setEntering] = useState(false);
+  const [requestOpen, setRequestOpen] = useState(false);
 
   const sendCode = async (e) => {
     e.preventDefault();
@@ -120,6 +122,20 @@ export default function ClientLogin() {
             </form>
           )}
         </div>
+
+        {step === "identify" && (
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={() => setRequestOpen(true)}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              אין לי חשבון עדיין — <span className="text-primary font-medium">פתיחת חשבון</span>
+            </button>
+          </div>
+        )}
+
+        <RequestAccountDialog open={requestOpen} onOpenChange={setRequestOpen} />
 
         <div className="mt-10 flex flex-col items-center gap-2.5">
           <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary/10 text-primary">
