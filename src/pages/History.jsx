@@ -9,14 +9,30 @@ import SendConfirmDialog from "@/components/recordings/SendConfirmDialog";
 import useSendRecording from "@/hooks/useSendRecording";
 import { RecordingRowsSkeleton, RecordingCardsSkeleton } from "@/components/recordings/RecordingSkeletons";
 import { PAGE_SIZE } from "@/lib/recordingUtils";
+import usePrivateContacts from "@/hooks/usePrivateContacts";
+import HideContactDialog from "@/components/recordings/HideContactDialog";
 
 export default function History() {
-  const [recordings, setRecordings] = useState([]);
+  const [allRecordings, setRecordings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
-  const listRef = useRef(recordings);
-  listRef.current = recordings;
+  const { isPrivate, hide } = usePrivateContacts();
+  const [hidePending, setHidePending] = useState(null);
+  const [hiding, setHiding] = useState(false);
+  const recordings = allRecordings.filter((r) => !isPrivate(r.callerNumber));
+  const listRef = useRef(allRecordings);
+  listRef.current = allRecordings;
+
+  const confirmHide = async () => {
+    setHiding(true);
+    try {
+      await hide(hidePending);
+      setHidePending(null);
+    } finally {
+      setHiding(false);
+    }
+  };
 
   const { sendingId, pending, setPending, send } = useSendRecording((id) =>
     setRecordings((prev) => prev.map((r) => (r.id === id ? { ...r, sent: true, sentAt: new Date().toISOString() } : r)))
@@ -86,7 +102,7 @@ export default function History() {
                 </thead>
                 <tbody>
                   {recordings.map((r) => (
-                    <RecordingRow key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} />
+                    <RecordingRow key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} onHide={setHidePending} />
                   ))}
                 </tbody>
               </table>
@@ -94,7 +110,7 @@ export default function History() {
 
             <div className="md:hidden mt-8 space-y-3.5">
               {recordings.map((r) => (
-                <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} />
+                <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} onHide={setHidePending} />
               ))}
             </div>
 
@@ -115,6 +131,13 @@ export default function History() {
         sending={pending && sendingId === pending.id}
         onConfirm={(message) => pending && send(pending.id, message)}
         onClose={() => setPending(null)}
+      />
+
+      <HideContactDialog
+        recording={hidePending}
+        working={hiding}
+        onConfirm={confirmHide}
+        onClose={() => setHidePending(null)}
       />
     </div>
   );

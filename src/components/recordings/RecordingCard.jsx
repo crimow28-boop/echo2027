@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { formatDuration, formatDate } from "@/lib/recordingUtils";
 import RecordingPlayer from "@/components/recordings/RecordingPlayer";
 import DownloadRecordingButton from "@/components/recordings/DownloadRecordingButton";
+import HideContactButton from "@/components/recordings/HideContactButton";
 
-export default function RecordingCard({ recording, sendingId, onSend }) {
+export default function RecordingCard({ recording, sendingId, onSend, onHide }) {
   const r = recording;
   const isSending = sendingId === r.id;
   const sent = r.sent || r.sentAt;
@@ -49,6 +50,11 @@ export default function RecordingCard({ recording, sendingId, onSend }) {
         </Button>
         </div>
       </div>
+      {onHide && (
+        <div className="pt-1">
+          <HideContactButton withLabel onClick={() => onHide(r)} />
+        </div>
+      )}
     </div>
   );
 }

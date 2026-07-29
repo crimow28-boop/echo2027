@@ -16,9 +16,15 @@ import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS, formatPhone
 import { buildSearchExamples } from "@/lib/searchExamples";
 import { RecordingRowsSkeleton, RecordingCardsSkeleton } from "@/components/recordings/RecordingSkeletons";
 import useIsSystemAdmin from "@/hooks/useIsSystemAdmin";
+import usePrivateContacts from "@/hooks/usePrivateContacts";
+import HideContactDialog from "@/components/recordings/HideContactDialog";
 
 export default function Home() {
-  const [recordings, setRecordings] = useState([]);
+  const [allRecordings, setRecordings] = useState([]);
+  const { isPrivate, hide } = usePrivateContacts();
+  const [hidePending, setHidePending] = useState(null);
+  const [hiding, setHiding] = useState(false);
+  const recordings = allRecordings.filter((r) => !isPrivate(r.callerNumber));
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
@@ -41,8 +47,18 @@ export default function Home() {
   filtersRef.current = filters;
   const searchRef = useRef(debouncedSearch);
   searchRef.current = debouncedSearch;
-  const recordingsRef = useRef(recordings);
-  recordingsRef.current = recordings;
+  const recordingsRef = useRef(allRecordings);
+  recordingsRef.current = allRecordings;
+
+  const confirmHide = async () => {
+    setHiding(true);
+    try {
+      await hide(hidePending);
+      setHidePending(null);
+    } finally {
+      setHiding(false);
+    }
+  };
   const inFlightRef = useRef(false);
   const reloadTimerRef = useRef(null);
 
@@ -377,7 +393,7 @@ export default function Home() {
                     </tr>
                   )}
                   {!loading && recordings.map((r) => (
-                    <RecordingRow key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} />
+                    <RecordingRow key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} onHide={setHidePending} />
                   ))}
                 </tbody>
               </table>
@@ -393,7 +409,7 @@ export default function Home() {
                 </div>
               )}
               {!loading && recordings.map((r) => (
-                <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} />
+                <RecordingCard key={r.id} recording={r} sendingId={sendingId} onSend={(rec) => setPending(rec)} onHide={setHidePending} />
               ))}
             </div>
 
@@ -414,6 +430,13 @@ export default function Home() {
         sending={pending && sendingId === pending.id}
         onConfirm={confirmSend}
         onClose={() => setPending(null)}
+      />
+
+      <HideContactDialog
+        recording={hidePending}
+        working={hiding}
+        onConfirm={confirmHide}
+        onClose={() => setHidePending(null)}
       />
     </div>
   );

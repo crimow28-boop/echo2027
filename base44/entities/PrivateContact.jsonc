@@ -1,0 +1,31 @@
+{
+  "name": "PrivateContact",
+  "type": "object",
+  "properties": {
+    "phone": {
+      "type": "string",
+      "title": "Normalized Phone"
+    },
+    "name": {
+      "type": "string",
+      "title": "Contact Name"
+    }
+  },
+  "required": [
+    "phone"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

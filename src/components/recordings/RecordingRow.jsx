@@ -3,8 +3,9 @@ import { Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDuration, formatDate } from "@/lib/recordingUtils";
 import DownloadRecordingButton from "@/components/recordings/DownloadRecordingButton";
+import HideContactButton from "@/components/recordings/HideContactButton";
 
-export default function RecordingRow({ recording, sendingId, onSend }) {
+export default function RecordingRow({ recording, sendingId, onSend, onHide }) {
   const r = recording;
   const isSending = sendingId === r.id;
   const sent = r.sent || r.sentAt;
@@ -31,6 +32,7 @@ export default function RecordingRow({ recording, sendingId, onSend }) {
       </td>
       <td className="px-4 py-2.5">
         <div className="flex items-center justify-center gap-2">
+        {onHide && <HideContactButton onClick={() => onHide(r)} />}
         <DownloadRecordingButton recording={r} />
         <Button
           disabled={isSending}

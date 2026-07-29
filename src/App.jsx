@@ -19,6 +19,7 @@ import Admin from './pages/Admin';
 import ClientLogin from './pages/ClientLogin';
 import Demo from './pages/Demo';
 import RequestAccount from './pages/RequestAccount';
+import PrivateContacts from './pages/PrivateContacts';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -55,6 +56,7 @@ const AuthenticatedApp = () => {
     <Route path="/settings" element={<Settings />} />
     <Route path="/onboarding" element={<Onboarding />} />
     <Route path="/history" element={<HistoryPage />} />
+    <Route path="/private-contacts" element={<PrivateContacts />} />
     <Route path="/admin" element={<Admin />} />
     </Route>
     <Route path="/client-login" element={<ClientLogin />} />
