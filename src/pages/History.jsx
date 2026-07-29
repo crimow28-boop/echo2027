@@ -7,6 +7,7 @@ import RecordingRow from "@/components/recordings/RecordingRow";
 import RecordingCard from "@/components/recordings/RecordingCard";
 import SendConfirmDialog from "@/components/recordings/SendConfirmDialog";
 import useSendRecording from "@/hooks/useSendRecording";
+import { RecordingRowsSkeleton, RecordingCardsSkeleton } from "@/components/recordings/RecordingSkeletons";
 import { PAGE_SIZE } from "@/lib/recordingUtils";
 
 export default function History() {
@@ -55,14 +56,22 @@ export default function History() {
         <p className="mt-2 text-sm text-muted-foreground">כל השיחות לפי סדר כרונולוגי — מהחדשה לישנה.</p>
 
         {loading ? (
-          <div className="py-20 text-center text-muted-foreground text-sm">
-            <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
-            טוענים שיחות...
+          <div className="animate-in fade-in duration-200">
+            <div className="hidden md:block mt-8 rounded-xl border border-border bg-card overflow-hidden">
+              <table className="w-full text-sm">
+                <tbody>
+                  <RecordingRowsSkeleton />
+                </tbody>
+              </table>
+            </div>
+            <div className="md:hidden mt-8">
+              <RecordingCardsSkeleton />
+            </div>
           </div>
         ) : recordings.length === 0 ? (
           <p className="py-20 text-muted-foreground text-sm">אין שיחות להצגה</p>
         ) : (
-          <>
+          <div className="animate-in fade-in duration-200">
             <div className="hidden md:block mt-8 rounded-xl border border-border bg-card overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-muted/40 border-b border-border">
@@ -97,7 +106,7 @@ export default function History() {
                 </Button>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
 

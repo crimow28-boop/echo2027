@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import LoginField from "@/components/auth/LoginField";
+import EchoLoadingScreen from "@/components/loading/EchoLoadingScreen";
 import { Loader2, ArrowRight, MessageCircle, LogIn, User, Phone, KeyRound, ShieldCheck } from "lucide-react";
 
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
@@ -14,6 +15,7 @@ export default function ClientLogin() {
   const [hint, setHint] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [entering, setEntering] = useState(false);
 
   const sendCode = async (e) => {
     e.preventDefault();
@@ -39,7 +41,8 @@ export default function ClientLogin() {
       const res = await base44.functions.invoke("verifyLoginCode", { accountNumber, phone, code });
       if (!res.data?.success) throw new Error(res.data?.error || "הקוד אינו תקין");
       await base44.auth.loginViaEmailPassword(res.data.email, res.data.password);
-      window.location.href = "/";
+      setEntering(true);
+      setTimeout(() => { window.location.href = "/"; }, 900);
     } catch (err) {
       setError(err.message);
       setBusy(false);
@@ -47,6 +50,8 @@ export default function ClientLogin() {
   };
 
   const buttonClass = "w-full gap-3 h-14 rounded-2xl text-base font-medium shadow-[0_8px_20px_-10px_rgba(0,0,0,0.35)]";
+
+  if (entering) return <EchoLoadingScreen message="מארגנים את השיחות שלך..." />;
 
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body flex items-center justify-center px-5 py-14">

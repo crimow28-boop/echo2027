@@ -14,6 +14,7 @@ import SearchSummary from "@/components/recordings/SearchSummary";
 import TypewriterPlaceholder from "@/components/recordings/TypewriterPlaceholder";
 import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS, formatPhoneDisplay } from "@/lib/recordingUtils";
 import { buildSearchExamples } from "@/lib/searchExamples";
+import { RecordingRowsSkeleton, RecordingCardsSkeleton } from "@/components/recordings/RecordingSkeletons";
 
 export default function Home() {
   const [recordings, setRecordings] = useState([]);
@@ -246,6 +247,12 @@ export default function Home() {
           <div className="shrink-0">
             <AppMenuSheet onExport={handleExport} exporting={exporting} />
           </div>
+          {syncing && (
+            <span className="inline-flex items-center gap-2 h-9 rounded-full bg-card px-3.5 text-xs text-muted-foreground shadow-[0_2px_10px_-6px_rgba(0,0,0,0.15)] animate-in fade-in duration-200">
+              <RefreshCw className="w-3.5 h-3.5 animate-spin motion-reduce:animate-none" />
+              מסנכרנים שיחות חדשות...
+            </span>
+          )}
         </div>
 
         {settingsLoaded && !hasSettings && (
@@ -339,7 +346,7 @@ export default function Home() {
 
         {/* Results */}
         {hasSearch ? (
-          <div className="mt-8">
+          <div className="mt-8 animate-in fade-in duration-200">
             <SearchSummary search={debouncedSearch} />
             <div className="flex items-center gap-2 mb-4 text-xs text-muted-foreground">
               <span className={`inline-block w-2 h-2 rounded-full ${loading ? "bg-muted-foreground animate-pulse" : "bg-primary"}`}></span>
@@ -360,14 +367,7 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  {loading && (
-                    <tr>
-                      <td colSpan={6} className="px-4 py-16 text-center text-muted-foreground text-sm">
-                        <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
-                        מחפשים את השיחות המתאימות...
-                      </td>
-                    </tr>
-                  )}
+                  {loading && <RecordingRowsSkeleton />}
                   {!loading && recordings.length === 0 && (
                     <tr>
                       <td colSpan={6} className="px-4 py-16 text-right text-muted-foreground text-sm">
@@ -385,12 +385,7 @@ export default function Home() {
 
             {/* Cards - Mobile */}
             <div className="md:hidden space-y-3.5">
-              {loading && (
-                <div className="text-center py-16 text-muted-foreground text-sm">
-                  <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
-                  מחפשים את השיחות המתאימות...
-                </div>
-              )}
+              {loading && <RecordingCardsSkeleton />}
               {!loading && recordings.length === 0 && (
                 <div className="py-16 text-right text-muted-foreground text-sm">
                   <p>אין שיחות כאלה</p>
