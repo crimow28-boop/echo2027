@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { loadRememberedClient, rememberClient } from "@/lib/rememberedDevice";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import LoginField from "@/components/auth/LoginField";
@@ -17,6 +18,23 @@ export default function ClientLogin() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [entering, setEntering] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  // A client who already logged in on this device stays logged in until logout.
+  useEffect(() => {
+    (async () => {
+      const saved = loadRememberedClient();
+      if (saved && (await base44.auth.isAuthenticated())) {
+        window.location.href = "/";
+        return;
+      }
+      if (saved) {
+        setAccountNumber(saved.accountNumber || "");
+        setPhone(saved.phone || "");
+      }
+      setChecking(false);
+    })();
+  }, []);
 
 
   const sendCode = async (e) => {
@@ -43,6 +61,7 @@ export default function ClientLogin() {
       const res = await base44.functions.invoke("verifyLoginCode", { accountNumber, phone, code });
       if (!res.data?.success) throw new Error(res.data?.error || "הקוד אינו תקין");
       await base44.auth.loginViaEmailPassword(res.data.email, res.data.password);
+      rememberClient(accountNumber, phone);
       setEntering(true);
       setTimeout(() => { window.location.href = "/"; }, 900);
     } catch (err) {
@@ -53,7 +72,7 @@ export default function ClientLogin() {
 
   const buttonClass = "w-full gap-3 h-14 rounded-2xl text-base font-medium shadow-[0_8px_20px_-10px_rgba(0,0,0,0.35)]";
 
-  if (entering) return <EchoLoadingScreen message="מארגנים את השיחות שלך..." />;
+  if (entering || checking) return <EchoLoadingScreen message="מארגנים את השיחות שלך..." />;
 
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body flex items-center justify-center px-5 py-14">

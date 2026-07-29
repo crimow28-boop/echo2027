@@ -4,6 +4,7 @@ import { Menu, Loader2, Download, History, Users, LogOut, Building2, EyeOff } fr
 import { base44 } from "@/api/base44Client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import useIsSystemAdmin from "@/hooks/useIsSystemAdmin";
+import { forgetClient } from "@/lib/rememberedDevice";
 
 export default function AppMenuSheet({ onExport, exporting }) {
   const [open, setOpen] = useState(false);
@@ -75,7 +76,10 @@ export default function AppMenuSheet({ onExport, exporting }) {
           <button
             type="button"
             className={`${itemClass} text-destructive hover:bg-destructive/10`}
-            onClick={() => base44.auth.logout("/demo")}
+            onClick={() => {
+              forgetClient();
+              base44.auth.logout("/demo");
+            }}
           >
             <LogOut className="w-4 h-4" />
             <span>התנתקות</span>
