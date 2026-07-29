@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Play, Pause } from "lucide-react";
+import AudioWaveform from "@/components/demo/AudioWaveform";
 
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
@@ -65,9 +66,18 @@ export default function DemoPlayer({ duration, audioUrl }) {
       >
         {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
       </button>
-      <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
-        <div className="h-full rounded-full bg-primary transition-[width] duration-200" style={{ width: `${pct}%` }} />
-      </div>
+      <AudioWaveform
+        seed={audioUrl || String(duration)}
+        progress={pct / 100}
+        onSeek={(ratio) => {
+          if (audioUrl && audioRef.current && total) {
+            audioRef.current.currentTime = ratio * total;
+            setPos(ratio * total);
+          } else {
+            setPos(ratio * duration);
+          }
+        }}
+      />
       <span className="text-xs text-muted-foreground font-mono shrink-0" dir="ltr">
         {fmt(pos)} / {fmt(total)}
       </span>
