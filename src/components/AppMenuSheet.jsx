@@ -5,11 +5,13 @@ import { base44 } from "@/api/base44Client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import useIsSystemAdmin from "@/hooks/useIsSystemAdmin";
 import { forgetClient } from "@/lib/rememberedDevice";
+import LogoutConfirmDialog from "@/components/LogoutConfirmDialog";
 
 export default function AppMenuSheet({ onExport, exporting }) {
   const [open, setOpen] = useState(false);
   const { isAdmin } = useIsSystemAdmin();
   const [client, setClient] = useState(null);
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
   useEffect(() => {
     base44.entities.UserSettings.filter({}, "-updated_date", 1)
@@ -76,15 +78,20 @@ export default function AppMenuSheet({ onExport, exporting }) {
           <button
             type="button"
             className={`${itemClass} text-destructive hover:bg-destructive/10`}
-            onClick={() => {
-              forgetClient();
-              base44.auth.logout("/demo");
-            }}
+            onClick={() => setConfirmLogout(true)}
           >
             <LogOut className="w-4 h-4" />
             <span>התנתקות</span>
           </button>
         </div>
+        <LogoutConfirmDialog
+          open={confirmLogout}
+          onClose={() => setConfirmLogout(false)}
+          onConfirm={() => {
+            forgetClient();
+            base44.auth.logout("/demo");
+          }}
+        />
       </SheetContent>
     </Sheet>
   );
