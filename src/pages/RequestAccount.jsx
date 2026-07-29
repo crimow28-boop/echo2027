@@ -69,7 +69,15 @@ export default function RequestAccount() {
                 <LoginField id="reqphone" label="טלפון" icon={Phone} value={form.phone} onChange={set("phone")} placeholder="0501234567" />
                 <div className="space-y-2">
                   <p className="text-sm font-medium">הערות (לא חובה)</p>
-                  <Textarea value={form.notes} onChange={set("notes")} rows={3} placeholder="משהו שכדאי שנדע?" className="text-sm rounded-2xl" />
+                  <Textarea
+                    value={form.notes}
+                    onChange={set("notes")}
+                    rows={3}
+                    dir="rtl"
+                    style={{ unicodeBidi: "plaintext" }}
+                    placeholder="משהו שכדאי שנדע?"
+                    className="text-sm text-right leading-relaxed rounded-2xl"
+                  />
                 </div>
                 {error && <p className="text-xs text-destructive">{error}</p>}
                 <Button type="submit" disabled={busy} className="w-full gap-3 h-14 rounded-full text-base font-medium shadow-[0_8px_20px_-10px_rgba(0,0,0,0.35)]">

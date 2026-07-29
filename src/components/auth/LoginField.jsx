@@ -2,7 +2,7 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function LoginField({ id, label, icon: Icon, inputClassName = "", ...props }) {
+export default function LoginField({ id, label, icon: Icon, inputClassName = "", dir = "rtl", ...props }) {
   return (
     <div className="space-y-2">
       <Label htmlFor={id} className="text-sm font-medium text-muted-foreground">{label}</Label>
@@ -12,8 +12,9 @@ export default function LoginField({ id, label, icon: Icon, inputClassName = "",
         </span>
         <Input
           id={id}
-          dir="ltr"
-          className={`h-14 pl-16 pr-5 text-right text-lg bg-transparent border-0 shadow-none rounded-2xl focus-visible:ring-0 ${inputClassName}`}
+          dir={dir}
+          style={{ unicodeBidi: "plaintext" }}
+          className={`h-14 pl-16 pr-5 text-right text-lg leading-normal bg-transparent border-0 shadow-none rounded-2xl focus-visible:ring-0 ${inputClassName}`}
           {...props}
         />
       </div>
