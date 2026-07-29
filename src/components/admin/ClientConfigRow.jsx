@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Loader2, Pencil, Trash2, CheckCircle2, XCircle, ShieldCheck } from "lucide-react";
+import { Loader2, Pencil, Trash2, CheckCircle2, XCircle, ShieldCheck, MessageCircle } from "lucide-react";
 import CreateLoginAccount from "@/components/admin/CreateLoginAccount";
 
 export default function ClientConfigRow({ config, onEdit, onChanged }) {
@@ -26,6 +26,25 @@ export default function ClientConfigRow({ config, onEdit, onChanged }) {
       setResult({ exm: false, green: false });
     } finally {
       setChecking(false);
+    }
+  };
+
+  const [welcome, setWelcome] = useState(null);
+  const [sendingWelcome, setSendingWelcome] = useState(false);
+
+  const sendWelcome = async () => {
+    setSendingWelcome(true);
+    setWelcome(null);
+    try {
+      const res = await base44.functions.invoke("sendClientWelcome", {
+        configId: config.id,
+        loginUrl: `${window.location.origin}/client-login`
+      });
+      setWelcome(res.data?.success ? { ok: true } : { error: res.data?.error || "שליחה נכשלה" });
+    } catch (e) {
+      setWelcome({ error: e.message });
+    } finally {
+      setSendingWelcome(false);
     }
   };
 
@@ -76,7 +95,14 @@ export default function ClientConfigRow({ config, onEdit, onChanged }) {
           בדיקת חיבורים
         </Button>
         {result?.exm !== undefined && badge("EXM", result.exm)}
+        <Button variant="outline" size="sm" disabled={sendingWelcome} onClick={sendWelcome} className="gap-1.5 h-8 rounded-lg shadow-none text-xs">
+          {sendingWelcome ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MessageCircle className="w-3.5 h-3.5" />}
+          שליחת הודעת פתיחה
+        </Button>
+        {result?.exm !== undefined && badge("EXM", result.exm)}
         {result?.green !== undefined && result.green !== null && badge("Green API", result.green)}
+        {welcome?.ok && <span className="text-xs text-primary">ההודעה נשלחה</span>}
+        {welcome?.error && <span className="text-xs text-destructive">{welcome.error}</span>}
       </div>
 
       <CreateLoginAccount config={config} onDone={onChanged} />
