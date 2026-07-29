@@ -1,20 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { getRecordingUrls } from "../../shared/exmApi.ts";
 import { getUserSettings, greenApiUrl } from "../../shared/userSettings.ts";
-
-// Convert an Israeli phone number to WhatsApp chat id format.
-// 0526331295 -> 972526331295 ; strips dashes/spaces ; removes leading 0 ; prepends 972.
-function toWhatsAppChatId(phone) {
-  if (!phone) return null;
-  const cleaned = String(phone).replace(/[\s\-+()]/g, "");
-  let normalized = cleaned;
-  if (normalized.startsWith("972")) {
-    normalized = normalized.replace(/^9720?/, "972");
-  } else if (normalized.startsWith("0")) {
-    normalized = "972" + normalized.slice(1);
-  }
-  return `${normalized}@c.us`;
-}
+import { toWhatsAppChatId } from "../../shared/whatsappContacts.ts";
 
 export default async function(req) {
   try {

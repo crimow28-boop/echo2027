@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Loader2, RefreshCw, Download, History, Settings as SettingsIcon } from "lucide-react";
+import { Menu, Loader2, RefreshCw, Download, History, UserSearch, Settings as SettingsIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
-export default function AppMenuSheet({ onSync, onExport, syncing, exporting, hasSettings }) {
+export default function AppMenuSheet({ onSync, onExport, onEnrichNames, syncing, exporting, enriching, hasSettings }) {
   const [open, setOpen] = useState(false);
   const itemClass =
     "w-full flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-foreground hover:bg-accent transition-colors disabled:opacity-50 disabled:pointer-events-none";
@@ -38,6 +38,18 @@ export default function AppMenuSheet({ onSync, onExport, syncing, exporting, has
           >
             {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
             <span>סנכרון הקלטות</span>
+          </button>
+          <button
+            type="button"
+            className={itemClass}
+            disabled={enriching}
+            onClick={() => {
+              setOpen(false);
+              onEnrichNames();
+            }}
+          >
+            {enriching ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserSearch className="w-4 h-4" />}
+            <span>שאיבת שמות מוואטסאפ</span>
           </button>
           <button
             type="button"

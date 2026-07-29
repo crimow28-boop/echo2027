@@ -24,6 +24,7 @@ export default function Home() {
   const [pending, setPending] = useState(null);
   const [syncing, setSyncing] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [enriching, setEnriching] = useState(false);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [hasSettings, setHasSettings] = useState(false);
   const [hasGreen, setHasGreen] = useState(false);
@@ -208,6 +209,16 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasSettings]);
 
+  const handleEnrichNames = async () => {
+    setEnriching(true);
+    try {
+      await base44.functions.invoke("enrichContactNames", {});
+      loadRecordings(true);
+    } finally {
+      setEnriching(false);
+    }
+  };
+
   const handleExport = async () => {
     setExporting(true);
     try {
@@ -234,8 +245,10 @@ export default function Home() {
             <AppMenuSheet
               onSync={handleSync}
               onExport={handleExport}
+              onEnrichNames={handleEnrichNames}
               syncing={syncing}
               exporting={exporting}
+              enriching={enriching}
               hasSettings={hasSettings}
             />
           </div>
