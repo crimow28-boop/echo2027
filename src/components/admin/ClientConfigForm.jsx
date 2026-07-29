@@ -35,8 +35,17 @@ export default function ClientConfigForm({ initial, onDone, onCancel }) {
         greenInstanceId: form.greenInstanceId.trim(),
         greenToken: form.greenToken.trim()
       };
-      if (initial?.id) await base44.entities.UserSettings.update(initial.id, payload);
-      else await base44.entities.UserSettings.create(payload);
+      if (initial?.id) {
+        await base44.entities.UserSettings.update(initial.id, payload);
+      } else {
+        const created = await base44.entities.UserSettings.create(payload);
+        // New client — send the Echo welcome message on WhatsApp.
+        const res = await base44.functions.invoke("sendClientWelcome", {
+          configId: created.id,
+          loginUrl: `${window.location.origin}/client-login`
+        });
+        if (!res.data?.success) setError(`הלקוח נשמר, אך הודעת הפתיחה לא נשלחה (${res.data?.error || "שגיאה"})`);
+      }
       onDone();
     } catch (err) {
       setError(err.message);
