@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import LoginField from "@/components/auth/LoginField";
 import EchoLoadingScreen from "@/components/loading/EchoLoadingScreen";
 import RequestAccountDialog from "@/components/auth/RequestAccountDialog";
-import { Loader2, ArrowRight, MessageCircle, LogIn, User, Phone, KeyRound, ShieldCheck } from "lucide-react";
+import { Loader2, ArrowRight, MessageCircle, LogIn, User, Phone, KeyRound, ShieldCheck, Sparkles } from "lucide-react";
 
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
 
@@ -124,14 +124,18 @@ export default function ClientLogin() {
         </div>
 
         {step === "identify" && (
-          <div className="mt-6 text-center">
-            <button
+          <div className="mt-6 rounded-2xl bg-card p-5 text-center shadow-[0_10px_30px_-22px_rgba(0,0,0,0.25)]">
+            <p className="text-sm font-medium">אין לי חשבון עדיין</p>
+            <p className="mt-1.5 text-xs text-muted-foreground">משאירים פרטים ואנחנו פותחים לכם חשבון.</p>
+            <Button
               type="button"
+              variant="outline"
               onClick={() => setRequestOpen(true)}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="mt-4 w-full gap-2 h-12 rounded-2xl text-sm"
             >
-              אין לי חשבון עדיין — <span className="text-primary font-medium">פתיחת חשבון</span>
-            </button>
+              <Sparkles className="w-4 h-4" />
+              פתיחת חשבון חדש
+            </Button>
           </div>
         )}
 
