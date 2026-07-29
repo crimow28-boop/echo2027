@@ -3,6 +3,7 @@ import { Loader2, Send, Pencil } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import WhatsAppChatPreview from "@/components/demo/WhatsAppChatPreview";
 
 const buildMessage = (rec) =>
   `שלום ${rec?.callerFriendly || ""},\nמצורפת הקלטת השיחה שלנו.\nתודה, echo (דמו)`;
@@ -42,9 +43,7 @@ export default function DemoSendDialog({ recording, onConfirm, onClose }) {
         {editing ? (
           <Textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={5} className="text-sm" />
         ) : (
-          <div className="rounded-2xl rounded-tr-sm bg-primary/10 px-4 py-3 text-sm whitespace-pre-line leading-relaxed">
-            {message}
-          </div>
+          <WhatsAppChatPreview recording={recording} message={message} />
         )}
 
         <div className="flex items-center justify-between gap-3 pt-1">
