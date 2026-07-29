@@ -7,7 +7,7 @@ import DemoFeatures from "@/components/demo/DemoFeatures";
 
 export default function Demo() {
   return (
-    <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
+    <div dir="rtl" className="min-h-screen bg-transparent bg-grid text-foreground font-body">
       <DemoHeader />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-14">

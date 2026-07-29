@@ -256,7 +256,7 @@ export default function Home() {
   };
 
   return (
-    <div dir="rtl" className="min-h-screen bg-background bg-grid text-foreground font-body">
+    <div dir="rtl" className="min-h-screen bg-transparent bg-grid text-foreground font-body">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
         {/* Top bar */}
         <div className="flex items-start justify-start gap-4 -mt-6 mb-10">
