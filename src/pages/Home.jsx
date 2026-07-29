@@ -28,6 +28,7 @@ export default function Home() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [hasSettings, setHasSettings] = useState(false);
   const [hasGreen, setHasGreen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [suggestions, setSuggestions] = useState(SEARCH_SUGGESTIONS);
@@ -113,6 +114,7 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       try {
+        base44.auth.me().then((u) => setIsAdmin(u?.role === "admin")).catch(() => {});
         const rows = await base44.entities.UserSettings.filter({}, "-updated_date", 1);
         setHasSettings(!!rows?.[0]?.exmToken);
         setHasGreen(!!(rows?.[0]?.greenInstanceId && rows?.[0]?.greenToken));
@@ -251,13 +253,17 @@ export default function Home() {
             <div className="flex items-center gap-3 flex-1">
               <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0" />
               <div className="text-sm leading-relaxed text-amber-800">
-                <p className="font-medium">חיבור נדרש</p>
-                <p className="text-amber-700 mt-1">כדי לסנכרן ולשלוח הקלטות, יש להזין את טוקן ה-EXM ופרטי Green API.</p>
+                <p className="font-medium">החיבור בהקמה</p>
+                <p className="text-amber-700 mt-1">
+                  {isAdmin ? "לא הוגדרו חיבורי EXM ו-Green API עבור המשתמש הזה." : "החיבור לשיחות שלכם עוד לא הושלם — נציג המערכת מטפל בזה."}
+                </p>
               </div>
             </div>
-            <Button asChild size="sm" className="gap-2 rounded-lg border border-amber-300 bg-amber-100 text-amber-800 shadow-none hover:bg-amber-200 text-xs font-medium">
-              <Link to="/onboarding">להגדרה →</Link>
-            </Button>
+            {isAdmin && (
+              <Button asChild size="sm" className="gap-2 rounded-lg border border-amber-300 bg-amber-100 text-amber-800 shadow-none hover:bg-amber-200 text-xs font-medium">
+                <Link to="/admin">לניהול לקוחות →</Link>
+              </Button>
+            )}
           </div>
         )}
 
@@ -267,12 +273,16 @@ export default function Home() {
               <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0" />
               <div className="text-sm leading-relaxed text-amber-800">
                 <p className="font-medium">חסר חיבור WhatsApp</p>
-                <p className="text-amber-700 mt-1">כדי לשלוח הקלטות ללקוחות, יש להזין את פרטי Green API.</p>
+                <p className="text-amber-700 mt-1">
+                  {isAdmin ? "יש להזין את פרטי Green API עבור הלקוח." : "השליחה לוואטסאפ עוד לא זמינה — נציג המערכת מטפל בזה."}
+                </p>
               </div>
             </div>
-            <Button asChild size="sm" className="gap-2 rounded-lg border border-amber-300 bg-amber-100 text-amber-800 shadow-none hover:bg-amber-200 text-xs font-medium">
-              <Link to="/onboarding">להגדרה →</Link>
-            </Button>
+            {isAdmin && (
+              <Button asChild size="sm" className="gap-2 rounded-lg border border-amber-300 bg-amber-100 text-amber-800 shadow-none hover:bg-amber-200 text-xs font-medium">
+                <Link to="/admin">לניהול לקוחות →</Link>
+              </Button>
+            )}
           </div>
         )}
 

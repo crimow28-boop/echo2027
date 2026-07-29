@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Loader2, Download, History, Settings as SettingsIcon } from "lucide-react";
+import { Menu, Loader2, Download, History, Users } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export default function AppMenuSheet({ onExport, exporting }) {
   const [open, setOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    base44.auth.me().then((u) => setIsAdmin(u?.role === "admin")).catch(() => {});
+  }, []);
   const itemClass =
     "w-full flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-foreground hover:bg-accent transition-colors disabled:opacity-50 disabled:pointer-events-none";
 
@@ -39,10 +45,12 @@ export default function AppMenuSheet({ onExport, exporting }) {
             {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
             <span>ייצוא ל-CSV</span>
           </button>
-          <Link to="/settings" onClick={() => setOpen(false)} className={itemClass}>
-            <SettingsIcon className="w-4 h-4" />
-            <span>הגדרות</span>
-          </Link>
+          {isAdmin && (
+            <Link to="/admin" onClick={() => setOpen(false)} className={itemClass}>
+              <Users className="w-4 h-4" />
+              <span>ניהול לקוחות</span>
+            </Link>
+          )}
         </div>
       </SheetContent>
     </Sheet>

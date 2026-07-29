@@ -15,6 +15,7 @@ import Home from './pages/Home';
 import Settings from './pages/Settings';
 import Onboarding from './pages/Onboarding';
 import HistoryPage from './pages/History';
+import Admin from './pages/Admin';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -49,6 +50,7 @@ const AuthenticatedApp = () => {
     <Route path="/settings" element={<Settings />} />
     <Route path="/onboarding" element={<Onboarding />} />
     <Route path="/history" element={<HistoryPage />} />
+    <Route path="/admin" element={<Admin />} />
     </Route>
     <Route path="/login" element={<Login />} />
     <Route path="/register" element={<Register />} />
