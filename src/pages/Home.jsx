@@ -15,6 +15,7 @@ import TypewriterPlaceholder from "@/components/recordings/TypewriterPlaceholder
 import { buildQuery, DEFAULT_FILTERS, PAGE_SIZE, SEARCH_SUGGESTIONS, formatPhoneDisplay } from "@/lib/recordingUtils";
 import { buildSearchExamples } from "@/lib/searchExamples";
 import { RecordingRowsSkeleton, RecordingCardsSkeleton } from "@/components/recordings/RecordingSkeletons";
+import useIsSystemAdmin from "@/hooks/useIsSystemAdmin";
 
 export default function Home() {
   const [recordings, setRecordings] = useState([]);
@@ -29,7 +30,7 @@ export default function Home() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [hasSettings, setHasSettings] = useState(false);
   const [hasGreen, setHasGreen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAdmin } = useIsSystemAdmin();
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [suggestions, setSuggestions] = useState(SEARCH_SUGGESTIONS);
@@ -115,7 +116,6 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       try {
-        base44.auth.me().then((u) => setIsAdmin(u?.role === "admin")).catch(() => {});
         const rows = await base44.entities.UserSettings.filter({}, "-updated_date", 1);
         setHasSettings(!!rows?.[0]?.exmToken);
         setHasGreen(!!(rows?.[0]?.greenInstanceId && rows?.[0]?.greenToken));

@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import { Menu, Loader2, Download, History, Users, LogOut, Building2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import useIsSystemAdmin from "@/hooks/useIsSystemAdmin";
 
 export default function AppMenuSheet({ onExport, exporting }) {
   const [open, setOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAdmin } = useIsSystemAdmin();
   const [client, setClient] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then((u) => setIsAdmin(u?.role === "admin")).catch(() => {});
     base44.entities.UserSettings.filter({}, "-updated_date", 1)
       .then((rows) => setClient(rows?.[0] || null))
       .catch(() => {});

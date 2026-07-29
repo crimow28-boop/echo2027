@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader2, Plus, ShieldAlert } from "lucide-react";
 import ClientConfigForm from "@/components/admin/ClientConfigForm";
 import ClientConfigRow from "@/components/admin/ClientConfigRow";
+import useIsSystemAdmin from "@/hooks/useIsSystemAdmin";
 
 export default function Admin() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAdmin, checked } = useIsSystemAdmin();
   const [configs, setConfigs] = useState([]);
   const [editing, setEditing] = useState(null); // config object | "new" | null
 
@@ -19,17 +20,15 @@ export default function Admin() {
   }, []);
 
   useEffect(() => {
+    if (!checked) return;
     (async () => {
       try {
-        const user = await base44.auth.me();
-        const admin = user?.role === "admin";
-        setIsAdmin(admin);
-        if (admin) await load();
+        if (isAdmin) await load();
       } finally {
         setLoading(false);
       }
     })();
-  }, [load]);
+  }, [checked, isAdmin, load]);
 
   if (loading) {
     return (
