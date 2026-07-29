@@ -45,7 +45,7 @@ export default function History() {
   }, [load]);
 
   return (
-    <div dir="rtl" className="min-h-screen bg-app-gradient text-foreground font-body">
+    <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowRight className="w-4 h-4" />
@@ -57,7 +57,7 @@ export default function History() {
 
         {loading ? (
           <div className="animate-in fade-in duration-200">
-            <div className="hidden md:block mt-8 rounded-2xl border border-border/60 surface-premium overflow-hidden">
+            <div className="hidden md:block mt-8 rounded-xl border border-border bg-card overflow-hidden">
               <table className="w-full text-sm">
                 <tbody>
                   <RecordingRowsSkeleton />
@@ -72,7 +72,7 @@ export default function History() {
           <p className="py-20 text-muted-foreground text-sm">אין שיחות להצגה</p>
         ) : (
           <div className="animate-in fade-in duration-200">
-            <div className="hidden md:block mt-8 rounded-2xl border border-border/60 surface-premium overflow-hidden">
+            <div className="hidden md:block mt-8 rounded-xl border border-border bg-card overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-muted/40 border-b border-border">
                   <tr className="text-right">
