@@ -10,7 +10,8 @@ const fmt = (s) => {
 
 const BARS = [6, 12, 8, 16, 10, 20, 14, 9, 18, 11, 7, 15, 19, 10, 13, 8, 16, 12, 6, 14, 9, 17, 11, 7];
 
-export default function WhatsAppChatPreview({ recording, message }) {
+export default function WhatsAppChatPreview({ recording, message, read = false }) {
+  const tickClass = `w-3 h-3 transition-colors duration-500 ${read ? "text-[#53bdeb]" : "text-[#8696a0]"}`;
   const time = new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
   const name = recording?.callerFriendly || formatPhoneDisplay(recording?.callerNumber || "");
 
@@ -38,7 +39,7 @@ export default function WhatsAppChatPreview({ recording, message }) {
             </p>
             <div className="mt-0.5 flex items-center justify-start gap-1 text-[10px] text-[#667781]">
               <span dir="ltr">{time}</span>
-              <CheckCheck className="w-3 h-3 text-[#53bdeb]" />
+              <CheckCheck className={tickClass} />
             </div>
           </div>
         </div>
@@ -65,7 +66,7 @@ export default function WhatsAppChatPreview({ recording, message }) {
               <span dir="ltr">{fmt(recording?.duration)}</span>
               <span className="flex items-center gap-1">
                 <span dir="ltr">{time}</span>
-                <CheckCheck className="w-3 h-3 text-[#53bdeb]" />
+                <CheckCheck className={tickClass} />
               </span>
             </div>
           </div>
