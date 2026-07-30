@@ -5,7 +5,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import WhatsAppBubble from "@/components/recordings/WhatsAppBubble";
-import { buildRecordingMessage } from "@/lib/messageTemplate";
+import { buildRecordingMessage, isMissedCall } from "@/lib/messageTemplate";
 
 export default function SendConfirmDialog({ recording, sending, onConfirm, onClose }) {
   const open = !!recording;
@@ -65,7 +65,9 @@ export default function SendConfirmDialog({ recording, sending, onConfirm, onClo
             {editing ? <Check className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
             {editing ? "סיום עריכה" : "עריכת ההודעה"}
           </button>
-          <span className="text-xs text-muted-foreground">הקישור יוצר אוטומטית בשליחה</span>
+          <span className="text-xs text-muted-foreground">
+            {r && isMissedCall(r) ? "שיחה שלא נענתה · ללא הקלטה" : "הקישור יוצר אוטומטית בשליחה"}
+          </span>
         </div>
 
         <div className="flex gap-3 p-5 pt-2">

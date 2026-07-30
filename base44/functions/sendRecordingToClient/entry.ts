@@ -24,13 +24,15 @@ export default async function(req) {
 
     // Fetch a permanent public recording URL from exm.co.il (ttl=0, no time limit)
     // using the calling user's own EXM token, so the client can open the link anytime.
+    // 0-second calls were never answered: no recording, send a call-back message.
+    const missed = !Number(recording.duration);
     let recordingUrl = recording.recordingUrl;
-    if (recording.externalId) {
+    if (!missed && recording.externalId) {
       const urls = await getRecordingUrls(settings.exmToken, [recording.externalId], 0);
       const found = urls.find((u) => u.id === recording.externalId && u.code === 0);
       if (found && found.url) recordingUrl = found.url;
     }
-    if (!recordingUrl) return Response.json({ error: 'No recording available for this call' }, { status: 400 });
+    if (!missed && !recordingUrl) return Response.json({ error: 'No recording available for this call' }, { status: 400 });
 
     const sendMessageUrl = greenApiUrl(settings, "sendMessage");
     if (!sendMessageUrl) return Response.json({ error: 'NO_GREEN_API' }, { status: 400 });
@@ -54,8 +56,28 @@ export default async function(req) {
         ? `${digits.slice(0, 3)}${"*".repeat(digits.length - 5)}${digits.slice(-2)}`
         : digits;
 
+    const missedFallback = recording.callType === "outgoing"
+      ? [
+          `שלום,`,
+          `ניסינו להשיג אותך בטלפון ולא הצלחנו.`,
+          `נשמח שתחזור אלינו בהזדמנות הראשונה, או פשוט להשיב להודעה זו.`,
+          ``,
+          `בברכה,`,
+          `${businessName}`
+        ].join("\n")
+      : [
+          `שלום,`,
+          `ראינו שהתקשרת ולא הצלחנו לענות.`,
+          `נחזור אליך בהקדם — אפשר גם להשיב להודעה זו ונטפל בפנייה.`,
+          ``,
+          `בברכה,`,
+          `${businessName}`
+        ].join("\n");
+
     const customMessage = typeof body?.message === "string" ? body.message.trim() : "";
-    const caption = customMessage
+    const caption = missed
+      ? (customMessage || missedFallback)
+      : customMessage
       ? (customMessage.includes("{{link}}")
           ? customMessage.replaceAll("{{link}}", recordingUrl)
           : `${customMessage}\n\n${recordingUrl}`)
