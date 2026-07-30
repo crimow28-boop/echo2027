@@ -35,20 +35,62 @@
   ],
   "rls": {
     "read": {
-      "user_condition": {
-        "role": "admin"
-      }
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "email": "imtidharcrimow@gmail.com"
+          }
+        },
+        {
+          "user_condition": {
+            "email": "tidharben@tidharben.com"
+          }
+        }
+      ]
     },
     "create": false,
     "update": {
-      "user_condition": {
-        "role": "admin"
-      }
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "email": "imtidharcrimow@gmail.com"
+          }
+        },
+        {
+          "user_condition": {
+            "email": "tidharben@tidharben.com"
+          }
+        }
+      ]
     },
     "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "email": "imtidharcrimow@gmail.com"
+          }
+        },
+        {
+          "user_condition": {
+            "email": "tidharben@tidharben.com"
+          }
+        }
+      ]
     }
   }
 }
