@@ -18,6 +18,8 @@ import { RecordingRowsSkeleton, RecordingCardsSkeleton } from "@/components/reco
 import useIsSystemAdmin from "@/hooks/useIsSystemAdmin";
 import usePrivateContacts from "@/hooks/usePrivateContacts";
 import HideContactDialog from "@/components/recordings/HideContactDialog";
+import HistoryReveal from "@/components/home/HistoryReveal";
+import ScrollHint from "@/components/home/ScrollHint";
 
 export default function Home() {
   const [allRecordings, setRecordings] = useState([]);
@@ -61,6 +63,7 @@ export default function Home() {
   };
   const inFlightRef = useRef(false);
   const reloadTimerRef = useRef(null);
+  const historyRef = useRef(null);
 
   const hasSearch = debouncedSearch.trim().length > 0;
 
@@ -358,7 +361,24 @@ export default function Home() {
               </div>
             </div>
           )}
+
+          {!hasSearch && (
+            <ScrollHint
+              onClick={() => historyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            />
+          )}
         </div>
+
+        {/* Call history, revealed on scroll */}
+        {!hasSearch && (
+          <HistoryReveal
+            ref={historyRef}
+            sendingId={sendingId}
+            onSend={(rec) => setPending(rec)}
+            onHide={setHidePending}
+            isPrivate={isPrivate}
+          />
+        )}
 
         {/* Results */}
         {hasSearch ? (
