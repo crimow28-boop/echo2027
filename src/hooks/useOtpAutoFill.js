@@ -35,21 +35,13 @@ export default function useOtpAutoFill(onCode, active) {
         /* clipboard permission not granted — user can paste manually */
       }
     };
-    const onVisible = () => {
-      if (document.visibilityState === "visible") readClipboard();
-    };
-
     readClipboard();
     window.addEventListener("focus", readClipboard);
-    document.addEventListener("visibilitychange", onVisible);
-    const poll = setInterval(readClipboard, 1500);
 
     return () => {
       cancelled = true;
       controller?.abort();
-      clearInterval(poll);
       window.removeEventListener("focus", readClipboard);
-      document.removeEventListener("visibilitychange", onVisible);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
