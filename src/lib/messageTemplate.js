@@ -2,7 +2,32 @@
 // recording link on the server, where the permanent URL is generated.
 export const LINK_TOKEN = "{{link}}";
 
-export function buildRecordingMessage(recording, businessName) {
+export const DEFAULT_TEMPLATE = [
+  `שלום,`,
+  `להלן הקישור להקלטת השיחה שהתקיימה עם נציג/ת {{business}}:`,
+  LINK_TOKEN,
+  ``,
+  `📅 תאריך השיחה: {{date}}`,
+  `🕒 שעת השיחה: {{time}}`,
+  `⏱️ משך השיחה: {{duration}}`,
+  ``,
+  `הקישור נשמר ללא מגבלת זמן — מומלץ לשמור אותו לצורך עיון עתידי.`,
+  ``,
+  `לכל שאלה או בקשה נוספת, ניתן להשיב להודעה זו.`,
+  ``,
+  `בברכה,`,
+  `{{business}}`
+].join("\n");
+
+export const TEMPLATE_TOKENS = [
+  { token: "{{link}}", label: "קישור להקלטה" },
+  { token: "{{business}}", label: "שם העסק" },
+  { token: "{{date}}", label: "תאריך השיחה" },
+  { token: "{{time}}", label: "שעת השיחה" },
+  { token: "{{duration}}", label: "משך השיחה" }
+];
+
+export function buildRecordingMessage(recording, businessName, template) {
   if (!recording) return "";
   const biz = businessName || "העסק שלנו";
   const d = recording.callDate ? new Date(recording.callDate) : null;
@@ -13,20 +38,9 @@ export function buildRecordingMessage(recording, businessName) {
   const rem = secs % 60;
   const durationStr = mins > 0 ? `${mins} דקות ו-${rem} שניות` : `${rem} שניות`;
 
-  return [
-    `שלום,`,
-    `להלן הקישור להקלטת השיחה שהתקיימה עם נציג/ת ${biz}:`,
-    LINK_TOKEN,
-    ``,
-    `📅 תאריך השיחה: ${dateStr}`,
-    `🕒 שעת השיחה: ${timeStr}`,
-    `⏱️ משך השיחה: ${durationStr}`,
-    ``,
-    `הקישור נשמר ללא מגבלת זמן — מומלץ לשמור אותו לצורך עיון עתידי.`,
-    ``,
-    `לכל שאלה או בקשה נוספת, ניתן להשיב להודעה זו.`,
-    ``,
-    `בברכה,`,
-    `${biz}`
-  ].join("\n");
+  return (template || DEFAULT_TEMPLATE)
+    .replaceAll("{{business}}", biz)
+    .replaceAll("{{date}}", dateStr)
+    .replaceAll("{{time}}", timeStr)
+    .replaceAll("{{duration}}", durationStr);
 }

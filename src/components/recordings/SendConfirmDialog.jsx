@@ -13,18 +13,22 @@ export default function SendConfirmDialog({ recording, sending, onConfirm, onClo
   const [businessName, setBusinessName] = useState("");
   const [message, setMessage] = useState("");
   const [editing, setEditing] = useState(false);
+  const [template, setTemplate] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then((u) => setBusinessName(u?.full_name || "")).catch(() => {});
+    base44.entities.MessageTemplate.list("-updated_date", 1)
+      .then((rows) => setTemplate(rows?.[0]?.body || null))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
     if (r) {
-      setMessage(buildRecordingMessage(r, businessName));
+      setMessage(buildRecordingMessage(r, businessName, template));
       setEditing(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [r?.id, businessName]);
+  }, [r?.id, businessName, template]);
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>

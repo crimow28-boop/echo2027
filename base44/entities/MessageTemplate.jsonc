@@ -1,0 +1,27 @@
+{
+  "name": "MessageTemplate",
+  "type": "object",
+  "properties": {
+    "body": {
+      "type": "string",
+      "title": "Message Body Template"
+    }
+  },
+  "required": [
+    "body"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}
