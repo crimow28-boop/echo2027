@@ -4,7 +4,7 @@ import { MESSAGE_KINDS } from "@/lib/messageTemplate";
 
 export default function MessageKindTabs({ value, onChange }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-3 sm:grid-cols-3">
       {MESSAGE_KINDS.map((k) => {
         const active = k.id === value;
         return (

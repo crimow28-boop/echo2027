@@ -6,7 +6,8 @@
       "type": "string",
       "enum": [
         "recording",
-        "missed"
+        "missed",
+        "no_answer"
       ],
       "default": "recording",
       "title": "Message Kind"
