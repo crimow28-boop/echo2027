@@ -2,6 +2,15 @@
   "name": "MessageTemplate",
   "type": "object",
   "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "recording",
+        "missed"
+      ],
+      "default": "recording",
+      "title": "Message Kind"
+    },
     "body": {
       "type": "string",
       "title": "Message Body Template"

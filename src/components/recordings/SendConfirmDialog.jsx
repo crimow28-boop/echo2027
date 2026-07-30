@@ -5,7 +5,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import WhatsAppBubble from "@/components/recordings/WhatsAppBubble";
-import { buildRecordingMessage, isMissedCall } from "@/lib/messageTemplate";
+import { buildRecordingMessage, isMissedCall, loadTemplates } from "@/lib/messageTemplate";
 
 export default function SendConfirmDialog({ recording, sending, onConfirm, onClose }) {
   const open = !!recording;
@@ -13,22 +13,24 @@ export default function SendConfirmDialog({ recording, sending, onConfirm, onClo
   const [businessName, setBusinessName] = useState("");
   const [message, setMessage] = useState("");
   const [editing, setEditing] = useState(false);
-  const [template, setTemplate] = useState(null);
+  const [templates, setTemplates] = useState({});
 
   useEffect(() => {
     base44.auth.me().then((u) => setBusinessName(u?.full_name || "")).catch(() => {});
-    base44.entities.MessageTemplate.list("-updated_date", 1)
-      .then((rows) => setTemplate(rows?.[0]?.body || null))
-      .catch(() => {});
+    loadTemplates(base44).then((map) => {
+      const bodies = {};
+      Object.entries(map).forEach(([kind, row]) => { if (row?.body) bodies[kind] = row.body; });
+      setTemplates(bodies);
+    });
   }, []);
 
   useEffect(() => {
     if (r) {
-      setMessage(buildRecordingMessage(r, businessName, template));
+      setMessage(buildRecordingMessage(r, businessName, templates));
       setEditing(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [r?.id, businessName, template]);
+  }, [r?.id, businessName, templates]);
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>

@@ -1,51 +1,46 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Loader2, RotateCcw, Save, MessageSquare } from "lucide-react";
+import { ArrowRight, Loader2, MessageSquare } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import TemplateTokenHints from "@/components/template/TemplateTokenHints";
-import WhatsAppBubble from "@/components/recordings/WhatsAppBubble";
-import { DEFAULT_TEMPLATE, buildRecordingMessage } from "@/lib/messageTemplate";
-
-const SAMPLE = { callDate: new Date().toISOString(), duration: 95 };
+import MessageKindTabs from "@/components/template/MessageKindTabs";
+import MessageTemplateEditor from "@/components/template/MessageTemplateEditor";
+import { MESSAGE_KINDS, loadTemplates } from "@/lib/messageTemplate";
 
 export default function MessageTemplatePage() {
-  const [record, setRecord] = useState(null);
-  const [body, setBody] = useState(DEFAULT_TEMPLATE);
+  const [selected, setSelected] = useState("recording");
+  const [records, setRecords] = useState({});
+  const [bodies, setBodies] = useState({});
   const [businessName, setBusinessName] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const areaRef = useRef(null);
+  const [savedKind, setSavedKind] = useState(null);
 
   useEffect(() => {
-    Promise.all([
-      base44.entities.MessageTemplate.list("-updated_date", 1).catch(() => []),
-      base44.auth.me().catch(() => null)
-    ]).then(([rows, user]) => {
-      const row = rows?.[0] || null;
-      setRecord(row);
-      if (row?.body) setBody(row.body);
+    Promise.all([loadTemplates(base44), base44.auth.me().catch(() => null)]).then(([map, user]) => {
+      setRecords(map);
+      const next = {};
+      MESSAGE_KINDS.forEach((k) => {
+        next[k.id] = map[k.id]?.body || k.defaultBody;
+      });
+      setBodies(next);
       setBusinessName(user?.full_name || "");
       setLoading(false);
     });
   }, []);
 
-  const insert = (token) => {
-    const el = areaRef.current;
-    if (!el) return setBody((b) => b + token);
-    const start = el.selectionStart ?? body.length;
-    setBody(body.slice(0, start) + token + body.slice(el.selectionEnd ?? start));
-    setSaved(false);
-  };
+  const kind = MESSAGE_KINDS.find((k) => k.id === selected);
 
   const save = async () => {
     setSaving(true);
     try {
-      if (record) await base44.entities.MessageTemplate.update(record.id, { body });
-      else setRecord(await base44.entities.MessageTemplate.create({ body }));
-      setSaved(true);
+      const body = bodies[selected];
+      const existing = records[selected];
+      if (existing) await base44.entities.MessageTemplate.update(existing.id, { body });
+      else {
+        const created = await base44.entities.MessageTemplate.create({ kind: selected, body });
+        setRecords((r) => ({ ...r, [selected]: created }));
+      }
+      setSavedKind(selected);
     } finally {
       setSaving(false);
     }
@@ -58,10 +53,10 @@ export default function MessageTemplatePage() {
           <div>
             <h1 className="font-heading text-xl font-bold flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-primary" />
-              ההודעה שנשלחת ללקוח
+              ההודעות שנשלחות ללקוח
             </h1>
             <p className="mt-1 text-xs text-muted-foreground">
-              זו ברירת המחדל שתופיע בכל שליחה. ניתן לערוך גם לפני כל שליחה בודדת.
+              בוחרים סוג הודעה, עורכים את הטקסט ושומרים. אפשר לערוך גם לפני כל שליחה.
             </p>
           </div>
           <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
@@ -75,37 +70,19 @@ export default function MessageTemplatePage() {
           </div>
         ) : (
           <>
-            <div className="mt-6 space-y-3">
-              <TemplateTokenHints onInsert={insert} />
-              <Textarea
-                ref={areaRef}
-                dir="rtl"
-                rows={14}
-                value={body}
-                onChange={(e) => { setBody(e.target.value); setSaved(false); }}
-                style={{ unicodeBidi: "plaintext" }}
-                className="text-right text-[13px] leading-relaxed rounded-xl"
+            <div className="mt-6">
+              <MessageKindTabs value={selected} onChange={(id) => { setSelected(id); setSavedKind(null); }} />
+            </div>
+            <div className="mt-6">
+              <MessageTemplateEditor
+                kind={kind}
+                body={bodies[selected] || ""}
+                onChange={(v) => { setBodies((b) => ({ ...b, [selected]: v })); setSavedKind(null); }}
+                onSave={save}
+                saving={saving}
+                saved={savedKind === selected}
+                businessName={businessName}
               />
-            </div>
-
-            <div className="mt-4 flex items-center gap-3">
-              <Button onClick={save} disabled={saving} className="gap-2">
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                שמירה
-              </Button>
-              <Button
-                variant="outline"
-                className="gap-2 shadow-none"
-                onClick={() => { setBody(DEFAULT_TEMPLATE); setSaved(false); }}
-              >
-                <RotateCcw className="w-4 h-4" /> שחזור ברירת מחדל
-              </Button>
-              {saved && <span className="text-xs text-primary">נשמר</span>}
-            </div>
-
-            <div className="mt-8">
-              <p className="mb-2 text-xs text-muted-foreground">תצוגה מקדימה</p>
-              <WhatsAppBubble message={buildRecordingMessage(SAMPLE, businessName, body)} />
             </div>
           </>
         )}
