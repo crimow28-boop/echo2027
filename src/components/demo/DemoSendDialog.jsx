@@ -56,7 +56,7 @@ export default function DemoSendDialog({ recording, onConfirm, onClose }) {
         {sent ? (
           <div className="flex items-center justify-center gap-2 pt-1 text-sm text-primary">
             <CheckCheck className={`w-4 h-4 transition-colors duration-500 ${read ? "text-[#53bdeb]" : "text-muted-foreground"}`} />
-            {read ? "ההודעה נשלחה ונקראה" : "ההודעה נשלחה"}
+            ההודעה נשלחה
           </div>
         ) : (
           <div className="flex items-center justify-between gap-3 pt-1">
