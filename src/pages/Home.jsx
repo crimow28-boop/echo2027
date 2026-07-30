@@ -19,7 +19,6 @@ import useIsSystemAdmin from "@/hooks/useIsSystemAdmin";
 import usePrivateContacts from "@/hooks/usePrivateContacts";
 import HideContactDialog from "@/components/recordings/HideContactDialog";
 import HistoryReveal from "@/components/home/HistoryReveal";
-import ScrollHint from "@/components/home/ScrollHint";
 
 export default function Home() {
   const [allRecordings, setRecordings] = useState([]);
@@ -360,12 +359,6 @@ export default function Home() {
                 })}
               </div>
             </div>
-          )}
-
-          {!hasSearch && (
-            <ScrollHint
-              onClick={() => historyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
-            />
           )}
         </div>
 
