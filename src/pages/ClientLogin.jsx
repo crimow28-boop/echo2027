@@ -119,6 +119,10 @@ export default function ClientLogin() {
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
                 placeholder="512345678"
+                name="business-id"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
               />
               <LoginField
                 id="phone"
@@ -127,6 +131,10 @@ export default function ClientLogin() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="0501234567"
+                name="client-phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="off"
               />
               {error && <p className="text-xs text-destructive">{error}</p>}
               <Button type="submit" disabled={busy} className={buttonClass}>

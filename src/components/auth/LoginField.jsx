@@ -13,6 +13,10 @@ export default function LoginField({ id, label, icon: Icon, inputClassName = "",
         <Input
           id={id}
           dir={dir}
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+          data-form-type="other"
           style={{ unicodeBidi: "plaintext" }}
           className={`h-14 pl-16 pr-5 text-right text-lg leading-normal bg-transparent border-0 shadow-none rounded-2xl focus-visible:ring-0 ${inputClassName}`}
           {...props}
