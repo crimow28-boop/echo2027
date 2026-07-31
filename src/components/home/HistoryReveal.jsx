@@ -51,6 +51,14 @@ const HistoryReveal = React.forwardRef(function HistoryReveal(
     load(true);
   }, [load]);
 
+  // Keep rows in sync (e.g. mark as sent right after a send).
+  useEffect(() => {
+    return base44.entities.CallRecording.subscribe((event) => {
+      if (event?.type !== "update" || !event.data?.id) return;
+      setRecordings((prev) => prev.map((r) => (r.id === event.data.id ? { ...r, ...event.data } : r)));
+    });
+  }, []);
+
   return (
     <section ref={ref} className="mt-24 pb-16">
       <motion.div style={{ opacity, y, scale }} className="origin-top">
