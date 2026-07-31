@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 
 const WORDS = ["משה כהן", "מוסך אלון", "052", "רונית שגב"];
 
-// Types a name, pauses (so results show), deletes it, moves to the next one.
+// Types a name, holds it (results shown), deletes it, moves on.
+// `settled` is true only while a word is fully typed, so results don't flicker.
 export default function useDemoTypewriter(active) {
   const [text, setText] = useState("");
+  const [settled, setSettled] = useState(false);
   const state = useRef({ word: 0, char: 0, deleting: false });
 
   useEffect(() => {
@@ -14,21 +16,23 @@ export default function useDemoTypewriter(active) {
     const tick = () => {
       const s = state.current;
       const word = WORDS[s.word % WORDS.length];
-      let delay = 110;
+      let delay = 150;
 
       if (!s.deleting) {
         s.char += 1;
         if (s.char >= word.length) {
           s.deleting = true;
-          delay = 2200;
+          setSettled(true);
+          delay = 3600;
         }
       } else {
+        setSettled(false);
         s.char -= 1;
-        delay = 55;
+        delay = 80;
         if (s.char <= 0) {
           s.deleting = false;
           s.word += 1;
-          delay = 500;
+          delay = 900;
         }
       }
 
@@ -36,9 +40,9 @@ export default function useDemoTypewriter(active) {
       timer = setTimeout(tick, delay);
     };
 
-    timer = setTimeout(tick, 700);
+    timer = setTimeout(tick, 900);
     return () => clearTimeout(timer);
   }, [active]);
 
-  return text;
+  return { text, settled };
 }

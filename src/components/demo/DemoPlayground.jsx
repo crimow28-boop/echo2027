@@ -12,10 +12,11 @@ export default function DemoPlayground() {
   const [sentIds, setSentIds] = useState([]);
   const [pending, setPending] = useState(null);
 
-  const typed = useDemoTypewriter(!touched);
+  const { text: typed, settled } = useDemoTypewriter(!touched);
   const value = touched ? search : typed;
+  const showResults = touched ? Boolean(search.trim()) : settled;
 
-  const results = useMemo(() => filterDemoRecordings(value), [value]);
+  const results = useMemo(() => filterDemoRecordings(value).slice(0, 3), [value]);
 
   return (
     <div className="rounded-[1.75rem] bg-card p-4 sm:p-6 ring-1 ring-black/5 shadow-[0_28px_60px_-32px_rgba(15,23,42,0.28)]">
@@ -31,6 +32,12 @@ export default function DemoPlayground() {
           onChange={(e) => {
             setTouched(true);
             setSearch(e.target.value);
+          }}
+          onFocus={() => {
+            if (!touched) {
+              setTouched(true);
+              setSearch("");
+            }
           }}
           placeholder="שם, מספר טלפון או תאריך (למשל 28.07)"
           dir="auto"
@@ -63,13 +70,11 @@ export default function DemoPlayground() {
         )}
       </div>
 
-      {value.trim() && (
-        <>
-          <p className="mt-4 text-xs text-muted-foreground">נמצאו {results.length} שיחות</p>
-
-          <div className="mt-3 space-y-3">
+      <div className="mt-4 min-h-[220px]">
+        {showResults ? (
+          <div className="space-y-3 animate-in fade-in duration-500">
             {results.length === 0 ? (
-              <p className="py-10 text-sm text-muted-foreground text-center">אין שיחות כאלה — נסו "משה" או "052"</p>
+              <p className="py-12 text-sm text-muted-foreground text-center">אין שיחות כאלה — נסו "משה" או "052"</p>
             ) : (
               results.map((r) => (
                 <DemoRecordingCard
@@ -81,8 +86,12 @@ export default function DemoPlayground() {
               ))
             )}
           </div>
-        </>
-      )}
+        ) : (
+          <p className="py-12 text-xs text-muted-foreground text-center">
+            אפשר גם לחפש בעצמכם — לחצו על שדה החיפוש
+          </p>
+        )}
+      </div>
 
       <DemoSendDialog
         recording={pending}
