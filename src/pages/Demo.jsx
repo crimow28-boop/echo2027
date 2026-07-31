@@ -65,7 +65,7 @@ export default function Demo() {
 
         <section className="rounded-2xl border border-border bg-card p-6 text-center">
           <p className="font-heading text-xl">מוכנים להתחיל?</p>
-          <p className="mt-2 text-sm text-muted-foreground">פותחים חשבון בכמה פרטים, או מתחברים עם מספר החשבון שקיבלתם.</p>
+          <p className="mt-2 text-sm text-muted-foreground">מזינים מספר טלפון וזהו — נכנסים או פותחים חשבון.</p>
           <div className="mt-5">
             <DemoCtaButtons size="sm" />
           </div>

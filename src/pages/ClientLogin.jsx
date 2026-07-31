@@ -6,14 +6,13 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import LoginField from "@/components/auth/LoginField";
 import EchoLoadingScreen from "@/components/loading/EchoLoadingScreen";
-import { Link } from "react-router-dom";
-import { Loader2, ArrowRight, MessageCircle, LogIn, Hash, Phone, KeyRound, ShieldCheck, Sparkles } from "lucide-react";
+import SignupPrompt from "@/components/auth/SignupPrompt";
+import { Loader2, ArrowRight, MessageCircle, LogIn, Phone, KeyRound, ShieldCheck } from "lucide-react";
 
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
 
 export default function ClientLogin() {
   const [step, setStep] = useState("identify");
-  const [accountNumber, setAccountNumber] = useState("");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [hint, setHint] = useState("");
@@ -32,10 +31,7 @@ export default function ClientLogin() {
         window.location.href = "/";
         return;
       }
-      if (saved) {
-        setAccountNumber(saved.accountNumber || "");
-        setPhone(saved.phone || "");
-      }
+      if (saved) setPhone(saved.phone || "");
       setChecking(false);
     })();
   }, []);
@@ -46,7 +42,11 @@ export default function ClientLogin() {
     setError("");
     setBusy(true);
     try {
-      const res = await base44.functions.invoke("requestLoginCode", { accountNumber, phone });
+      const res = await base44.functions.invoke("requestLoginCode", { phone });
+      if (res.data?.notRegistered) {
+        setStep("signup");
+        return;
+      }
       if (!res.data?.success) throw new Error(res.data?.error || "שליחת הקוד נכשלה");
       setHint(res.data.phoneHint || "");
       setStep("code");
@@ -63,10 +63,10 @@ export default function ClientLogin() {
     setError("");
     setBusy(true);
     try {
-      const res = await base44.functions.invoke("verifyLoginCode", { accountNumber, phone, code: value });
+      const res = await base44.functions.invoke("verifyLoginCode", { phone, code: value });
       if (!res.data?.success) throw new Error(res.data?.error || "הקוד אינו תקין");
       await base44.auth.loginViaEmailPassword(res.data.email, res.data.password);
-      rememberClient(accountNumber, phone);
+      rememberClient("", phone);
       setEntering(true);
       setTimeout(() => { window.location.href = "/"; }, 900);
     } catch (err) {
@@ -100,30 +100,20 @@ export default function ClientLogin() {
 
         <div className="mt-10 text-center">
           <h1 className="font-heading text-4xl tracking-tight">
-            {step === "identify" ? "כניסה למערכת" : "הזינו את הקוד"}
+            {step === "identify" ? "כניסה למערכת" : step === "signup" ? "פתיחת חשבון" : "הזינו את הקוד"}
           </h1>
           <p className="mt-4 text-sm sm:text-base leading-relaxed text-muted-foreground max-w-xs mx-auto">
             {step === "identify"
-              ? "הזינו את ח.פ העסק ומספר הטלפון שלכם כדי להתחבר ל-Echo."
-              : `שלחנו קוד בוואטסאפ למספר שמסתיים ב-${hint}. הקוד בתוקף ל-5 דקות.`}
+              ? "הזינו את מספר הטלפון שלכם כדי להתחבר ל-Echo."
+              : step === "signup"
+                ? "עוד פרט קטן ואנחנו מטפלים בשאר."
+                : `שלחנו קוד בוואטסאפ למספר שמסתיים ב-${hint}. הקוד בתוקף ל-5 דקות.`}
           </p>
         </div>
 
         <div className="mt-10 rounded-[2rem] bg-card p-6 sm:p-7 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.22)]">
           {step === "identify" ? (
             <form onSubmit={sendCode} className="space-y-6">
-              <LoginField
-                id="acc"
-                label="ח.פ העסק"
-                icon={Hash}
-                value={accountNumber}
-                onChange={(e) => setAccountNumber(e.target.value)}
-                placeholder="512345678"
-                name="business-id"
-                type="text"
-                inputMode="numeric"
-                autoComplete="off"
-              />
               <LoginField
                 id="phone"
                 label="מספר טלפון"
@@ -138,10 +128,12 @@ export default function ClientLogin() {
               />
               {error && <p className="text-xs text-destructive">{error}</p>}
               <Button type="submit" disabled={busy} className={buttonClass}>
-                שליחת קוד בוואטסאפ
+                המשך
                 {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <MessageCircle className="w-5 h-5" />}
               </Button>
             </form>
+          ) : step === "signup" ? (
+            <SignupPrompt phone={phone} onBack={() => setStep("identify")} />
           ) : (
             <form
               onSubmit={(e) => { e.preventDefault(); verify(code); }}
@@ -181,19 +173,6 @@ export default function ClientLogin() {
             </form>
           )}
         </div>
-
-        {step === "identify" && (
-          <div className="mt-6 rounded-2xl bg-card p-5 text-center shadow-[0_10px_30px_-22px_rgba(0,0,0,0.25)]">
-            <p className="text-sm font-medium">אין לי חשבון עדיין</p>
-            <p className="mt-1.5 text-xs text-muted-foreground">משאירים פרטים ואנחנו פותחים לכם חשבון.</p>
-            <Button asChild variant="outline" className="mt-4 w-full gap-2 h-12 rounded-full text-sm">
-              <Link to="/signup">
-                <Sparkles className="w-4 h-4" />
-                פתיחת חשבון חדש
-              </Link>
-            </Button>
-          </div>
-        )}
 
         <div className="mt-10 flex flex-col items-center gap-2.5">
           <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary/10 text-primary">

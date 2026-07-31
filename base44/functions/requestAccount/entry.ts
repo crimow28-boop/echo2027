@@ -97,8 +97,8 @@ export default async function (req) {
     const phone = (body.phone || "").trim();
     const notes = (body.notes || "").trim();
 
-    if (!businessId || !contactName || !phone) {
-      return Response.json({ success: false, error: "יש למלא ח.פ, שם מלא וטלפון" }, { status: 400 });
+    if (!contactName || !phone) {
+      return Response.json({ success: false, error: "יש למלא שם מלא וטלפון" }, { status: 400 });
     }
 
     await base44.asServiceRole.entities.AccountRequest.create({

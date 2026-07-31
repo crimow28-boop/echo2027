@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { findClientConfig, normalizePhone } from "../../shared/clientLogin.ts";
+import { findClientByPhone, normalizePhone } from "../../shared/clientLogin.ts";
 
 // Public endpoint: verify the WhatsApp one-time code and hand back the hidden
 // platform credentials so the browser can complete the login.
@@ -8,13 +8,13 @@ export default async function(req) {
     const base44 = createClientFromRequest(req);
     const body = await req.json().catch(() => ({}));
     const code = String(body?.code || "").trim();
-    const config = await findClientConfig(base44, body?.accountNumber, body?.phone);
+    const config = await findClientByPhone(base44, body?.phone);
     if (!config || !code) {
       return Response.json({ success: false, error: 'הקוד שהוזן אינו תקין' });
     }
 
     const rows = await base44.asServiceRole.entities.LoginCode.filter(
-      { accountNumber: String(body.accountNumber).trim(), phone: normalizePhone(config.clientPhone), code, used: false },
+      { phone: normalizePhone(config.clientPhone), code, used: false },
       "-created_date",
       1
     );

@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { greenApiUrl } from "../../shared/userSettings.ts";
-import { findClientConfig, generateCode, normalizePhone } from "../../shared/clientLogin.ts";
+import { findClientByPhone, generateCode, normalizePhone } from "../../shared/clientLogin.ts";
 
 // Public endpoint: given an account number + phone, send a one-time login code
 // over WhatsApp (Green API) to that phone. Never reveals whether the pair exists
@@ -9,9 +9,9 @@ export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json().catch(() => ({}));
-    const config = await findClientConfig(base44, body?.accountNumber, body?.phone);
+    const config = await findClientByPhone(base44, body?.phone);
     if (!config) {
-      return Response.json({ success: false, error: 'מספר החשבון או הטלפון אינם תואמים' });
+      return Response.json({ success: false, notRegistered: true, error: 'המספר אינו רשום במערכת' });
     }
 
     const url = greenApiUrl(config, "sendMessage");
@@ -36,7 +36,7 @@ export default async function(req) {
     }
 
     await base44.asServiceRole.entities.LoginCode.create({
-      accountNumber: String(body.accountNumber).trim(),
+      accountNumber: String(config.accountNumber || "").trim() || phone,
       phone,
       code,
       expiresAt,
