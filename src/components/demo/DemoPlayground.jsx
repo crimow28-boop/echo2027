@@ -10,7 +10,11 @@ export default function DemoPlayground() {
   const [sentIds, setSentIds] = useState([]);
   const [pending, setPending] = useState(null);
 
-  const results = useMemo(() => filterDemoRecordings(search), [search]);
+  // Demo always shows results — any free text falls back to the full list.
+  const results = useMemo(() => {
+    const found = filterDemoRecordings(search);
+    return found.length ? found : filterDemoRecordings("");
+  }, [search]);
 
   return (
     <div className="rounded-[1.75rem] bg-card p-4 sm:p-6 ring-1 ring-black/5 shadow-[0_28px_60px_-32px_rgba(15,23,42,0.28)]">
@@ -57,18 +61,14 @@ export default function DemoPlayground() {
           <p className="mt-4 text-xs text-muted-foreground">נמצאו {results.length} שיחות</p>
 
           <div className="mt-3 space-y-3">
-            {results.length === 0 ? (
-              <p className="py-10 text-sm text-muted-foreground text-center">אין שיחות כאלה — נסו "משה" או "052"</p>
-            ) : (
-              results.map((r) => (
-                <DemoRecordingCard
-                  key={r.id}
-                  recording={r}
-                  sent={sentIds.includes(r.id)}
-                  onSend={setPending}
-                />
-              ))
-            )}
+            {results.map((r) => (
+              <DemoRecordingCard
+                key={r.id}
+                recording={r}
+                sent={sentIds.includes(r.id)}
+                onSend={setPending}
+              />
+            ))}
           </div>
         </>
       )}
