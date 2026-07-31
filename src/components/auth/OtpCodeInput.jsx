@@ -11,7 +11,8 @@ export default function OtpCodeInput({ value, onChange, disabled, autoFilled }) 
         disabled={disabled}
         autoFocus
         inputMode="numeric"
-        autoComplete="one-time-code"
+        autoComplete="off"
+        name="otp-manual"
         containerClassName="gap-2"
       >
         <InputOTPGroup className="gap-2">
