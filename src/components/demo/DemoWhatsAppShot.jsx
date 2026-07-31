@@ -1,7 +1,7 @@
 import React from "react";
 import { Image } from "@/components/ui/image";
 
-const SHOT = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/00fba2dac_WhatsAppImage2026-07-31at1257071.jpeg";
+const SHOT = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/fc74ebd5b_WhatsAppImage2026-07-31at131811.jpg";
 
 export default function DemoWhatsAppShot() {
   return (
