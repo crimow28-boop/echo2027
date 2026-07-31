@@ -9,7 +9,7 @@ export default function DemoCtaButtons({ size = "lg" }) {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
       <Button asChild className={`gap-2 ${h} rounded-full px-7 text-sm w-full sm:w-auto`}>
-        <Link to="/signup">מתחילים כאן</Link>
+        <Link to="/signup">מתחילים כאן בחינם</Link>
       </Button>
       <Button asChild variant="outline" className={`gap-2 ${h} rounded-full bg-card px-7 text-sm w-full sm:w-auto`}>
         <Link to="/client-login">
