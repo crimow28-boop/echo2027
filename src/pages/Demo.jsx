@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import DemoCtaButtons from "@/components/demo/DemoCtaButtons";
 import DemoFlowAnimation from "@/components/demo/DemoFlowAnimation";
 import DemoHeader from "@/components/demo/DemoHeader";
+import DemoHeroArt from "@/components/demo/DemoHeroArt";
 import DemoPlayground from "@/components/demo/DemoPlayground";
 import DemoWhatsAppShot from "@/components/demo/DemoWhatsAppShot";
 
@@ -25,6 +26,7 @@ export default function Demo() {
             <DemoCtaButtons />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">פתיחת חשבון בחינם, בלי כרטיס אשראי.</p>
+          <DemoHeroArt />
         </section>
 
         <section>
