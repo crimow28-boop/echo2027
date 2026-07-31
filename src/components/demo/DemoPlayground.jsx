@@ -4,13 +4,18 @@ import { Input } from "@/components/ui/input";
 import { DEMO_SUGGESTIONS, filterDemoRecordings } from "@/lib/demoData";
 import DemoRecordingCard from "@/components/demo/DemoRecordingCard";
 import DemoSendDialog from "@/components/demo/DemoSendDialog";
+import useDemoTypewriter from "@/hooks/useDemoTypewriter";
 
 export default function DemoPlayground() {
   const [search, setSearch] = useState("");
+  const [touched, setTouched] = useState(false);
   const [sentIds, setSentIds] = useState([]);
   const [pending, setPending] = useState(null);
 
-  const results = useMemo(() => filterDemoRecordings(search), [search]);
+  const typed = useDemoTypewriter(!touched);
+  const value = touched ? search : typed;
+
+  const results = useMemo(() => filterDemoRecordings(value), [value]);
 
   return (
     <div className="rounded-[1.75rem] bg-card p-4 sm:p-6 ring-1 ring-black/5 shadow-[0_28px_60px_-32px_rgba(15,23,42,0.28)]">
@@ -22,8 +27,11 @@ export default function DemoPlayground() {
       <div className="relative mt-4">
         <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={value}
+          onChange={(e) => {
+            setTouched(true);
+            setSearch(e.target.value);
+          }}
           placeholder="שם, מספר טלפון או תאריך (למשל 28.07)"
           dir="auto"
           className="h-12 pr-5 pl-11 text-sm rounded-full border-0 bg-card shadow-[0_2px_12px_-8px_rgba(0,0,0,0.2)] focus-visible:ring-0"
@@ -35,13 +43,16 @@ export default function DemoPlayground() {
           <button
             key={s}
             type="button"
-            onClick={() => setSearch(s)}
+            onClick={() => {
+              setTouched(true);
+              setSearch(s);
+            }}
             className="rounded-full bg-muted px-3 py-1.5 text-xs text-foreground hover:bg-accent transition-colors"
           >
             {s}
           </button>
         ))}
-        {search && (
+        {touched && search && (
           <button
             type="button"
             onClick={() => setSearch("")}
@@ -52,7 +63,7 @@ export default function DemoPlayground() {
         )}
       </div>
 
-      {search.trim() && (
+      {value.trim() && (
         <>
           <p className="mt-4 text-xs text-muted-foreground">נמצאו {results.length} שיחות</p>
 
