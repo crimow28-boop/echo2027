@@ -18,8 +18,8 @@ export default function Demo() {
           <img
             src="https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/cd193fd4b_Screenshot2026-07-31at231057-Photoroom.png"
             alt="כל שיחות העסק במקום אחד"
-            className="w-full max-w-md mx-auto h-auto"
-          />
+            className="w-full max-w-md mx-auto h-auto" />
+          
           <p className="mt-5 text-sm sm:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
             חפשו כל שיחה לפי שם, מספר או תאריך, והעבירו אותה ללקוח תוך שניות.
           </p>
@@ -35,7 +35,7 @@ export default function Demo() {
             <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-[11px] tracking-wide text-muted-foreground">
               איך זה עובד
             </span>
-            <p className="mt-4 font-heading text-2xl tracking-tight">כל שיחה נכנסת — נשמרת אצלכם</p>
+            <p className="mt-4 font-heading text-2xl tracking-tight">כל שיחה מוקל אצלכם</p>
             <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground max-w-sm mx-auto">
               השיחה מוקלטת אוטומטית ומגיעה ישר לרשימת השיחות במערכת.
             </p>
