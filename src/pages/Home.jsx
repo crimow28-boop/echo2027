@@ -321,7 +321,7 @@ export default function Home() {
           <img
             src="https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/023ecb0e1_Screenshot2026-07-31at233007-Photoroom.png"
             alt="מצאו כל שיחה, ברגע."
-            className="mx-auto w-full max-w-[13rem] sm:max-w-[16rem] h-auto"
+            className="mx-auto w-full max-w-[16rem] sm:max-w-[20rem] h-auto"
           />
           <p className="mt-6 text-sm sm:text-base text-muted-foreground">חפשו לפי איש קשר, מספר טלפון או תאריך.</p>
 
