@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import LoginField from "@/components/auth/LoginField";
 import EchoLoadingScreen from "@/components/loading/EchoLoadingScreen";
 import SignupPrompt from "@/components/auth/SignupPrompt";
+import PageRise from "@/components/PageRise";
 import { Loader2, ArrowRight, MessageCircle, LogIn, Phone, KeyRound, ShieldCheck } from "lucide-react";
 
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/7557abb16_Screenshot2026-07-31at231525-Photoroom.png";
@@ -95,7 +96,7 @@ export default function ClientLogin() {
 
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body flex items-center justify-center px-5 py-14">
-      <div className="w-full max-w-md text-right">
+      <PageRise className="w-full max-w-md text-right">
         <img src={LOGO} alt="echo" className="h-16 w-auto mx-auto" />
 
         <div className="mt-10 text-center">
@@ -182,7 +183,7 @@ export default function ClientLogin() {
             הפרטים שלכם מאובטחים ונשמרים בצורה מוצפנת.
           </p>
         </div>
-      </div>
+      </PageRise>
     </div>
   );
 }
