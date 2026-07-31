@@ -4,15 +4,14 @@ import useOtpAutoFill from "@/hooks/useOtpAutoFill";
 import { loadRememberedClient, rememberClient } from "@/lib/rememberedDevice";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import LoginField from "@/components/auth/LoginField";
 import EchoLoadingScreen from "@/components/loading/EchoLoadingScreen";
 import SignupPrompt from "@/components/auth/SignupPrompt";
-import { Loader2, ArrowRight, MessageCircle, LogIn, Phone, KeyRound, ShieldCheck } from "lucide-react";
+import { Loader2, ArrowRight, LogIn, KeyRound, ShieldCheck } from "lucide-react";
 
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
 
 export default function ClientLogin() {
-  const [step, setStep] = useState("identify");
+  const [step, setStep] = useState("code");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [hint, setHint] = useState("");
@@ -38,8 +37,13 @@ export default function ClientLogin() {
         requestCode(fromUrl);
         return;
       }
-      if (saved) setPhone(saved.phone || "");
-      setChecking(false);
+      if (saved?.phone) {
+        setPhone(saved.phone);
+        setChecking(false);
+        requestCode(saved.phone);
+        return;
+      }
+      window.location.href = "/demo";
     })();
   }, []);
 
@@ -61,11 +65,6 @@ export default function ClientLogin() {
     } finally {
       setBusy(false);
     }
-  };
-
-  const sendCode = (e) => {
-    e.preventDefault();
-    requestCode(phone);
   };
 
   const verify = async (value) => {
@@ -111,40 +110,18 @@ export default function ClientLogin() {
 
         <div className="mt-10 text-center">
           <h1 className="font-heading text-4xl tracking-tight">
-            {step === "identify" ? "כניסה למערכת" : step === "signup" ? "פתיחת חשבון" : "הזינו את הקוד"}
+            {step === "signup" ? "פתיחת חשבון" : "הזינו את הקוד"}
           </h1>
           <p className="mt-4 text-sm sm:text-base leading-relaxed text-muted-foreground max-w-xs mx-auto">
-            {step === "identify"
-              ? "הזינו את מספר הטלפון שלכם כדי להתחבר ל-Echo."
-              : step === "signup"
-                ? "עוד פרט קטן ואנחנו מטפלים בשאר."
-                : `שלחנו קוד בוואטסאפ למספר שמסתיים ב-${hint}. הקוד בתוקף ל-5 דקות.`}
+            {step === "signup"
+              ? "עוד פרט קטן ואנחנו מטפלים בשאר."
+              : `שלחנו קוד בוואטסאפ למספר שמסתיים ב-${hint}. הקוד בתוקף ל-5 דקות.`}
           </p>
         </div>
 
         <div className="mt-10 rounded-[2rem] bg-card p-6 sm:p-7 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.22)]">
-          {step === "identify" ? (
-            <form onSubmit={sendCode} className="space-y-6">
-              <LoginField
-                id="phone"
-                label="מספר טלפון"
-                icon={Phone}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="0501234567"
-                name="client-phone"
-                type="tel"
-                inputMode="tel"
-                autoComplete="off"
-              />
-              {error && <p className="text-xs text-destructive">{error}</p>}
-              <Button type="submit" disabled={busy} className={buttonClass}>
-                המשך
-                {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <MessageCircle className="w-5 h-5" />}
-              </Button>
-            </form>
-          ) : step === "signup" ? (
-            <SignupPrompt phone={phone} onBack={() => setStep("identify")} />
+          {step === "signup" ? (
+            <SignupPrompt phone={phone} onBack={() => { window.location.href = "/demo"; }} />
           ) : (
             <form
               onSubmit={(e) => { e.preventDefault(); verify(code); }}
@@ -176,7 +153,7 @@ export default function ClientLogin() {
               </Button>
               <button
                 type="button"
-                onClick={() => { setStep("identify"); setCode(""); setError(""); setAutoFilled(false); attempted.current = ""; }}
+                onClick={() => { window.location.href = "/demo"; }}
                 className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowRight className="w-3.5 h-3.5" /> חזרה
