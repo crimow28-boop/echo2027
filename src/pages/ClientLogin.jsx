@@ -32,19 +32,23 @@ export default function ClientLogin() {
         window.location.href = "/";
         return;
       }
-      if (fromUrl) setPhone(fromUrl);
-      else if (saved) setPhone(saved.phone || "");
+      if (fromUrl) {
+        setPhone(fromUrl);
+        setChecking(false);
+        requestCode(fromUrl);
+        return;
+      }
+      if (saved) setPhone(saved.phone || "");
       setChecking(false);
     })();
   }, []);
 
 
-  const sendCode = async (e) => {
-    e.preventDefault();
+  const requestCode = async (value) => {
     setError("");
     setBusy(true);
     try {
-      const res = await base44.functions.invoke("requestLoginCode", { phone });
+      const res = await base44.functions.invoke("requestLoginCode", { phone: value });
       if (res.data?.notRegistered) {
         setStep("signup");
         return;
@@ -57,6 +61,11 @@ export default function ClientLogin() {
     } finally {
       setBusy(false);
     }
+  };
+
+  const sendCode = (e) => {
+    e.preventDefault();
+    requestCode(phone);
   };
 
   const verify = async (value) => {
