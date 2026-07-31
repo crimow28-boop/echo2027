@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import DemoCtaButtons from "@/components/demo/DemoCtaButtons";
 import DemoHeader from "@/components/demo/DemoHeader";
 import DemoPlayground from "@/components/demo/DemoPlayground";
+import DemoWhatsAppShot from "@/components/demo/DemoWhatsAppShot";
 
 export default function Demo() {
   return (
@@ -26,6 +27,10 @@ export default function Demo() {
 
         <section>
           <DemoPlayground />
+        </section>
+
+        <section>
+          <DemoWhatsAppShot />
         </section>
 
         <section className="rounded-2xl border border-border bg-card p-6 text-center">
