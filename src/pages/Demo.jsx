@@ -30,7 +30,10 @@ export default function Demo() {
         </section>
 
         <section>
-          <DemoPlayground />
+          <p className="font-heading text-xl text-center">וככה זה נראה אצליכם</p>
+          <div className="mt-6">
+            <DemoPlayground />
+          </div>
         </section>
 
         <section className="rounded-2xl border border-border bg-card p-6 text-center">
