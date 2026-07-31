@@ -15,7 +15,7 @@ export default function Demo() {
           <h1 className="font-heading text-4xl sm:text-5xl font-bold tracking-tight leading-[1.15]">
             כל הקלטות השיחות של העסק
             <br />
-            <span className="text-emerald-500">במקום אחד</span>
+            <span className="text-primary">במקום אחד</span>
           </h1>
           <p className="mt-5 text-sm sm:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
             חפשו כל שיחה לפי שם, מספר או תאריך, והעבירו אותה ללקוח תוך שניות.
