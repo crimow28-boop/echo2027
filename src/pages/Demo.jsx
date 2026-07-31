@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import DemoCtaButtons from "@/components/demo/DemoCtaButtons";
+import DemoFlowAnimation from "@/components/demo/DemoFlowAnimation";
 import DemoHeader from "@/components/demo/DemoHeader";
 import DemoPlayground from "@/components/demo/DemoPlayground";
 import DemoWhatsAppShot from "@/components/demo/DemoWhatsAppShot";
@@ -24,6 +25,21 @@ export default function Demo() {
             <DemoCtaButtons />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">פתיחת חשבון בחינם, בלי כרטיס אשראי.</p>
+        </section>
+
+        <section>
+          <div className="text-center">
+            <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-[11px] tracking-wide text-muted-foreground">
+              איך זה עובד
+            </span>
+            <p className="mt-4 font-heading text-2xl tracking-tight">כל שיחה נכנסת — נשמרת אצלכם</p>
+            <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground max-w-sm mx-auto">
+              השיחה מוקלטת אוטומטית ומגיעה ישר לרשימת השיחות במערכת.
+            </p>
+          </div>
+          <div className="mt-8">
+            <DemoFlowAnimation />
+          </div>
         </section>
 
         <section>
