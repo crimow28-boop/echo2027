@@ -23,6 +23,7 @@ export default function Demo() {
           <div className="mt-7">
             <DemoCtaButtons />
           </div>
+          <p className="mt-3 text-xs text-muted-foreground">פתיחת חשבון בחינם, בלי כרטיס אשראי.</p>
         </section>
 
         <section>
