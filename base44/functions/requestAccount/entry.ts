@@ -1,4 +1,22 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { normalizePhone } from "../../shared/clientLogin.ts";
+
+// Verify the WhatsApp code that was sent to the signing-up phone number.
+// Returns true only for a valid, unused, unexpired code.
+async function verifySignupCode(base44, phone, code) {
+  const normalized = normalizePhone(phone);
+  const clean = String(code || "").replace(/\D/g, "");
+  if (!normalized || clean.length !== 6) return false;
+  const rows = await base44.asServiceRole.entities.LoginCode.filter(
+    { accountNumber: `signup:${normalized}`, code: clean, used: false },
+    "-created_date",
+    5
+  );
+  const match = (rows || []).find((r) => new Date(r.expiresAt).getTime() > Date.now());
+  if (!match) return false;
+  await base44.asServiceRole.entities.LoginCode.update(match.id, { used: true });
+  return true;
+}
 
 // Notify the system admins by email about a new account request.
 async function notifyAdmin(base44, details) {
@@ -99,6 +117,11 @@ export default async function (req) {
 
     if (!contactName || !phone) {
       return Response.json({ success: false, error: "יש למלא שם מלא וטלפון" }, { status: 400 });
+    }
+
+    const verified = await verifySignupCode(base44, phone, body.code);
+    if (!verified) {
+      return Response.json({ success: false, error: "קוד האימות שגוי או שפג תוקפו" }, { status: 400 });
     }
 
     await base44.asServiceRole.entities.AccountRequest.create({

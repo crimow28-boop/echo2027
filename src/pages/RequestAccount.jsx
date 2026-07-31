@@ -5,30 +5,26 @@ import { Loader2, Send, CheckCircle2, Building2, Hash, User, Phone, ArrowRight, 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import LoginField from "@/components/auth/LoginField";
+import SignupCodeStep from "@/components/auth/SignupCodeStep";
 
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
 
 export default function RequestAccount() {
   const [form, setForm] = useState({ businessName: "", businessId: "", contactName: "", phone: "", notes: "" });
-  const [busy, setBusy] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
 
   const set = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const submit = async (e) => {
+  const submit = (e) => {
     e.preventDefault();
-    setError("");
-    setBusy(true);
-    try {
-      const res = await base44.functions.invoke("requestAccount", form);
-      if (!res.data?.success) throw new Error(res.data?.error || "השליחה נכשלה");
-      setDone(true);
-    } catch (err) {
-      setError(err?.response?.data?.error || err.message);
-    } finally {
-      setBusy(false);
+    if (!form.contactName.trim() || !form.phone.trim()) {
+      setError("יש למלא שם מלא וטלפון");
+      return;
     }
+    setError("");
+    setVerifying(true);
   };
 
   return (
@@ -62,29 +58,38 @@ export default function RequestAccount() {
             </div>
 
             <div className="mt-10 rounded-[2rem] bg-card p-6 sm:p-7 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.22)]">
-              <form onSubmit={submit} className="space-y-6">
-                <LoginField id="biz" label="שם העסק (לא חובה)" icon={Building2} value={form.businessName} onChange={set("businessName")} placeholder="מוסך אלון" />
-                <LoginField id="bizid" label="ח.פ / עוסק מורשה" icon={Hash} value={form.businessId} onChange={set("businessId")} placeholder="512345678" />
-                <LoginField id="contact" label="שם מלא" icon={User} value={form.contactName} onChange={set("contactName")} placeholder="ישראל ישראלי" />
-                <LoginField id="reqphone" label="טלפון" icon={Phone} value={form.phone} onChange={set("phone")} placeholder="0501234567" />
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">הערות (לא חובה)</p>
-                  <Textarea
-                    value={form.notes}
-                    onChange={set("notes")}
-                    rows={3}
-                    dir="rtl"
-                    style={{ unicodeBidi: "plaintext" }}
-                    placeholder="משהו שכדאי שנדע?"
-                    className="text-sm text-right leading-relaxed rounded-2xl"
-                  />
-                </div>
-                {error && <p className="text-xs text-destructive">{error}</p>}
-                <Button type="submit" disabled={busy} className="w-full gap-3 h-14 rounded-full text-base font-medium shadow-[0_8px_20px_-10px_rgba(0,0,0,0.35)]">
-                  שליחת הבקשה
-                  {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                </Button>
-              </form>
+              {verifying ? (
+                <SignupCodeStep
+                  phone={form.phone.trim()}
+                  payload={form}
+                  onDone={() => setDone(true)}
+                  onBack={() => setVerifying(false)}
+                />
+              ) : (
+                <form onSubmit={submit} className="space-y-6">
+                  <LoginField id="biz" label="שם העסק (לא חובה)" icon={Building2} value={form.businessName} onChange={set("businessName")} placeholder="מוסך אלון" />
+                  <LoginField id="bizid" label="ח.פ / עוסק מורשה" icon={Hash} value={form.businessId} onChange={set("businessId")} placeholder="512345678" />
+                  <LoginField id="contact" label="שם מלא" icon={User} value={form.contactName} onChange={set("contactName")} placeholder="ישראל ישראלי" />
+                  <LoginField id="reqphone" label="טלפון" icon={Phone} value={form.phone} onChange={set("phone")} placeholder="0501234567" />
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">הערות (לא חובה)</p>
+                    <Textarea
+                      value={form.notes}
+                      onChange={set("notes")}
+                      rows={3}
+                      dir="rtl"
+                      style={{ unicodeBidi: "plaintext" }}
+                      placeholder="משהו שכדאי שנדע?"
+                      className="text-sm text-right leading-relaxed rounded-2xl"
+                    />
+                  </div>
+                  {error && <p className="text-xs text-destructive">{error}</p>}
+                  <Button type="submit" className="w-full gap-3 h-14 rounded-full text-base font-medium shadow-[0_8px_20px_-10px_rgba(0,0,0,0.35)]">
+                    המשך לאימות בוואטסאפ
+                    <Send className="w-5 h-5" />
+                  </Button>
+                </form>
+              )}
             </div>
 
             <div className="mt-6 text-center">

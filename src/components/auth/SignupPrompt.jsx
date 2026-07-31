@@ -1,28 +1,21 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import LoginField from "@/components/auth/LoginField";
-import { Loader2, User, ArrowRight, CheckCircle2 } from "lucide-react";
+import SignupCodeStep from "@/components/auth/SignupCodeStep";
+import { User, ArrowRight, CheckCircle2 } from "lucide-react";
 
-// Shown when the phone number isn't registered — collects a name and leaves a lead.
+// Shown when the phone number isn't registered — collects a name, verifies the
+// phone with a WhatsApp code, and only then opens the account.
 export default function SignupPrompt({ phone, onBack }) {
   const [name, setName] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
 
-  const submit = async (e) => {
+  const submit = (e) => {
     e.preventDefault();
     setError("");
-    setBusy(true);
-    try {
-      const res = await base44.functions.invoke("requestAccount", { contactName: name.trim(), phone });
-      if (!res.data?.success) throw new Error(res.data?.error || "השליחה נכשלה");
-      setDone(true);
-    } catch (err) {
-      setError(err.message);
-      setBusy(false);
-    }
+    setVerifying(true);
   };
 
   if (done) {
@@ -34,6 +27,17 @@ export default function SignupPrompt({ phone, onBack }) {
           שלחנו לך הודעה בוואטסאפ, ונציג שלנו יחזור אליך בהקדם.
         </p>
       </div>
+    );
+  }
+
+  if (verifying) {
+    return (
+      <SignupCodeStep
+        phone={phone}
+        payload={{ contactName: name.trim() }}
+        onDone={() => setDone(true)}
+        onBack={() => setVerifying(false)}
+      />
     );
   }
 
@@ -54,9 +58,8 @@ export default function SignupPrompt({ phone, onBack }) {
         autoComplete="off"
       />
       {error && <p className="text-xs text-destructive">{error}</p>}
-      <Button type="submit" disabled={busy || !name.trim()} className="w-full gap-3 h-14 rounded-full text-base font-medium">
-        שליחת פרטים
-        {busy && <Loader2 className="w-5 h-5 animate-spin" />}
+      <Button type="submit" disabled={!name.trim()} className="w-full gap-3 h-14 rounded-full text-base font-medium">
+        המשך לאימות בוואטסאפ
       </Button>
       <button
         type="button"
