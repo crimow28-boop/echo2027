@@ -13,7 +13,7 @@ export default function DemoPlayground() {
   const results = useMemo(() => filterDemoRecordings(search), [search]);
 
   return (
-    <div className="rounded-2xl border border-border bg-card/60 p-4 sm:p-5">
+    <div className="rounded-[1.75rem] bg-card p-4 sm:p-6 ring-1 ring-black/5 shadow-[0_28px_60px_-32px_rgba(15,23,42,0.28)]">
       <div className="flex items-center gap-2 text-xs text-primary">
         <Sparkles className="w-3.5 h-3.5" />
         דמו אינטראקטיבי — חפשו, האזינו ושלחו

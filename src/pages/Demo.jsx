@@ -30,8 +30,16 @@ export default function Demo() {
         </section>
 
         <section>
-          <p className="font-heading text-xl text-center">וככה זה נראה אצליכם</p>
-          <div className="mt-6">
+          <div className="text-center">
+            <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-[11px] tracking-wide text-muted-foreground">
+              המערכת
+            </span>
+            <p className="mt-4 font-heading text-2xl tracking-tight">וככה זה נראה אצליכם</p>
+            <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground max-w-sm mx-auto">
+              מחפשים את השיחה, מאזינים, ושולחים בלחיצה.
+            </p>
+          </div>
+          <div className="mt-8">
             <DemoPlayground />
           </div>
         </section>
