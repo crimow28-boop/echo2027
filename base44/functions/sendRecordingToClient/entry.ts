@@ -36,7 +36,7 @@ export default async function(req) {
         // EXM lookup failed — fall back to the stored recording URL if we have one.
       }
     }
-    if (!missed && !recordingUrl) return Response.json({ error: 'לא נמצאה הקלטה לשיחה הזו' }, { status: 400 });
+    if (!missed && !recordingUrl) return Response.json({ error: 'מערכת הטלפוניה לא שמרה קובץ הקלטה לשיחה הזו — לרוב קורה בשיחות קצרות מאוד' }, { status: 400 });
 
     const sendMessageUrl = greenApiUrl(settings, "sendMessage");
     if (!sendMessageUrl) return Response.json({ error: 'NO_GREEN_API' }, { status: 400 });
