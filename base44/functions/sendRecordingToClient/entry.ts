@@ -28,11 +28,15 @@ export default async function(req) {
     const missed = !Number(recording.duration);
     let recordingUrl = recording.recordingUrl;
     if (!missed && recording.externalId) {
-      const urls = await getRecordingUrls(settings.exmToken, [recording.externalId], 0);
-      const found = urls.find((u) => u.id === recording.externalId && u.code === 0);
-      if (found && found.url) recordingUrl = found.url;
+      try {
+        const urls = await getRecordingUrls(settings.exmToken, [recording.externalId], 0);
+        const found = urls.find((u) => u.id === recording.externalId && u.code === 0);
+        if (found && found.url) recordingUrl = found.url;
+      } catch (_) {
+        // EXM lookup failed — fall back to the stored recording URL if we have one.
+      }
     }
-    if (!missed && !recordingUrl) return Response.json({ error: 'No recording available for this call' }, { status: 400 });
+    if (!missed && !recordingUrl) return Response.json({ error: 'לא נמצאה הקלטה לשיחה הזו' }, { status: 400 });
 
     const sendMessageUrl = greenApiUrl(settings, "sendMessage");
     if (!sendMessageUrl) return Response.json({ error: 'NO_GREEN_API' }, { status: 400 });

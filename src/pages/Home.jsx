@@ -30,7 +30,12 @@ export default function Home() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [sendingId, setSendingId] = useState(null);
-  const [pending, setPending] = useState(null);
+  const [pending, setPendingState] = useState(null);
+  const [sendError, setSendError] = useState("");
+  const setPending = (rec) => {
+    setSendError("");
+    setPendingState(rec);
+  };
   const [syncing, setSyncing] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [enriching, setEnriching] = useState(false);
@@ -176,26 +181,26 @@ export default function Home() {
 
   const handleSend = async (recordId, message) => {
     setSendingId(recordId);
+    setSendError("");
     try {
       const response = await base44.functions.invoke("sendRecordingToClient", { recordId, message });
       if (response.data?.success) {
         setRecordings((prev) =>
           prev.map((r) => (r.id === recordId ? { ...r, sent: true, sentAt: new Date().toISOString() } : r))
         );
-        toast({ title: "ההקלטה נשלחה ללקוח בהצלחה" });
+        setPendingState(null);
       } else {
         throw new Error(response.data?.error || "שליחה נכשלה");
       }
     } catch (error) {
       const raw = error?.response?.data?.error || error?.message || "שליחה נכשלה";
       const friendly =
-        raw === "NO_GREEN_API" ? "Green API אינו מוגדר — הגדירו אותו בהגדרות"
-        : raw === "NO_SETTINGS" ? "חסרות הגדרות חיבור — הגדירו אותן בהגדרות"
+        raw === "NO_GREEN_API" ? "Green API אינו מוגדר — פנו לנציג המערכת"
+        : raw === "NO_SETTINGS" ? "חסרות הגדרות חיבור — פנו לנציג המערכת"
         : raw;
-      toast({ title: "שגיאה בשליחה", description: friendly, variant: "destructive" });
+      setSendError(friendly);
     } finally {
       setSendingId(null);
-      setPending(null);
     }
   };
 
@@ -441,6 +446,7 @@ export default function Home() {
       <SendConfirmDialog
         recording={pending}
         sending={pending && sendingId === pending.id}
+        error={sendError}
         onConfirm={confirmSend}
         onClose={() => setPending(null)}
       />

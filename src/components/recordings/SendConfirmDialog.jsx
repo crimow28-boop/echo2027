@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import WhatsAppBubble from "@/components/recordings/WhatsAppBubble";
 import { buildRecordingMessage, isMissedCall, loadTemplates } from "@/lib/messageTemplate";
 
-export default function SendConfirmDialog({ recording, sending, onConfirm, onClose }) {
+export default function SendConfirmDialog({ recording, sending, error, onConfirm, onClose }) {
   const open = !!recording;
   const r = recording;
   const [businessName, setBusinessName] = useState("");
@@ -71,6 +71,12 @@ export default function SendConfirmDialog({ recording, sending, onConfirm, onClo
             {r && isMissedCall(r) ? "שיחה שלא נענתה · ללא הקלטה" : "הקישור יוצר אוטומטית בשליחה"}
           </span>
         </div>
+
+        {error && (
+          <p className="mx-5 mb-1 rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive leading-relaxed">
+            {error}
+          </p>
+        )}
 
         <div className="flex gap-3 p-5 pt-2">
           <Button

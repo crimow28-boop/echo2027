@@ -34,7 +34,7 @@ export default function History() {
     }
   };
 
-  const { sendingId, pending, setPending, send } = useSendRecording((id) =>
+  const { sendingId, pending, setPending, clearPending, send, error: sendError } = useSendRecording((id) =>
     setRecordings((prev) => prev.map((r) => (r.id === id ? { ...r, sent: true, sentAt: new Date().toISOString() } : r)))
   );
 
@@ -129,8 +129,9 @@ export default function History() {
       <SendConfirmDialog
         recording={pending}
         sending={pending && sendingId === pending.id}
+        error={sendError}
         onConfirm={(message) => pending && send(pending.id, message)}
-        onClose={() => setPending(null)}
+        onClose={clearPending}
       />
 
       <HideContactDialog
