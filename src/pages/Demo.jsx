@@ -35,7 +35,7 @@ export default function Demo() {
             <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-[11px] tracking-wide text-muted-foreground">
               איך זה עובד
             </span>
-            <p className="mt-4 font-heading text-2xl tracking-tight">כל שיחה מוקל אצלכם</p>
+            <p className="mt-4 font-heading text-2xl tracking-tight">כל שיחה מוקלטת ומאובטחת בענן</p>
             <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground max-w-sm mx-auto">
               השיחה מוקלטת אוטומטית ומגיעה ישר לרשימת השיחות במערכת.
             </p>
