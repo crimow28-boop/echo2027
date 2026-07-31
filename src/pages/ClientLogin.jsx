@@ -4,14 +4,15 @@ import useOtpAutoFill from "@/hooks/useOtpAutoFill";
 import { loadRememberedClient, rememberClient } from "@/lib/rememberedDevice";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
+import LoginField from "@/components/auth/LoginField";
 import EchoLoadingScreen from "@/components/loading/EchoLoadingScreen";
 import SignupPrompt from "@/components/auth/SignupPrompt";
-import { Loader2, ArrowRight, LogIn, KeyRound, ShieldCheck } from "lucide-react";
+import { Loader2, ArrowRight, MessageCircle, LogIn, Phone, KeyRound, ShieldCheck } from "lucide-react";
 
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
 
 export default function ClientLogin() {
-  const [step, setStep] = useState("");
+  const [step, setStep] = useState("identify");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [hint, setHint] = useState("");
@@ -25,34 +26,23 @@ export default function ClientLogin() {
   // A client who already logged in on this device stays logged in until logout.
   useEffect(() => {
     (async () => {
-      const fromUrl = new URLSearchParams(window.location.search).get("phone");
       const saved = loadRememberedClient();
       if (saved && (await base44.auth.isAuthenticated())) {
         window.location.href = "/";
         return;
       }
-      if (fromUrl) {
-        setPhone(fromUrl);
-        setChecking(false);
-        requestCode(fromUrl);
-        return;
-      }
-      if (saved?.phone) {
-        setPhone(saved.phone);
-        setChecking(false);
-        requestCode(saved.phone);
-        return;
-      }
-      window.location.href = "/demo";
+      if (saved) setPhone(saved.phone || "");
+      setChecking(false);
     })();
   }, []);
 
 
-  const requestCode = async (value) => {
+  const sendCode = async (e) => {
+    e.preventDefault();
     setError("");
     setBusy(true);
     try {
-      const res = await base44.functions.invoke("requestLoginCode", { phone: value });
+      const res = await base44.functions.invoke("requestLoginCode", { phone });
       if (res.data?.notRegistered) {
         setStep("signup");
         return;
@@ -62,7 +52,6 @@ export default function ClientLogin() {
       setStep("code");
     } catch (err) {
       setError(err.message);
-      setStep("error");
     } finally {
       setBusy(false);
     }
@@ -102,8 +91,7 @@ export default function ClientLogin() {
 
   const buttonClass = "w-full gap-3 h-14 rounded-full text-base font-medium shadow-[0_8px_20px_-10px_rgba(0,0,0,0.35)]";
 
-  if (entering) return <EchoLoadingScreen message="מארגנים את השיחות שלך..." />;
-  if (checking || !step) return <EchoLoadingScreen message={error ? "" : "רק בודקים את המספר..."} />;
+  if (entering || checking) return <EchoLoadingScreen message="מארגנים את השיחות שלך..." />;
 
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body flex items-center justify-center px-5 py-14">
@@ -112,27 +100,40 @@ export default function ClientLogin() {
 
         <div className="mt-10 text-center">
           <h1 className="font-heading text-4xl tracking-tight">
-            {step === "signup" ? "פתיחת חשבון" : step === "error" ? "רגע אחד" : "הזינו את הקוד"}
+            {step === "identify" ? "כניסה למערכת" : step === "signup" ? "פתיחת חשבון" : "הזינו את הקוד"}
           </h1>
           <p className="mt-4 text-sm sm:text-base leading-relaxed text-muted-foreground max-w-xs mx-auto">
-            {step === "signup"
-              ? "עוד פרט קטן ואנחנו מטפלים בשאר."
-              : step === "error"
-              ? "משהו לא הסתדר בשליחת הקוד."
-              : `שלחנו קוד בוואטסאפ למספר שמסתיים ב-${hint}. הקוד בתוקף ל-5 דקות.`}
+            {step === "identify"
+              ? "הזינו את מספר הטלפון שלכם כדי להתחבר ל-Echo."
+              : step === "signup"
+                ? "עוד פרט קטן ואנחנו מטפלים בשאר."
+                : `שלחנו קוד בוואטסאפ למספר שמסתיים ב-${hint}. הקוד בתוקף ל-5 דקות.`}
           </p>
         </div>
 
         <div className="mt-10 rounded-[2rem] bg-card p-6 sm:p-7 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.22)]">
-          {step === "error" ? (
-            <div className="space-y-5 text-center">
-              <p className="text-sm text-destructive">{error}</p>
-              <Button onClick={() => { window.location.href = "/demo"; }} className={buttonClass}>
-                חזרה
+          {step === "identify" ? (
+            <form onSubmit={sendCode} className="space-y-6">
+              <LoginField
+                id="phone"
+                label="מספר טלפון"
+                icon={Phone}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="0501234567"
+                name="client-phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="off"
+              />
+              {error && <p className="text-xs text-destructive">{error}</p>}
+              <Button type="submit" disabled={busy} className={buttonClass}>
+                המשך
+                {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <MessageCircle className="w-5 h-5" />}
               </Button>
-            </div>
+            </form>
           ) : step === "signup" ? (
-            <SignupPrompt phone={phone} onBack={() => { window.location.href = "/demo"; }} />
+            <SignupPrompt phone={phone} onBack={() => setStep("identify")} />
           ) : (
             <form
               onSubmit={(e) => { e.preventDefault(); verify(code); }}
@@ -164,7 +165,7 @@ export default function ClientLogin() {
               </Button>
               <button
                 type="button"
-                onClick={() => { window.location.href = "/demo"; }}
+                onClick={() => { setStep("identify"); setCode(""); setError(""); setAutoFilled(false); attempted.current = ""; }}
                 className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowRight className="w-3.5 h-3.5" /> חזרה
