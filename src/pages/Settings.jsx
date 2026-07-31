@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowRight, Loader2, ShieldCheck, ExternalLink } from "lucide-react";
 
-const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
+const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/7557abb16_Screenshot2026-07-31at231525-Photoroom.png";
 const EXM_HELP = "https://www.exm.co.il/";
 const GREEN_HELP = "https://console.green-api.com/";
 

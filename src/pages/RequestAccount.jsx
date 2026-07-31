@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import LoginField from "@/components/auth/LoginField";
 import SignupCodeStep from "@/components/auth/SignupCodeStep";
 
-const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
+const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/7557abb16_Screenshot2026-07-31at231525-Photoroom.png";
 
 export default function RequestAccount() {
   const [form, setForm] = useState({ businessName: "", businessId: "", contactName: "", phone: "", notes: "" });

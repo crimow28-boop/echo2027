@@ -9,7 +9,7 @@ import EchoLoadingScreen from "@/components/loading/EchoLoadingScreen";
 import SignupPrompt from "@/components/auth/SignupPrompt";
 import { Loader2, ArrowRight, MessageCircle, LogIn, Phone, KeyRound, ShieldCheck } from "lucide-react";
 
-const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
+const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/7557abb16_Screenshot2026-07-31at231525-Photoroom.png";
 
 export default function ClientLogin() {
   const [step, setStep] = useState("identify");
