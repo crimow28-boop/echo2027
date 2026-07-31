@@ -11,7 +11,7 @@ import { Loader2, ArrowRight, LogIn, KeyRound, ShieldCheck } from "lucide-react"
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/736748188_Screenshot2026-07-28at231744-Photoroom1.png";
 
 export default function ClientLogin() {
-  const [step, setStep] = useState("code");
+  const [step, setStep] = useState("");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [hint, setHint] = useState("");
@@ -62,6 +62,7 @@ export default function ClientLogin() {
       setStep("code");
     } catch (err) {
       setError(err.message);
+      setStep("error");
     } finally {
       setBusy(false);
     }
@@ -101,7 +102,8 @@ export default function ClientLogin() {
 
   const buttonClass = "w-full gap-3 h-14 rounded-full text-base font-medium shadow-[0_8px_20px_-10px_rgba(0,0,0,0.35)]";
 
-  if (entering || checking) return <EchoLoadingScreen message="מארגנים את השיחות שלך..." />;
+  if (entering) return <EchoLoadingScreen message="מארגנים את השיחות שלך..." />;
+  if (checking || !step) return <EchoLoadingScreen message={error ? "" : "רק בודקים את המספר..."} />;
 
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body flex items-center justify-center px-5 py-14">
@@ -110,17 +112,26 @@ export default function ClientLogin() {
 
         <div className="mt-10 text-center">
           <h1 className="font-heading text-4xl tracking-tight">
-            {step === "signup" ? "פתיחת חשבון" : "הזינו את הקוד"}
+            {step === "signup" ? "פתיחת חשבון" : step === "error" ? "רגע אחד" : "הזינו את הקוד"}
           </h1>
           <p className="mt-4 text-sm sm:text-base leading-relaxed text-muted-foreground max-w-xs mx-auto">
             {step === "signup"
               ? "עוד פרט קטן ואנחנו מטפלים בשאר."
+              : step === "error"
+              ? "משהו לא הסתדר בשליחת הקוד."
               : `שלחנו קוד בוואטסאפ למספר שמסתיים ב-${hint}. הקוד בתוקף ל-5 דקות.`}
           </p>
         </div>
 
         <div className="mt-10 rounded-[2rem] bg-card p-6 sm:p-7 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.22)]">
-          {step === "signup" ? (
+          {step === "error" ? (
+            <div className="space-y-5 text-center">
+              <p className="text-sm text-destructive">{error}</p>
+              <Button onClick={() => { window.location.href = "/demo"; }} className={buttonClass}>
+                חזרה
+              </Button>
+            </div>
+          ) : step === "signup" ? (
             <SignupPrompt phone={phone} onBack={() => { window.location.href = "/demo"; }} />
           ) : (
             <form
