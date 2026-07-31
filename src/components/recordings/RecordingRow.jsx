@@ -1,5 +1,5 @@
 import React from "react";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDuration, formatDate } from "@/lib/recordingUtils";
 import DownloadRecordingButton from "@/components/recordings/DownloadRecordingButton";
@@ -16,7 +16,11 @@ export default function RecordingRow({ recording, sendingId, onSend, onHide }) {
       <td className="px-4 py-3.5 text-muted-foreground text-sm font-mono" dir="ltr">{formatDuration(r.duration)}</td>
       <td className="px-4 py-3.5 text-muted-foreground text-sm">{formatDate(r.callDate || r.created_date)}</td>
       <td className="px-4 py-3.5">
-        {r.sentAt ? (
+        {Number(r.duration) > 0 && r.recordingMissing ? (
+          <span className="inline-flex items-center gap-1.5 text-xs text-amber-700">
+            <MicOff className="w-3.5 h-3.5" /> אין הקלטה
+          </span>
+        ) : r.sentAt ? (
           <span className="inline-flex items-center gap-2 text-xs text-primary">
             <span className="w-2 h-2 rounded-full bg-primary"></span> נשלחה · {formatDate(r.sentAt)}
           </span>

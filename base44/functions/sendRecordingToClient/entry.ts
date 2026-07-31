@@ -39,7 +39,7 @@ export default async function(req) {
             recordingUrl = found.url;
             lookupError = null;
             // Cache it so future sends don't depend on EXM being reachable.
-            await base44.entities.CallRecording.update(recordId, { recordingUrl });
+            await base44.entities.CallRecording.update(recordId, { recordingUrl, recordingMissing: false });
           } else if (found && found.code === 404) {
             notRecorded = true;
             break;
@@ -52,6 +52,9 @@ export default async function(req) {
       }
     }
     if (!missed && !recordingUrl) {
+      if (notRecorded && !recording.recordingMissing) {
+        await base44.entities.CallRecording.update(recordId, { recordingMissing: true });
+      }
       const error = notRecorded
         ? 'מערכת הטלפוניה לא שמרה קובץ הקלטה לשיחה הזו'
         : (lookupError || 'לא נמצא קישור להקלטה של השיחה הזו');

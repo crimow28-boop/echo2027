@@ -36,6 +36,11 @@
       "type": "string",
       "title": "Recording URL"
     },
+    "recordingMissing": {
+      "type": "boolean",
+      "default": false,
+      "title": "No Recording Saved"
+    },
     "sent": {
       "type": "boolean",
       "default": false,

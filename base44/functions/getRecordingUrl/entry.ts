@@ -25,7 +25,15 @@ export default async function(req) {
       const found = urls.find((u) => u.id === recording.externalId && u.code === 0);
       if (found && found.url) url = found.url;
     }
-    if (!url) return Response.json({ error: 'אין הקלטה זמינה לשיחה הזו' }, { status: 400 });
+    if (!url) {
+      if (!recording.recordingMissing) {
+        await base44.entities.CallRecording.update(recordId, { recordingMissing: true });
+      }
+      return Response.json({ error: 'מערכת הטלפוניה לא שמרה הקלטה לשיחה הזו' }, { status: 400 });
+    }
+    if (recording.recordingMissing) {
+      await base44.entities.CallRecording.update(recordId, { recordingMissing: false });
+    }
 
     return Response.json({ success: true, url });
   } catch (error) {
