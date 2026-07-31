@@ -47,15 +47,15 @@ export default function DemoFlowAnimation() {
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={step >= 2 ? { opacity: 1, y: 0 } : { opacity: 0.35, y: 14 }}
+        initial={{ opacity: 1, y: 0 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
         className="rounded-2xl bg-muted/60 p-3 sm:p-4 ring-1 ring-black/5"
       >
         <p className="mb-3 font-heading text-sm">פירוט שיחות</p>
         <div className="space-y-2">
           {ROWS.map((r, i) => (
-            <DemoFlowRow key={r.phone} {...r} visible={step >= 3} delay={i * 0.12} />
+            <DemoFlowRow key={r.phone} {...r} visible delay={i * 0.12} />
           ))}
         </div>
       </motion.div>
