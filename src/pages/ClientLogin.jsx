@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import OtpCodeInput from "@/components/auth/OtpCodeInput";
-import useOtpAutoFill from "@/hooks/useOtpAutoFill";
 import { loadRememberedClient, rememberClient } from "@/lib/rememberedDevice";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,6 @@ export default function ClientLogin() {
   const [error, setError] = useState("");
   const [entering, setEntering] = useState(false);
   const [checking, setChecking] = useState(true);
-  const [autoFilled, setAutoFilled] = useState(false);
   const attempted = useRef("");
 
   // A client who already logged in on this device stays logged in until logout.
@@ -41,6 +39,11 @@ export default function ClientLogin() {
   const sendCode = async (e) => {
     e.preventDefault();
     setError("");
+    const digits = phone.replace(/\D/g, "");
+    if (!/^0(5\d{8}|[2-4,8-9]\d{7}|7\d{8})$/.test(digits)) {
+      setError("מספר הטלפון אינו תקין");
+      return;
+    }
     setBusy(true);
     try {
       const res = await base44.functions.invoke("requestLoginCode", { phone });
@@ -75,14 +78,6 @@ export default function ClientLogin() {
       setBusy(false);
     }
   };
-
-  useOtpAutoFill(
-    (found) => {
-      setAutoFilled(true);
-      setCode(found);
-    },
-    step === "code" && !busy
-  );
 
   // Verify automatically as soon as all six digits are in place.
   useEffect(() => {
@@ -147,16 +142,11 @@ export default function ClientLogin() {
                 </div>
                 <OtpCodeInput
                   value={code}
-                  onChange={(v) => { setAutoFilled(false); setError(""); setCode(v); }}
+                  onChange={(v) => { setError(""); setCode(v); }}
                   disabled={busy}
-                  autoFilled={autoFilled}
                 />
                 <p className="text-center text-xs text-muted-foreground transition-opacity duration-300">
-                  {busy
-                    ? "מאמתים את הקוד..."
-                    : autoFilled
-                      ? "הקוד זוהה אוטומטית"
-                      : "הקוד יזוהה אוטומטית · אפשר גם להדביק אותו"}
+                  {busy ? "מאמתים את הקוד..." : "הזינו את הקוד שקיבלתם בוואטסאפ"}
                 </p>
               </div>
               {error && <p className="text-xs text-destructive text-center">{error}</p>}
@@ -166,7 +156,7 @@ export default function ClientLogin() {
               </Button>
               <button
                 type="button"
-                onClick={() => { setStep("identify"); setCode(""); setError(""); setAutoFilled(false); attempted.current = ""; }}
+                onClick={() => { setStep("identify"); setCode(""); setError(""); attempted.current = ""; }}
                 className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowRight className="w-3.5 h-3.5" /> חזרה
