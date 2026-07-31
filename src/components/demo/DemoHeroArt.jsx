@@ -7,7 +7,7 @@ export default function DemoHeroArt() {
     <img
       src={ART}
       alt="בעל עסק מקבל הקלטת שיחה בוואטסאפ"
-      className="mx-auto mt-8 w-56 sm:w-64 h-auto"
+      className="mx-auto mt-8 -mb-10 sm:-mb-14 w-80 sm:w-[26rem] max-w-full h-auto block"
     />
   );
 }
