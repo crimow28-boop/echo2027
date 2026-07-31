@@ -26,12 +26,14 @@ export default function ClientLogin() {
   // A client who already logged in on this device stays logged in until logout.
   useEffect(() => {
     (async () => {
+      const fromUrl = new URLSearchParams(window.location.search).get("phone");
       const saved = loadRememberedClient();
       if (saved && (await base44.auth.isAuthenticated())) {
         window.location.href = "/";
         return;
       }
-      if (saved) setPhone(saved.phone || "");
+      if (fromUrl) setPhone(fromUrl);
+      else if (saved) setPhone(saved.phone || "");
       setChecking(false);
     })();
   }, []);
