@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { LogIn, Sparkles } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function DemoCtaButtons({ size = "lg" }) {
@@ -9,10 +9,7 @@ export default function DemoCtaButtons({ size = "lg" }) {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
       <Button asChild className={`gap-2 ${h} rounded-full px-7 text-sm w-full sm:w-auto`}>
-        <Link to="/signup">
-          <Sparkles className="w-4 h-4" />
-          פתיחת חשבון חדש
-        </Link>
+        <Link to="/signup">מתחילים כאן</Link>
       </Button>
       <Button asChild variant="outline" className={`gap-2 ${h} rounded-full bg-card px-7 text-sm w-full sm:w-auto`}>
         <Link to="/client-login">
