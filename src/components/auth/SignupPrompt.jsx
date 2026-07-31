@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import LoginField from "@/components/auth/LoginField";
 import SignupCodeStep from "@/components/auth/SignupCodeStep";
-import { User, ArrowRight, CheckCircle2 } from "lucide-react";
+import { User, UserPlus, ArrowRight, CheckCircle2 } from "lucide-react";
 
 // Shown when the phone number isn't registered — collects a name, verifies the
 // phone with a WhatsApp code, and only then opens the account.
@@ -43,9 +43,15 @@ export default function SignupPrompt({ phone, onBack }) {
 
   return (
     <form onSubmit={submit} className="space-y-6">
-      <p className="text-sm text-muted-foreground leading-relaxed">
-        המספר {phone} עדיין לא רשום אצלנו. השאירו שם מלא ונחזור אליכם.
-      </p>
+      <div className="flex items-start gap-3 rounded-2xl bg-muted p-4">
+        <UserPlus className="w-5 h-5 shrink-0 text-primary mt-0.5" />
+        <div className="space-y-1">
+          <p className="text-sm font-medium">עדיין לא רשומים אצלנו</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            המספר <span dir="ltr" className="font-mono">{phone}</span> לא נמצא במערכת. השאירו שם מלא ונפתח לכם חשבון.
+          </p>
+        </div>
+      </div>
       <LoginField
         id="fullname"
         label="שם מלא"
