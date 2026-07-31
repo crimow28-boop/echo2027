@@ -52,22 +52,26 @@ export default function DemoPlayground() {
         )}
       </div>
 
-      <p className="mt-4 text-xs text-muted-foreground">נמצאו {results.length} שיחות</p>
+      {search.trim() && (
+        <>
+          <p className="mt-4 text-xs text-muted-foreground">נמצאו {results.length} שיחות</p>
 
-      <div className="mt-3 space-y-3">
-        {results.length === 0 ? (
-          <p className="py-10 text-sm text-muted-foreground text-center">אין שיחות כאלה — נסו "משה" או "052"</p>
-        ) : (
-          results.map((r) => (
-            <DemoRecordingCard
-              key={r.id}
-              recording={r}
-              sent={sentIds.includes(r.id)}
-              onSend={setPending}
-            />
-          ))
-        )}
-      </div>
+          <div className="mt-3 space-y-3">
+            {results.length === 0 ? (
+              <p className="py-10 text-sm text-muted-foreground text-center">אין שיחות כאלה — נסו "משה" או "052"</p>
+            ) : (
+              results.map((r) => (
+                <DemoRecordingCard
+                  key={r.id}
+                  recording={r}
+                  sent={sentIds.includes(r.id)}
+                  onSend={setPending}
+                />
+              ))
+            )}
+          </div>
+        </>
+      )}
 
       <DemoSendDialog
         recording={pending}
