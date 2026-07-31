@@ -27,16 +27,36 @@ export default async function(req) {
     // 0-second calls were never answered: no recording, send a call-back message.
     const missed = !Number(recording.duration);
     let recordingUrl = recording.recordingUrl;
-    if (!missed && recording.externalId) {
-      try {
-        const urls = await getRecordingUrls(settings.exmToken, [recording.externalId], 0);
-        const found = urls.find((u) => u.id === recording.externalId && u.code === 0);
-        if (found && found.url) recordingUrl = found.url;
-      } catch (_) {
-        // EXM lookup failed — fall back to the stored recording URL if we have one.
+    let lookupError = null;
+    let notRecorded = false;
+    if (!missed && !recordingUrl && recording.externalId) {
+      // The EXM lookup can be slow — retry once before giving up.
+      for (let attempt = 0; attempt < 2 && !recordingUrl; attempt++) {
+        try {
+          const urls = await getRecordingUrls(settings.exmToken, [recording.externalId], 0);
+          const found = urls.find((u) => u.id === recording.externalId);
+          if (found?.url) {
+            recordingUrl = found.url;
+            lookupError = null;
+            // Cache it so future sends don't depend on EXM being reachable.
+            await base44.entities.CallRecording.update(recordId, { recordingUrl });
+          } else if (found && found.code === 404) {
+            notRecorded = true;
+            break;
+          } else {
+            lookupError = "לא הצלחנו לקבל קישור להקלטה ממערכת הטלפוניה";
+          }
+        } catch (e) {
+          lookupError = `מערכת הטלפוניה לא זמינה כרגע (${e.message})`;
+        }
       }
     }
-    if (!missed && !recordingUrl) return Response.json({ error: 'מערכת הטלפוניה לא שמרה קובץ הקלטה לשיחה הזו — לרוב קורה בשיחות קצרות מאוד' }, { status: 400 });
+    if (!missed && !recordingUrl) {
+      const error = notRecorded
+        ? 'מערכת הטלפוניה לא שמרה קובץ הקלטה לשיחה הזו'
+        : (lookupError || 'לא נמצא קישור להקלטה של השיחה הזו');
+      return Response.json({ error }, { status: 400 });
+    }
 
     const sendMessageUrl = greenApiUrl(settings, "sendMessage");
     if (!sendMessageUrl) return Response.json({ error: 'NO_GREEN_API' }, { status: 400 });
