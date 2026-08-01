@@ -7,6 +7,7 @@ import MissedCallNotice from "@/components/recordings/MissedCallNotice";
 import NoRecordingNotice from "@/components/recordings/NoRecordingNotice";
 import DownloadRecordingButton from "@/components/recordings/DownloadRecordingButton";
 import HideContactButton from "@/components/recordings/HideContactButton";
+import TranscriptSection from "@/components/recordings/TranscriptSection";
 
 export default function RecordingCard({ recording, sendingId, onSend, onHide }) {
   const r = recording;
@@ -58,6 +59,7 @@ export default function RecordingCard({ recording, sendingId, onSend, onHide }) 
         </Button>
         </div>
       </div>
+      <TranscriptSection recording={r} />
       {onHide && (
         <div className="pt-1">
           <HideContactButton withLabel onClick={() => onHide(r)} />

@@ -3,9 +3,10 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Loader2, Save, X } from "lucide-react";
 
-const EMPTY = { clientName: "", accountNumber: "", clientPhone: "", exmToken: "", greenInstanceId: "", greenToken: "" };
+const EMPTY = { clientName: "", accountNumber: "", clientPhone: "", exmToken: "", greenInstanceId: "", greenToken: "", transcriptEnabled: false };
 
 export default function ClientConfigForm({ initial, onDone, onCancel }) {
   const [form, setForm] = useState({ ...EMPTY, ...(initial || {}) });
@@ -28,7 +29,8 @@ export default function ClientConfigForm({ initial, onDone, onCancel }) {
         clientPhone: form.clientPhone.trim(),
         exmToken: form.exmToken.trim(),
         greenInstanceId: form.greenInstanceId.trim(),
-        greenToken: form.greenToken.trim()
+        greenToken: form.greenToken.trim(),
+        transcriptEnabled: !!form.transcriptEnabled
       };
       if (initial?.id) {
         await base44.entities.UserSettings.update(initial.id, payload);
@@ -72,6 +74,16 @@ export default function ClientConfigForm({ initial, onDone, onCancel }) {
         {field("exm", "טוקן EXM", "exmToken", "exm_token")}
         {field("gi", "מזהה מופע Green API", "greenInstanceId", "710722692595")}
         {field("gt", "טוקן Green API", "greenToken", "api_token")}
+      </div>
+      <div className="flex items-center justify-between gap-3 rounded-lg border border-border p-3">
+        <div>
+          <Label className="text-xs font-medium text-foreground/80">תמלול שיחות (Gemini)</Label>
+          <p className="mt-1 text-xs text-muted-foreground">כשכבוי — הלקוח לא רואה בכלל שהאפשרות קיימת.</p>
+        </div>
+        <Switch
+          checked={!!form.transcriptEnabled}
+          onCheckedChange={(v) => setForm((p) => ({ ...p, transcriptEnabled: v }))}
+        />
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}
       <div className="flex items-center gap-3">
