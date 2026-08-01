@@ -45,6 +45,11 @@
       "type": "string",
       "title": "Public Listen Link Token"
     },
+    "hidden": {
+      "type": "boolean",
+      "default": false,
+      "title": "Hidden (Private Contact)"
+    },
     "sent": {
       "type": "boolean",
       "default": false,
@@ -63,7 +68,16 @@
   ],
   "rls": {
     "read": {
-      "created_by_id": "{{user.id}}"
+      "$and": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.hidden": {
+            "$ne": true
+          }
+        }
+      ]
     },
     "create": {
       "created_by_id": "{{user.id}}"
