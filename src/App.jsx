@@ -10,6 +10,7 @@ import ResetPassword from '@/pages/ResetPassword';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
+import InstallAppPrompt from './components/InstallAppPrompt';
 // Add page imports here
 import Home from './pages/Home';
 import Settings from './pages/Settings';
@@ -84,6 +85,7 @@ function App() {
         <Router>
           <ScrollToTop />
           <AuthenticatedApp />
+          <InstallAppPrompt />
         </Router>
       </QueryClientProvider>
     </AuthProvider>
