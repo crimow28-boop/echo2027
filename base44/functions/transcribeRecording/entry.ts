@@ -28,13 +28,22 @@ export default async function(req) {
     }
     if (!url) return Response.json({ error: 'מערכת הטלפוניה לא שמרה הקלטה לשיחה הזו' }, { status: 400 });
 
+    // Step 1 — accurate speech-to-text (Whisper).
+    const rawText = await base44.integrations.Core.TranscribeAudio({ audio_url: url });
+    const text = String(rawText || '').trim();
+    if (!text) return Response.json({ error: 'לא זוהה דיבור בהקלטה' }, { status: 400 });
+
+    // Step 2 — split the verbatim transcript between the two speakers.
     const result = await base44.integrations.Core.InvokeLLM({
       prompt: [
-        'תמלל את שיחת הטלפון המצורפת בעברית, במדויק ולפי סדר הדברים.',
-        'הפרד בין הדוברים: "business" הוא נציג העסק שענה לשיחה, "caller" הוא הלקוח שהתקשר.',
-        'החזר מערך הודעות לפי סדר השיחה. אל תוסיף פרשנות או סיכום — רק את מה שנאמר.'
-      ].join(' '),
-      file_urls: [url],
+        'לפניך תמלול מדויק (verbatim) של שיחת טלפון. חלק אותו לתורות דיבור בין שני דוברים בלבד.',
+        '"business" = הצד שענה לשיחה (נציג העסק), "caller" = הצד שהתקשר (הלקוח).',
+        'חוק קריטי: אסור לשנות, לתקן, לקצר, לתרגם או להוסיף מילים. השתמש רק במילים שמופיעות בתמלול, באותו סדר בדיוק.',
+        'אם לא ברור מי הדובר, שייך את הקטע לדובר הסביר לפי ההקשר, אבל אל תמציא תוכן.',
+        '',
+        'התמלול:',
+        text
+      ].join('\n'),
       model: 'gemini_3_1_pro',
       response_json_schema: {
         type: 'object',
