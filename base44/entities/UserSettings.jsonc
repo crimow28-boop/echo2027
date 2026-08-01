@@ -37,11 +37,6 @@
     "greenToken": {
       "type": "string",
       "title": "Green API Token"
-    },
-    "transcriptEnabled": {
-      "type": "boolean",
-      "default": false,
-      "title": "Call Transcription Enabled"
     }
   },
   "required": [

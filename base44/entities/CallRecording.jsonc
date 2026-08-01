@@ -50,30 +50,6 @@
       "type": "string",
       "format": "date-time",
       "title": "Sent At"
-    },
-    "transcript": {
-      "type": "array",
-      "title": "Transcript",
-      "items": {
-        "type": "object",
-        "properties": {
-          "speaker": {
-            "type": "string",
-            "enum": [
-              "caller",
-              "business"
-            ]
-          },
-          "text": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "transcribedAt": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Transcribed At"
     }
   },
   "required": [
