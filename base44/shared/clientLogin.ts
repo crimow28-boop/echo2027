@@ -27,6 +27,28 @@ export async function findClientByPhone(base44, phone) {
   return (rows || []).find((r) => normalizePhone(r.clientPhone) === wanted) || null;
 }
 
+// Cryptographically-random 6-digit code (not Math.random, which is guessable).
 export function generateCode() {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  return String(100000 + (buf[0] % 900000));
+}
+
+// Throttle code sending per phone: 60s cooldown between codes, max 5 per hour.
+// Returns a user-facing error string when blocked, or null when allowed.
+export async function codeSendBlocked(base44, phone) {
+  const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const rows = await base44.asServiceRole.entities.LoginCode.filter(
+    { phone, created_date: { $gte: hourAgo } },
+    "-created_date",
+    10
+  );
+  if (!rows || rows.length === 0) return null;
+  if (Date.now() - new Date(rows[0].created_date).getTime() < 60 * 1000) {
+    return "שלחנו קוד ממש עכשיו — אנא המתינו דקה לפני בקשת קוד נוסף";
+  }
+  if (rows.length >= 5) {
+    return "יותר מדי בקשות קוד למספר הזה — נסו שוב בעוד כשעה";
+  }
+  return null;
 }

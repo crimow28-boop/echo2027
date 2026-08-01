@@ -1,9 +1,11 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { getRecordingUrls } from "../../shared/exmApi.ts";
 import { getUserSettings } from "../../shared/userSettings.ts";
+import { randomListenToken, listenUrl } from "../../shared/listenLinks.ts";
+import { secrets } from "base44:runtime";
 
-// Export the calling user's CallRecording rows with permanent (public) recording
-// links from exm, so the spreadsheet stays usable over time. Returns rows for CSV.
+// Export the calling user's CallRecording rows with Echo listen links (which
+// mint short-lived EXM URLs on each visit), so the spreadsheet stays usable
+// over time without embedding permanent public EXM links. Returns rows for CSV.
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -28,21 +30,17 @@ export default async function(req) {
       guard++;
     }
 
-    // Fetch permanent (ttl=0) recording URLs from exm, in batches of 50.
-    const withExternal = all.filter(r => r.externalId);
-    const urlMap = new Map();
-    for (let i = 0; i < withExternal.length; i += 50) {
-      const ids = withExternal.slice(i, i + 50).map(r => r.externalId);
-      try {
-        const urls = await getRecordingUrls(token, ids, 0);
-        for (const u of urls || []) {
-          if (u.id && u.url) urlMap.set(u.id, u.url);
-        }
-      } catch (_e) {
-        // partial failure — keep going so the export still completes
-      }
+    // Make sure every exported recording has an Echo listen token.
+    const missingToken = all.filter(r => r.externalId && !r.listenToken);
+    for (let i = 0; i < missingToken.length; i += 200) {
+      const batch = missingToken.slice(i, i + 200);
+      batch.forEach(r => { r.listenToken = randomListenToken(); });
+      await base44.entities.CallRecording.bulkUpdate(
+        batch.map(r => ({ id: r.id, listenToken: r.listenToken }))
+      );
     }
 
+    const appId = secrets.get("BASE44_APP_ID");
     const rows = all.map(r => ({
       name: r.callerFriendly || "",
       number: r.callerNumber || "",
@@ -50,7 +48,7 @@ export default async function(req) {
       duration: r.duration || 0,
       date: r.callDate || "",
       sent: r.sent ? "נשלח" : "ממתין",
-      link: (r.externalId && urlMap.get(r.externalId)) || r.recordingUrl || ""
+      link: (r.externalId && r.listenToken) ? listenUrl(appId, r.listenToken) : (r.recordingUrl || "")
     }));
 
     return Response.json({ success: true, count: rows.length, rows });

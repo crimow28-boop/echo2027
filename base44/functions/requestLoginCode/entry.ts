@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { greenApiUrl } from "../../shared/userSettings.ts";
-import { findClientByPhone, generateCode, normalizePhone } from "../../shared/clientLogin.ts";
+import { codeSendBlocked, findClientByPhone, generateCode, normalizePhone } from "../../shared/clientLogin.ts";
 
 // Public endpoint: given an account number + phone, send a one-time login code
 // over WhatsApp (Green API) to that phone. Never reveals whether the pair exists
@@ -19,8 +19,13 @@ export default async function(req) {
       return Response.json({ success: false, error: 'החיבור לוואטסאפ אינו מוגדר — פנו למנהל המערכת' });
     }
 
-    const code = generateCode();
     const phone = normalizePhone(config.clientPhone);
+    const blocked = await codeSendBlocked(base44, phone);
+    if (blocked) {
+      return Response.json({ success: false, error: blocked });
+    }
+
+    const code = generateCode();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
     const res = await fetch(url, {

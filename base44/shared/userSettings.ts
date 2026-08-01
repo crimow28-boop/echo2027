@@ -24,6 +24,25 @@ export async function getUserSettings(base44) {
   return null;
 }
 
+// Fetch the settings record belonging to an arbitrary user id (service role).
+// Used by public endpoints (e.g. listenRecording) that act on behalf of the
+// recording's owner without an authenticated session.
+export async function getSettingsForUserId(base44, userId) {
+  if (!userId) return null;
+  const svc = base44.asServiceRole.entities.UserSettings;
+  let rows = await svc.filter({ ownerUserId: userId }, "-updated_date", 5);
+  if (!rows?.length) rows = await svc.filter({ created_by_id: userId }, "-updated_date", 5);
+  if (!rows?.length) {
+    try {
+      const owner = await base44.asServiceRole.entities.User.get(userId);
+      if (owner?.email) rows = await svc.filter({ clientEmail: owner.email }, "-updated_date", 5);
+    } catch (_e) {
+      // user lookup failed — treat as not found
+    }
+  }
+  return rows?.[0] || null;
+}
+
 // Build a Green API endpoint URL from the user's instance id + api token.
 // Green API host is derived from the first 4 digits of the instance id,
 // e.g. instance "710722692595" -> "https://7107.api.greenapi.com".

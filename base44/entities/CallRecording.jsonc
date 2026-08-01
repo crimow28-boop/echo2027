@@ -41,6 +41,10 @@
       "default": false,
       "title": "No Recording Saved"
     },
+    "listenToken": {
+      "type": "string",
+      "title": "Public Listen Link Token"
+    },
     "sent": {
       "type": "boolean",
       "default": false,

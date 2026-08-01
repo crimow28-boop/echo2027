@@ -23,6 +23,11 @@
       "type": "boolean",
       "default": false,
       "title": "Used"
+    },
+    "attempts": {
+      "type": "number",
+      "default": 0,
+      "title": "Failed Verify Attempts"
     }
   },
   "required": [

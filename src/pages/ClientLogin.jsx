@@ -69,7 +69,7 @@ export default function ClientLogin() {
     try {
       const res = await base44.functions.invoke("verifyLoginCode", { phone, code: value });
       if (!res.data?.success) throw new Error(res.data?.error || "הקוד אינו תקין");
-      await base44.auth.loginViaEmailPassword(res.data.email, res.data.password);
+      base44.auth.setToken(res.data.token);
       rememberClient("", phone);
       setEntering(true);
       setTimeout(() => { window.location.href = "/"; }, 900);

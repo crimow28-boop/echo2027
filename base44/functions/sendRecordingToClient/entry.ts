@@ -2,6 +2,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { getRecordingUrls } from "../../shared/exmApi.ts";
 import { getUserSettings, greenApiUrl } from "../../shared/userSettings.ts";
 import { toWhatsAppChatId } from "../../shared/whatsappContacts.ts";
+import { randomListenToken, listenUrl } from "../../shared/listenLinks.ts";
+import { secrets } from "base44:runtime";
 
 export default async function(req) {
   try {
@@ -22,24 +24,27 @@ export default async function(req) {
     const chatId = toWhatsAppChatId(recording.callerNumber);
     if (!chatId) return Response.json({ error: 'Missing callerNumber' }, { status: 400 });
 
-    // Fetch a permanent public recording URL from exm.co.il (ttl=0, no time limit)
-    // using the calling user's own EXM token, so the client can open the link anytime.
+    // The client receives an Echo-owned link (listenRecording) that mints a fresh
+    // short-lived EXM signed URL on every listen — never a permanent public URL.
     // 0-second calls were never answered: no recording, send a call-back message.
     const missed = !Number(recording.duration);
-    let recordingUrl = recording.recordingUrl;
+    let recordingUrl = null;
     let lookupError = null;
     let notRecorded = false;
-    if (!missed && !recordingUrl && recording.externalId) {
-      // The EXM lookup can be slow — retry once before giving up.
+    if (!missed && recording.externalId) {
+      // Verify the recording actually exists in EXM (can be slow — retry once).
       for (let attempt = 0; attempt < 2 && !recordingUrl; attempt++) {
         try {
-          const urls = await getRecordingUrls(settings.exmToken, [recording.externalId], 0);
+          const urls = await getRecordingUrls(settings.exmToken, [recording.externalId], 10);
           const found = urls.find((u) => u.id === recording.externalId);
           if (found?.url) {
-            recordingUrl = found.url;
+            let token = recording.listenToken;
+            if (!token) {
+              token = randomListenToken();
+              await base44.entities.CallRecording.update(recordId, { listenToken: token, recordingMissing: false });
+            }
+            recordingUrl = listenUrl(secrets.get("BASE44_APP_ID"), token);
             lookupError = null;
-            // Cache it so future sends don't depend on EXM being reachable.
-            await base44.entities.CallRecording.update(recordId, { recordingUrl, recordingMissing: false });
           } else if (found && found.code === 404) {
             notRecorded = true;
             break;
@@ -50,6 +55,9 @@ export default async function(req) {
           lookupError = `מערכת הטלפוניה לא זמינה כרגע (${e.message})`;
         }
       }
+    } else if (!missed && recording.recordingUrl) {
+      // Legacy records without an EXM id — fall back to the stored URL.
+      recordingUrl = recording.recordingUrl;
     }
     if (!missed && !recordingUrl) {
       if (notRecorded && !recording.recordingMissing) {
