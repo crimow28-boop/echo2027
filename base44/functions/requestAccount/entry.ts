@@ -1,21 +1,35 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { normalizePhone } from "../../shared/clientLogin.ts";
-import { decryptSettingsRow } from "../../shared/secretsBox.ts";
+import { sendSystemWhatsApp } from "../../shared/systemWhatsApp.ts";
+
+const MAX_ATTEMPTS = 5;
 
 // Verify the WhatsApp code that was sent to the signing-up phone number.
-// Returns true only for a valid, unused, unexpired code.
+// Wrong guesses are counted and the code is burned after 5 failures, so the
+// 6-digit code can't be brute-forced.
 async function verifySignupCode(base44, phone, code) {
   const normalized = normalizePhone(phone);
   const clean = String(code || "").replace(/\D/g, "");
   if (!normalized || clean.length !== 6) return false;
+
   const rows = await base44.asServiceRole.entities.LoginCode.filter(
-    { accountNumber: `signup:${normalized}`, code: clean, used: false },
+    { accountNumber: `signup:${normalized}`, used: false },
     "-created_date",
-    5
+    1
   );
-  const match = (rows || []).find((r) => new Date(r.expiresAt).getTime() > Date.now());
-  if (!match) return false;
-  await base44.asServiceRole.entities.LoginCode.update(match.id, { used: true });
+  const record = rows?.[0];
+  if (!record || new Date(record.expiresAt).getTime() < Date.now()) return false;
+
+  if (record.code !== clean) {
+    const attempts = (record.attempts || 0) + 1;
+    await base44.asServiceRole.entities.LoginCode.update(record.id, {
+      attempts,
+      ...(attempts >= MAX_ATTEMPTS ? { used: true } : {})
+    });
+    return false;
+  }
+
+  await base44.asServiceRole.entities.LoginCode.update(record.id, { used: true });
   return true;
 }
 
@@ -46,21 +60,11 @@ async function notifyAdmin(base44, details) {
   return { sent: emails.length };
 }
 
-function toChatId(phone) {
-  let p = (phone || "").replace(/\D/g, "");
-  if (p.startsWith("972")) return `${p}@c.us`;
-  if (p.startsWith("0")) return `972${p.slice(1)}@c.us`;
-  return `${p}@c.us`;
-}
-
-// Notify the system admin on WhatsApp about a new lead (via Green API).
-async function notifyAdminWhatsApp(base44, details) {
+// Notify the system admin on WhatsApp about a new lead — from Echo's own
+// WhatsApp instance, never from a customer's account.
+async function notifyAdminWhatsApp(details) {
   const target = Deno.env.get("ADMIN_ALERT_PHONE");
   if (!target) return { skipped: "no ADMIN_ALERT_PHONE" };
-
-  const rows = await base44.asServiceRole.entities.UserSettings.list("-updated_date", 200);
-  const creds = await decryptSettingsRow((rows || []).find((r) => r.greenInstanceId && r.greenToken) || null);
-  if (!creds) return { skipped: "no green api credentials" };
 
   const message = [
     "🔔 ליד חדש ב-echo",
@@ -72,38 +76,18 @@ async function notifyAdminWhatsApp(base44, details) {
     details.notes ? `הערות: ${details.notes}` : null
   ].filter(Boolean).join("\n");
 
-  const res = await fetch(
-    `https://api.green-api.com/waInstance${creds.greenInstanceId}/sendMessage/${creds.greenToken}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chatId: toChatId(target), message })
-    }
-  );
-  return { status: res.status };
+  return sendSystemWhatsApp(target, message);
 }
 
 // Immediate WhatsApp welcome to the person who just requested an account.
-async function notifyLeadWhatsApp(base44, details) {
-  const rows = await base44.asServiceRole.entities.UserSettings.list("-updated_date", 200);
-  const creds = await decryptSettingsRow((rows || []).find((r) => r.greenInstanceId && r.greenToken) || null);
-  if (!creds) return { skipped: "no green api credentials" };
-
+async function notifyLeadWhatsApp(details) {
   const message =
     `היי ${details.contactName}, ברוכים הבאים ל־Echo 👋\n\n` +
     `החשבון שלך נפתח בהצלחה.\n\n` +
     `כדי להשלים את ההגדרה ולחבר את הקלטות השיחות, נציג שלנו יצור איתך קשר בקרוב וילווה אותך בתהליך.\n\n` +
     `בינתיים אין צורך לעשות דבר - אנחנו נדאג להכול יחד איתך.`;
 
-  const res = await fetch(
-    `https://api.green-api.com/waInstance${creds.greenInstanceId}/sendMessage/${creds.greenToken}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chatId: toChatId(details.phone), message })
-    }
-  );
-  return { status: res.status };
+  return sendSystemWhatsApp(details.phone, message);
 }
 
 export default async function (req) {
@@ -139,11 +123,11 @@ export default async function (req) {
     } catch (_e) { /* request is saved even if the email fails */ }
 
     try {
-      await notifyAdminWhatsApp(base44, { businessName, businessId, contactName, phone, notes });
+      await notifyAdminWhatsApp({ businessName, businessId, contactName, phone, notes });
     } catch (_e) { /* request is saved even if the WhatsApp alert fails */ }
 
     try {
-      await notifyLeadWhatsApp(base44, { contactName, phone });
+      await notifyLeadWhatsApp({ contactName, phone });
     } catch (_e) { /* request is saved even if the welcome message fails */ }
 
     return Response.json({ success: true });

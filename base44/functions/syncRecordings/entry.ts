@@ -28,6 +28,16 @@ export default async function(req) {
       if (r.externalId) idMap.set(r.externalId, r.id);
     }
 
+    // Numbers the user marked private stay hidden server-side, including for
+    // calls that arrive after the contact was hidden.
+    const privateRows = await base44.entities.PrivateContact.list("-created_date", 500);
+    const normalize = (n) => {
+      let d = String(n || "").replace(/\D/g, "");
+      if (d.startsWith("0")) d = "972" + d.slice(1);
+      return d;
+    };
+    const privateNumbers = new Set((privateRows || []).map((c) => normalize(c.phone)).filter(Boolean));
+
     const toCreate = [];
     const toUpdate = [];
     let next = null;
@@ -46,7 +56,7 @@ export default async function(req) {
         if (existingId) {
           toUpdate.push({ id: existingId, ...mapped });
         } else {
-          toCreate.push(mapped);
+          toCreate.push({ ...mapped, hidden: privateNumbers.has(normalize(mapped.callerNumber)) });
           idMap.set(mapped.externalId, "new");
         }
       }
