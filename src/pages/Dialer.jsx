@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DialPad from "@/components/dialer/DialPad";
+import DialerContacts from "@/components/dialer/DialerContacts";
 import { ArrowRight, Loader2, Phone, PhoneCall } from "lucide-react";
 
 export default function Dialer() {
@@ -85,6 +86,15 @@ export default function Dialer() {
             </p>
           )}
         </div>
+
+        <DialerContacts
+          onSelect={(phone) => {
+            setError("");
+            setOk("");
+            setNumber(phone);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
       </div>
     </div>
   );
