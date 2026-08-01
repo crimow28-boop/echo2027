@@ -3,24 +3,16 @@ import { base44 } from "@/api/base44Client";
 import { Input } from "@/components/ui/input";
 import { Search, User } from "lucide-react";
 
-// Contacts are built from the account's call history: one entry per phone number,
-// keeping the friendly name when the switchboard supplied one.
+// Contacts come live from the switchboard API (saved contacts first).
 export default function DialerContacts({ onSelect }) {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
 
   useEffect(() => {
-    base44.entities.CallRecording.list("-callDate", 300)
-      .then((rows) => {
-        const map = new Map();
-        (rows || []).forEach((r) => {
-          const phone = (r.callerNumber || "").trim();
-          if (!phone || map.has(phone)) return;
-          map.set(phone, { phone, name: (r.callerFriendly || "").trim() });
-        });
-        setContacts([...map.values()]);
-      })
+    base44.functions
+      .invoke("listExmContacts", {})
+      .then((res) => setContacts(res.data?.contacts || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -33,7 +25,12 @@ export default function DialerContacts({ onSelect }) {
     );
   }, [contacts, q]);
 
-  if (loading) return null;
+  if (loading)
+    return (
+      <div className="mt-6 rounded-[2rem] bg-card p-5 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.22)]">
+        <p className="text-center text-xs text-muted-foreground">טוענים אנשי קשר מהמרכזייה...</p>
+      </div>
+    );
   if (!contacts.length) return null;
 
   return (
