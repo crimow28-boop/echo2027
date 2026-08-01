@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Save, X } from "lucide-react";
 
-const EMPTY = { clientName: "", accountNumber: "", clientPhone: "", exmToken: "", greenInstanceId: "", greenToken: "" };
+const EMPTY = { clientName: "", accountNumber: "", clientPhone: "", virtualNumber: "", exmToken: "", greenInstanceId: "", greenToken: "" };
 
 export default function ClientConfigForm({ initial, onDone, onCancel }) {
   // Secret fields are never prefilled — stored values are encrypted; typing a
@@ -28,6 +28,7 @@ export default function ClientConfigForm({ initial, onDone, onCancel }) {
         clientName: form.clientName.trim(),
         accountNumber: form.accountNumber.trim(),
         clientPhone: form.clientPhone.trim(),
+        virtualNumber: form.virtualNumber.trim(),
         greenInstanceId: form.greenInstanceId.trim(),
         // Secrets are sent only when a new value was typed, and are encrypted server-side.
         ...(form.exmToken.trim() ? { exmToken: form.exmToken.trim() } : {}),
@@ -74,6 +75,7 @@ export default function ClientConfigForm({ initial, onDone, onCancel }) {
         {field("cname", "שם הלקוח", "clientName", "עסק לדוגמה")}
         {field("acc", "ח.פ העסק (מזהה כניסה)", "accountNumber", "512345678")}
         {field("cphone", "טלפון הלקוח (לקוד בוואטסאפ)", "clientPhone", "0501234567")}
+        {field("vnum", "מספר וירטואלי (לחייגן)", "virtualNumber", "0771234567")}
         {field("exm", "טוקן EXM", "exmToken", initial?.exmToken ? "שמור ומוצפן — הזינו ערך חדש להחלפה" : "exm_token")}
         {field("gi", "מזהה מופע Green API", "greenInstanceId", "710722692595")}
         {field("gt", "טוקן Green API", "greenToken", initial?.greenToken ? "שמור ומוצפן — הזינו ערך חדש להחלפה" : "api_token")}

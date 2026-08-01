@@ -30,6 +30,10 @@
       "type": "string",
       "title": "EXM API Token"
     },
+    "virtualNumber": {
+      "type": "string",
+      "title": "Virtual Number (Click2Call Caller ID)"
+    },
     "greenInstanceId": {
       "type": "string",
       "title": "Green API Instance ID"

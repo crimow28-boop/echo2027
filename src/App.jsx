@@ -22,6 +22,7 @@ import RequestAccount from './pages/RequestAccount';
 import PrivateContacts from './pages/PrivateContacts';
 import MessageTemplatePage from './pages/MessageTemplate';
 import VoiceAnnouncements from './pages/VoiceAnnouncements';
+import Dialer from './pages/Dialer';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -61,6 +62,7 @@ const AuthenticatedApp = () => {
     <Route path="/private-contacts" element={<PrivateContacts />} />
     <Route path="/message-template" element={<MessageTemplatePage />} />
     <Route path="/voice-announcements" element={<VoiceAnnouncements />} />
+    <Route path="/dialer" element={<Dialer />} />
     <Route path="/admin" element={<Admin />} />
     </Route>
     <Route path="/client-login" element={<ClientLogin />} />
