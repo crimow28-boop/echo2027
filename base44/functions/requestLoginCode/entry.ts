@@ -15,6 +15,12 @@ export default async function(req) {
     }
     const uniform = Response.json({ success: true, phoneHint: requested.slice(-4) });
 
+    // Throttle on the REQUESTED number, before any lookup, and answer with the
+    // same generic response when throttled — otherwise a second request within
+    // the cooldown would reveal whether the number is registered.
+    const blocked = await codeSendBlocked(base44, requested);
+    if (blocked) return uniform;
+
     const config = await findClientByPhone(base44, requested);
     if (!config) return uniform;
 
@@ -22,10 +28,6 @@ export default async function(req) {
     if (!url) return uniform;
 
     const phone = normalizePhone(config.clientPhone);
-    const blocked = await codeSendBlocked(base44, phone);
-    if (blocked) {
-      return Response.json({ success: false, error: blocked });
-    }
 
     const code = generateCode();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
