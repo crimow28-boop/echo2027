@@ -1,7 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { greenApiUrl } from "../../shared/userSettings.ts";
 import { codeSendBlocked, generateCode, normalizePhone } from "../../shared/clientLogin.ts";
-import { decryptSettingsRow } from "../../shared/secretsBox.ts";
+import { sendSystemWhatsApp } from "../../shared/systemWhatsApp.ts";
 
 // Public endpoint: send a one-time verification code over WhatsApp to a phone
 // that is signing up for a new account (before the account is actually opened).
@@ -15,28 +14,28 @@ export default async function (req) {
     const blocked = await codeSendBlocked(base44, phone);
     if (blocked) return Response.json({ success: false, error: blocked });
 
-    const rows = await base44.asServiceRole.entities.UserSettings.list("-updated_date", 200);
-    const creds = await decryptSettingsRow((rows || []).find((r) => r.greenInstanceId && r.greenToken) || null);
-    const url = creds ? greenApiUrl(creds, "sendMessage") : null;
-    if (!url) return Response.json({ success: false, error: 'החיבור לוואטסאפ אינו מוגדר — פנו למנהל המערכת' });
-
+    // Sent from Echo's own WhatsApp instance — never from a customer's account.
     const code = generateCode();
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chatId: `${phone}@c.us`,
-        message: `קוד האימות לפתיחת חשבון ב-Echo: ${code}\nהקוד בתוקף ל-5 דקות.`
-      })
-    });
-    if (!res.ok) return Response.json({ success: false, error: 'שליחת הקוד נכשלה — נסו שוב' });
+    const res = await sendSystemWhatsApp(
+      phone,
+      `קוד האימות לפתיחת חשבון ב-Echo: ${code}\nהקוד בתוקף ל-5 דקות.`
+    );
+    if (!res.ok) {
+      return Response.json({
+        success: false,
+        error: res.skipped
+          ? 'החיבור לוואטסאפ של המערכת אינו מוגדר — פנו למנהל המערכת'
+          : 'שליחת הקוד נכשלה — נסו שוב'
+      });
+    }
 
     await base44.asServiceRole.entities.LoginCode.create({
       accountNumber: `signup:${phone}`,
       phone,
       code,
       expiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
-      used: false
+      used: false,
+      attempts: 0
     });
 
     return Response.json({ success: true, phoneHint: phone.slice(-4) });

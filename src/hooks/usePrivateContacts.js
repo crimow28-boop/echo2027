@@ -25,21 +25,26 @@ export default function usePrivateContacts() {
     [contacts]
   );
 
+  // Hiding/unhiding runs on the server so the calls themselves are excluded from
+  // every response — not merely filtered out in the browser.
   const hide = useCallback(
     async (recording) => {
       const phone = normalizePrivatePhone(recording?.callerNumber);
       if (!phone) return;
-      const created = await base44.entities.PrivateContact.create({
+      const res = await base44.functions.invoke("setContactPrivacy", {
+        action: "hide",
         phone,
         name: recording.callerFriendly || ""
       });
-      setContacts((prev) => [created, ...prev]);
+      if (!res.data?.success) throw new Error(res.data?.error || "הסתרת איש הקשר נכשלה");
+      setContacts((prev) => [res.data.contact, ...prev]);
     },
     []
   );
 
   const unhide = useCallback(async (id) => {
-    await base44.entities.PrivateContact.delete(id);
+    const res = await base44.functions.invoke("setContactPrivacy", { action: "unhide", contactId: id });
+    if (!res.data?.success) throw new Error(res.data?.error || "החזרת השיחות נכשלה");
     setContacts((prev) => prev.filter((c) => c.id !== id));
   }, []);
 
