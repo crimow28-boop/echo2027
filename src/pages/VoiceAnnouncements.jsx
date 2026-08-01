@@ -1,16 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, AlertTriangle } from "lucide-react";
 import AnnouncementClip from "@/components/announcements/AnnouncementClip";
+import VersionPicker from "@/components/announcements/VersionPicker";
+import HelpNotice from "@/components/announcements/HelpNotice";
 
-const FILES = {
-  sentenceFemale: "https://media.base44.com/files/public/6a689fcffadbeb43e30aa312/b74f4fe1c_tikun73-notice-sentence-female.mp3",
-  sentenceMale: "https://media.base44.com/files/public/6a689fcffadbeb43e30aa312/db3ed20db_tikun73-notice-sentence-male.mp3",
-  openerFemale: "https://media.base44.com/files/public/6a689fcffadbeb43e30aa312/18a6d5ff0_tikun73-notice-opener-female.mp3",
-  openerMale: "https://media.base44.com/files/public/6a689fcffadbeb43e30aa312/51d21f601_tikun73-notice-opener-male.mp3",
+const VERSIONS = {
+  sentence: {
+    title: "משפט ההודעה בלבד",
+    subtitle: "יש לכם כבר הודעת פתיחה? הוסיפו אחריה רק את המשפט הזה.",
+    text: '"לידיעתכם, השיחה מוקלטת, ותוכלו לבקש ולקבל את הקלטת השיחה בכל עת."',
+    female: "https://media.base44.com/files/public/6a689fcffadbeb43e30aa312/b74f4fe1c_tikun73-notice-sentence-female.mp3",
+    male: "https://media.base44.com/files/public/6a689fcffadbeb43e30aa312/db3ed20db_tikun73-notice-sentence-male.mp3",
+    fileBase: "הודעת-הקלטה",
+  },
+  opener: {
+    title: "הודעת פתיחה שלמה",
+    subtitle: "אין לכם הודעת פתיחה? קובץ אחד שעושה הכל: ברכה, הודעת ההקלטה והמתנה.",
+    text: '"שלום, תודה שהתקשרתם. לידיעתכם, השיחה מוקלטת, ותוכלו לבקש ולקבל את הקלטת השיחה בכל עת. אנא המתינו ונשמח לעזור."',
+    female: "https://media.base44.com/files/public/6a689fcffadbeb43e30aa312/18a6d5ff0_tikun73-notice-opener-female.mp3",
+    male: "https://media.base44.com/files/public/6a689fcffadbeb43e30aa312/51d21f601_tikun73-notice-opener-male.mp3",
+    fileBase: "הודעת-פתיחה",
+  },
 };
 
 export default function VoiceAnnouncements() {
+  const [version, setVersion] = useState("sentence");
+  const v = VERSIONS[version];
+
   return (
     <div dir="rtl" className="min-h-screen bg-transparent bg-grid text-foreground font-body">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
@@ -20,7 +37,7 @@ export default function VoiceAnnouncements() {
 
         <h1 className="mt-6 text-2xl sm:text-3xl font-heading">הכרזות קוליות למרכזייה</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          שני נוסחים, שני קולות — מוכנים להורדה ולהעלאה למרכזייה.
+          בחרו את הנוסח המתאים לכם, והורידו בקול נשי או גברי.
         </p>
 
         <div className="mt-6 flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4">
@@ -32,33 +49,26 @@ export default function VoiceAnnouncements() {
           </p>
         </div>
 
-        <section className="mt-10">
-          <h2 className="text-lg font-heading">משפט ההודעה בלבד</h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            יש לכם כבר הודעת פתיחה? הוסיפו אחריה רק את המשפט הזה.
-          </p>
+        <div className="mt-8">
+          <p className="mb-3 text-sm font-medium">בחרו נוסח</p>
+          <VersionPicker value={version} onChange={setVersion} />
+        </div>
+
+        <section className="mt-8">
+          <h2 className="text-lg font-heading">{v.title}</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground">{v.subtitle}</p>
           <p className="mt-4 rounded-2xl bg-muted/50 border border-border px-4 py-3.5 text-sm leading-relaxed">
-            "לידיעתכם, השיחה מוקלטת, ותוכלו לבקש ולקבל את הקלטת השיחה בכל עת."
+            {v.text}
           </p>
           <div className="mt-4 space-y-3">
-            <AnnouncementClip label="קול נשי" url={FILES.sentenceFemale} fileName="הודעת-הקלטה-קול-נשי.mp3" />
-            <AnnouncementClip label="קול גברי" url={FILES.sentenceMale} fileName="הודעת-הקלטה-קול-גברי.mp3" />
+            <AnnouncementClip label="קול נשי" url={v.female} fileName={`${v.fileBase}-קול-נשי.mp3`} />
+            <AnnouncementClip label="קול גברי" url={v.male} fileName={`${v.fileBase}-קול-גברי.mp3`} />
           </div>
         </section>
 
-        <section className="mt-12">
-          <h2 className="text-lg font-heading">הודעת פתיחה שלמה</h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            אין לכם הודעת פתיחה? קובץ אחד שעושה הכל: ברכה, הודעת ההקלטה והמתנה.
-          </p>
-          <p className="mt-4 rounded-2xl bg-muted/50 border border-border px-4 py-3.5 text-sm leading-relaxed">
-            "שלום, תודה שהתקשרתם. לידיעתכם, השיחה מוקלטת, ותוכלו לבקש ולקבל את הקלטת השיחה בכל עת. אנא המתינו ונשמח לעזור."
-          </p>
-          <div className="mt-4 space-y-3">
-            <AnnouncementClip label="קול נשי" url={FILES.openerFemale} fileName="הודעת-פתיחה-קול-נשי.mp3" />
-            <AnnouncementClip label="קול גברי" url={FILES.openerMale} fileName="הודעת-פתיחה-קול-גברי.mp3" />
-          </div>
-        </section>
+        <div className="mt-10">
+          <HelpNotice />
+        </div>
       </div>
     </div>
   );
