@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Loader2, Download, History, Users, LogOut, Building2, EyeOff, MessageSquare } from "lucide-react";
+import { Menu, Loader2, Download, History, Users, LogOut, Building2, EyeOff, MessageSquare, Mic } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import useIsSystemAdmin from "@/hooks/useIsSystemAdmin";
@@ -56,6 +56,10 @@ export default function AppMenuSheet({ onExport, exporting }) {
           <Link to="/message-template" onClick={() => setOpen(false)} className={itemClass}>
             <MessageSquare className="w-4 h-4" />
             <span>עריכת ההודעה ללקוח</span>
+          </Link>
+          <Link to="/voice-announcements" onClick={() => setOpen(false)} className={itemClass}>
+            <Mic className="w-4 h-4" />
+            <span>הכרזות קוליות למרכזייה</span>
           </Link>
           <Link to="/private-contacts" onClick={() => setOpen(false)} className={itemClass}>
             <EyeOff className="w-4 h-4" />
