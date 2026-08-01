@@ -1,3 +1,5 @@
+import { decryptSettingsRow } from "./secretsBox.ts";
+
 // Shared helpers for per-user integration credentials (UserSettings entity).
 // UserSettings has owner-only RLS, so the user-authenticated client only ever
 // returns the calling user's own record.
@@ -18,7 +20,7 @@ export async function getUserSettings(base44) {
     const rows = await svc.filter(q, "-updated_date", 10);
     if (rows && rows.length > 0) {
       // Prefer a record that actually holds WhatsApp credentials.
-      return rows.find((r) => r.greenInstanceId && r.greenToken) || rows[0];
+      return decryptSettingsRow(rows.find((r) => r.greenInstanceId && r.greenToken) || rows[0]);
     }
   }
   return null;
@@ -40,7 +42,7 @@ export async function getSettingsForUserId(base44, userId) {
       // user lookup failed — treat as not found
     }
   }
-  return rows?.[0] || null;
+  return decryptSettingsRow(rows?.[0] || null);
 }
 
 // Build a Green API endpoint URL from the user's instance id + api token.

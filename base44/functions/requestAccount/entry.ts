@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { normalizePhone } from "../../shared/clientLogin.ts";
+import { decryptSettingsRow } from "../../shared/secretsBox.ts";
 
 // Verify the WhatsApp code that was sent to the signing-up phone number.
 // Returns true only for a valid, unused, unexpired code.
@@ -58,7 +59,7 @@ async function notifyAdminWhatsApp(base44, details) {
   if (!target) return { skipped: "no ADMIN_ALERT_PHONE" };
 
   const rows = await base44.asServiceRole.entities.UserSettings.list("-updated_date", 200);
-  const creds = (rows || []).find((r) => r.greenInstanceId && r.greenToken);
+  const creds = await decryptSettingsRow((rows || []).find((r) => r.greenInstanceId && r.greenToken) || null);
   if (!creds) return { skipped: "no green api credentials" };
 
   const message = [
@@ -85,7 +86,7 @@ async function notifyAdminWhatsApp(base44, details) {
 // Immediate WhatsApp welcome to the person who just requested an account.
 async function notifyLeadWhatsApp(base44, details) {
   const rows = await base44.asServiceRole.entities.UserSettings.list("-updated_date", 200);
-  const creds = (rows || []).find((r) => r.greenInstanceId && r.greenToken);
+  const creds = await decryptSettingsRow((rows || []).find((r) => r.greenInstanceId && r.greenToken) || null);
   if (!creds) return { skipped: "no green api credentials" };
 
   const message =

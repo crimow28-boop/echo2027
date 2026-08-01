@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { greenApiUrl } from "../../shared/userSettings.ts";
 import { codeSendBlocked, generateCode, normalizePhone } from "../../shared/clientLogin.ts";
+import { decryptSettingsRow } from "../../shared/secretsBox.ts";
 
 // Public endpoint: send a one-time verification code over WhatsApp to a phone
 // that is signing up for a new account (before the account is actually opened).
@@ -15,7 +16,7 @@ export default async function (req) {
     if (blocked) return Response.json({ success: false, error: blocked });
 
     const rows = await base44.asServiceRole.entities.UserSettings.list("-updated_date", 200);
-    const creds = (rows || []).find((r) => r.greenInstanceId && r.greenToken);
+    const creds = await decryptSettingsRow((rows || []).find((r) => r.greenInstanceId && r.greenToken) || null);
     const url = creds ? greenApiUrl(creds, "sendMessage") : null;
     if (!url) return Response.json({ success: false, error: 'החיבור לוואטסאפ אינו מוגדר — פנו למנהל המערכת' });
 

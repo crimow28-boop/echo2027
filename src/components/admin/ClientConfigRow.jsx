@@ -13,13 +13,10 @@ export default function ClientConfigRow({ config, onEdit, onChanged }) {
     setChecking(true);
     setResult(null);
     try {
-      const exm = await base44.functions.invoke("validateExmToken", { token: config.exmToken });
+      const exm = await base44.functions.invoke("validateExmToken", { configId: config.id });
       let green = { data: { valid: null } };
       if (config.greenInstanceId && config.greenToken) {
-        green = await base44.functions.invoke("validateGreenApi", {
-          instanceId: config.greenInstanceId,
-          apiToken: config.greenToken
-        });
+        green = await base44.functions.invoke("validateGreenApi", { configId: config.id });
       }
       setResult({ exm: exm.data?.valid, green: green.data?.valid });
     } catch (e) {

@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { greenApiUrl } from "../../shared/userSettings.ts";
 import { normalizePhone } from "../../shared/clientLogin.ts";
+import { decryptSettingsRow } from "../../shared/secretsBox.ts";
 
 // Admin-only: sends the Echo welcome WhatsApp message to a newly configured client.
 export default async function(req) {
@@ -15,7 +16,7 @@ export default async function(req) {
     const loginUrl = body?.loginUrl;
     if (!configId) return Response.json({ success: false, error: 'MISSING_CONFIG_ID' });
 
-    const config = await base44.asServiceRole.entities.UserSettings.get(configId);
+    const config = await decryptSettingsRow(await base44.asServiceRole.entities.UserSettings.get(configId));
     if (!config) return Response.json({ success: false, error: 'CONFIG_NOT_FOUND' });
 
     const url = greenApiUrl(config, "sendMessage");

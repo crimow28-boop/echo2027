@@ -29,9 +29,8 @@ export default function Settings() {
         const s = rows?.[0];
         if (s) {
           setSettingsId(s.id);
-          setExmToken(s.exmToken || "");
+          // Tokens are stored encrypted — never prefill them into the form.
           setGreenInstanceId(s.greenInstanceId || "");
-          setGreenToken(s.greenToken || "");
           setExisting({ exm: !!s.exmToken, green: !!(s.greenInstanceId && s.greenToken) });
         }
       } catch (e) {
@@ -44,24 +43,30 @@ export default function Settings() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!exmToken.trim()) {
+    if (!exmToken.trim() && !existing.exm) {
       toast({ title: "חובה להזין טוקן EXM", variant: "destructive" });
       return;
     }
     setSaving(true);
     try {
       const payload = {
-        exmToken: exmToken.trim(),
         greenInstanceId: greenInstanceId.trim(),
-        greenToken: greenToken.trim()
+        // Secrets are sent only when a new value was typed; encrypted server-side.
+        ...(exmToken.trim() ? { exmToken: exmToken.trim() } : {}),
+        ...(greenToken.trim() ? { greenToken: greenToken.trim() } : {})
       };
-      if (settingsId) {
-        await base44.entities.UserSettings.update(settingsId, payload);
-      } else {
-        const created = await base44.entities.UserSettings.create(payload);
-        setSettingsId(created.id);
-      }
-      setExisting({ exm: !!payload.exmToken, green: !!(payload.greenInstanceId && payload.greenToken) });
+      const res = await base44.functions.invoke("saveClientSettings", {
+        ...(settingsId ? { id: settingsId } : {}),
+        data: payload
+      });
+      if (!res.data?.success) throw new Error(res.data?.error || "השמירה נכשלה");
+      if (!settingsId) setSettingsId(res.data.id);
+      setExisting({
+        exm: existing.exm || !!exmToken.trim(),
+        green: !!greenInstanceId.trim() && (existing.green || !!greenToken.trim())
+      });
+      setExmToken("");
+      setGreenToken("");
       toast({ title: "ההגדרות נשמרו בהצלחה" });
     } catch (err) {
       toast({ title: "שגיאה בשמירה", description: err.message, variant: "destructive" });
@@ -70,7 +75,7 @@ export default function Settings() {
     }
   };
 
-  const mask = (v) => (v ? `${"•".repeat(Math.max(0, v.length - 4))}${v.slice(-4)}` : "");
+
 
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground font-body">
@@ -118,7 +123,7 @@ export default function Settings() {
               <a href={EXM_HELP} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline">
                 איך מוצאים את הטוקן ב-EXM <ExternalLink className="w-3 h-3" />
               </a>
-              {existing.exm && <p className="text-xs text-muted-foreground">נשמר כעת: {mask(exmToken)}</p>}
+              {existing.exm && <p className="text-xs text-muted-foreground">טוקן שמור ומוצפן — הזינו ערך חדש כדי להחליף</p>}
             </div>
             <div className="space-y-2.5">
               <Label htmlFor="gi" className="text-sm font-medium text-foreground/80">מזהה מופע · Green API</Label>
@@ -144,7 +149,7 @@ export default function Settings() {
               <a href={GREEN_HELP} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline">
                 איך מוצאים את הפרטים ב-Green API <ExternalLink className="w-3 h-3" />
               </a>
-              {existing.green && <p className="text-xs text-muted-foreground">נשמר כעת: {mask(greenToken)}</p>}
+              {existing.green && <p className="text-xs text-muted-foreground">טוקן שמור ומוצפן — הזינו ערך חדש כדי להחליף</p>}
             </div>
 
             <div className="flex items-center gap-3 pt-2">

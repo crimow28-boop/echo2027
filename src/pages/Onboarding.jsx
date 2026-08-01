@@ -31,9 +31,8 @@ export default function Onboarding() {
         const s = rows?.[0];
         if (s) {
           setExistingId(s.id);
-          setExmToken(s.exmToken || "");
+          // Tokens are stored encrypted — never prefill them into the form.
           setGreenInstanceId(s.greenInstanceId || "");
-          setGreenToken(s.greenToken || "");
           if (s.exmToken && s.greenInstanceId && s.greenToken) {
             window.location.href = "/";
             return;
@@ -49,13 +48,13 @@ export default function Onboarding() {
   }, []);
 
   const persistExm = async () => {
-    const payload = { exmToken: exmToken.trim() };
-    if (existingId) {
-      await base44.entities.UserSettings.update(existingId, payload);
-    } else {
-      const created = await base44.entities.UserSettings.create(payload);
-      setExistingId(created.id);
-    }
+    // Saved via the backend so the token is encrypted at rest.
+    const res = await base44.functions.invoke("saveClientSettings", {
+      ...(existingId ? { id: existingId } : {}),
+      data: { exmToken: exmToken.trim() }
+    });
+    if (!res.data?.success) throw new Error(res.data?.error || "השמירה נכשלה");
+    if (!existingId) setExistingId(res.data.id);
   };
 
   const handleExmNext = async (e) => {
@@ -95,7 +94,11 @@ export default function Onboarding() {
         apiToken: greenToken.trim()
       });
       if (res.data?.valid) {
-        await finish({ exmToken: exmToken.trim(), greenInstanceId: greenInstanceId.trim(), greenToken: greenToken.trim() });
+        await finish({
+          ...(exmToken.trim() ? { exmToken: exmToken.trim() } : {}),
+          greenInstanceId: greenInstanceId.trim(),
+          greenToken: greenToken.trim()
+        });
       } else {
         setErrorGreen(res.data?.error || "פרטי Green API לא תקינים");
       }
@@ -109,7 +112,7 @@ export default function Onboarding() {
   const handleSkipGreen = async () => {
     setSaving(true);
     try {
-      await finish({ exmToken: exmToken.trim() });
+      await finish(exmToken.trim() ? { exmToken: exmToken.trim() } : {});
     } catch (err) {
       toast({ title: "שגיאה בשמירה", description: err.message, variant: "destructive" });
     } finally {
@@ -120,10 +123,12 @@ export default function Onboarding() {
   const finish = async (payload) => {
     setSaving(true);
     try {
-      if (existingId) {
-        await base44.entities.UserSettings.update(existingId, payload);
-      } else {
-        await base44.entities.UserSettings.create(payload);
+      if (Object.keys(payload).length > 0) {
+        const res = await base44.functions.invoke("saveClientSettings", {
+          ...(existingId ? { id: existingId } : {}),
+          data: payload
+        });
+        if (!res.data?.success) throw new Error(res.data?.error || "השמירה נכשלה");
       }
       window.location.href = "/";
     } catch (err) {

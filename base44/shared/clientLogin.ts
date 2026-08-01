@@ -1,3 +1,5 @@
+import { decryptSettingsRow } from "./secretsBox.ts";
+
 // Helpers for the account-number + phone + WhatsApp code login flow.
 
 // Normalize an Israeli phone number to international digits (e.g. 972501234567).
@@ -16,7 +18,7 @@ export async function findClientConfig(base44, accountNumber, phone) {
   if (!account) return null;
   const rows = await base44.asServiceRole.entities.UserSettings.filter({ accountNumber: account }, "-updated_date", 5);
   const wanted = normalizePhone(phone);
-  return (rows || []).find((r) => normalizePhone(r.clientPhone) === wanted && wanted) || null;
+  return decryptSettingsRow((rows || []).find((r) => normalizePhone(r.clientPhone) === wanted && wanted) || null);
 }
 
 // Find the client config matching a phone number alone (service role).
@@ -24,7 +26,7 @@ export async function findClientByPhone(base44, phone) {
   const wanted = normalizePhone(phone);
   if (!wanted) return null;
   const rows = await base44.asServiceRole.entities.UserSettings.list("-updated_date", 500);
-  return (rows || []).find((r) => normalizePhone(r.clientPhone) === wanted) || null;
+  return decryptSettingsRow((rows || []).find((r) => normalizePhone(r.clientPhone) === wanted) || null);
 }
 
 // Cryptographically-random 6-digit code (not Math.random, which is guessable).

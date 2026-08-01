@@ -38,10 +38,12 @@ export default function CreateLoginAccount({ config, onDone }) {
     setBusy(true);
     try {
       await base44.auth.verifyOtp({ email: email.trim().toLowerCase(), otpCode: otp.trim() });
-      await base44.entities.UserSettings.update(config.id, {
-        clientEmail: email.trim().toLowerCase(),
-        loginPassword: password
+      // Saved via the backend so the password is encrypted at rest.
+      const res = await base44.functions.invoke("saveClientSettings", {
+        id: config.id,
+        data: { clientEmail: email.trim().toLowerCase(), loginPassword: password }
       });
+      if (!res.data?.success) throw new Error(res.data?.error || "שמירת החשבון נכשלה");
       setStage("done");
       onDone();
     } catch (e) {
