@@ -91,6 +91,14 @@
   .bg-grid {
     position: relative;
     background-color: #ffffff;
+  }
+  .bg-grid::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: #ffffff;
     background-image:
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cpath d='M-80 -60C120 -110 300 10 280 130 260 250 90 240 -20 320-130 400-200 120-80 -60Z' fill='%2314b8a6' fill-opacity='0.10'/%3E%3Cpath d='M-120 -80C60 -60 210 40 180 130 150 220 20 200-60 260-140 320-220 -60-120 -80Z' fill='%235eead4' fill-opacity='0.14'/%3E%3C/svg%3E"),
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cpath d='M-60 640C-140 460 20 380 160 400 300 420 330 520 300 620 270 720-20 760-60 640Z' fill='%2314b8a6' fill-opacity='0.09'/%3E%3Cpath d='M-100 660C-160 520-20 470 100 490 220 510 240 580 210 650 180 720-60 780-100 660Z' fill='%2399f6e4' fill-opacity='0.16'/%3E%3C/svg%3E"),
@@ -102,7 +110,6 @@
     background-repeat: no-repeat;
     background-position: left top, left bottom, right 12%, right 68%, left 42%, right top, right bottom;
     background-size: 56vw auto, 52vw auto, 46vw auto, 44vw auto, 34vw auto, 52vw auto, 50vw auto;
-    background-attachment: scroll;
   }
   .bg-grid::before {
     content: "";
