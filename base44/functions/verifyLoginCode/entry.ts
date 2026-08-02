@@ -54,6 +54,9 @@ export default async function(req) {
 
     return Response.json({ success: true, token: login.access_token });
   } catch (error) {
-    return Response.json({ success: false, error: error.message }, { status: 500 });
+    const raw = error?.message;
+    const message = typeof raw === "string" ? raw : JSON.stringify(raw ?? error);
+    console.error("verifyLoginCode failed:", message);
+    return Response.json({ success: false, error: 'ההתחברות נכשלה, נסו שוב' }, { status: 500 });
   }
 }

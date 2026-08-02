@@ -7,6 +7,7 @@ import LoginField from "@/components/auth/LoginField";
 import EchoLoadingScreen from "@/components/loading/EchoLoadingScreen";
 import SignupPrompt from "@/components/auth/SignupPrompt";
 import PageRise from "@/components/PageRise";
+import { errorText } from "@/lib/errorText";
 import { Loader2, ArrowRight, MessageCircle, LogIn, Phone, KeyRound, ShieldCheck } from "lucide-react";
 
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/7557abb16_Screenshot2026-07-31at231525-Photoroom.png";
@@ -49,11 +50,11 @@ export default function ClientLogin() {
       // The server answers identically for registered and unregistered numbers,
       // so an unregistered phone simply never receives a code.
       const res = await base44.functions.invoke("requestLoginCode", { phone });
-      if (!res.data?.success) throw new Error(res.data?.error || "שליחת הקוד נכשלה");
+      if (!res.data?.success) throw new Error(errorText(res.data?.error, "שליחת הקוד נכשלה"));
       setHint(res.data.phoneHint || "");
       setStep("code");
     } catch (err) {
-      setError(err.message);
+      setError(errorText(err, "שליחת הקוד נכשלה"));
     } finally {
       setBusy(false);
     }
@@ -66,13 +67,15 @@ export default function ClientLogin() {
     setBusy(true);
     try {
       const res = await base44.functions.invoke("verifyLoginCode", { phone, code: value });
-      if (!res.data?.success) throw new Error(res.data?.error || "הקוד אינו תקין");
+      if (!res.data?.success) throw new Error(errorText(res.data?.error, "הקוד אינו תקין"));
       base44.auth.setToken(res.data.token);
       rememberClient("", phone);
       setEntering(true);
       setTimeout(() => { window.location.href = "/"; }, 900);
     } catch (err) {
-      setError(err.message);
+      // Allow another attempt with the same digits after a transient failure.
+      attempted.current = "";
+      setError(errorText(err, "הקוד אינו תקין"));
       setBusy(false);
     }
   };
