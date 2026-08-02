@@ -18,14 +18,21 @@ export default async function (req) {
     const byPhone = new Map();
     let next = undefined;
 
-    for (let page = 0; page < 3; page++) {
-      const data = await listCalls(token, { items: 200, next });
+    // Go deep enough back in the history so the list holds all of the user's contacts.
+    for (let page = 0; page < 20; page++) {
+      const data = await listCalls(token, { items: 250, next });
       for (const call of data.calls || []) {
         const isOutgoing = String(call.type || "").startsWith("outgoing");
         const other = isOutgoing ? call.numbers?.destination : call.numbers?.caller;
         const phone = String(other?.e164 || "").replace(/\D/g, "");
-        if (!phone || byPhone.has(phone)) continue;
+        if (!phone) continue;
         const name = call.contact && call.contact.name ? String(call.contact.name).trim() : "";
+        const existing = byPhone.get(phone);
+        // Keep the first name we find for a number, even if an earlier call had none.
+        if (existing) {
+          if (!existing.name && name) existing.name = name;
+          continue;
+        }
         byPhone.set(phone, { phone, name });
       }
       next = data.metadata?.next_page_token;
