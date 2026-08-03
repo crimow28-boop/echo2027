@@ -19,13 +19,18 @@ export async function sendSystemWhatsApp(phone: string, message: string) {
   const chatId = toChatId(phone);
   if (!chatId) return { ok: false, skipped: "no phone" };
 
+  // Green API routes each instance to its own host, derived from the first 4
+  // digits of the instance id — the generic host answers 403.
+  const host = `https://${instanceId.slice(0, 4)}.api.green-api.com`;
   const res = await fetch(
-    `https://api.green-api.com/waInstance${instanceId}/sendMessage/${token}`,
+    `${host}/waInstance${instanceId}/sendMessage/${token}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chatId, message })
     }
   );
-  return { ok: res.ok, status: res.status };
+  const detail = await res.text().catch(() => "");
+  if (!res.ok) console.error("system whatsapp send failed", res.status, detail);
+  return { ok: res.ok, status: res.status, detail };
 }
