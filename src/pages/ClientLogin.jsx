@@ -47,10 +47,14 @@ export default function ClientLogin() {
     }
     setBusy(true);
     try {
-      // The server answers identically for registered and unregistered numbers,
-      // so an unregistered phone simply never receives a code.
+      // One entry point: a registered number gets a login code, an unknown one
+      // continues into the signup steps automatically.
       const res = await base44.functions.invoke("requestLoginCode", { phone });
       if (!res.data?.success) throw new Error(errorText(res.data?.error, "שליחת הקוד נכשלה"));
+      if (!res.data.registered) {
+        setStep("signup");
+        return;
+      }
       setHint(res.data.phoneHint || "");
       setStep("code");
     } catch (err) {
@@ -128,13 +132,6 @@ export default function ClientLogin() {
                 המשך
                 {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <MessageCircle className="w-5 h-5" />}
               </Button>
-              <button
-                type="button"
-                onClick={() => { setStep("signup"); setError(""); }}
-                className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                עוד אין לכם חשבון? פתחו חשבון
-              </button>
             </form>
           ) : step === "signup" ? (
             <SignupPrompt phone={phone} onBack={() => setStep("identify")} />
@@ -169,16 +166,6 @@ export default function ClientLogin() {
               >
                 <ArrowRight className="w-3.5 h-3.5" /> חזרה
               </button>
-              <p className="text-center text-xs text-muted-foreground">
-                לא קיבלתם קוד?{" "}
-                <button
-                  type="button"
-                  onClick={() => { setStep("signup"); setCode(""); setError(""); attempted.current = ""; }}
-                  className="underline hover:text-foreground transition-colors"
-                >
-                  פתחו חשבון
-                </button>
-              </p>
             </form>
           )}
         </div>

@@ -13,19 +13,16 @@ export default async function(req) {
     if (!requested) {
       return Response.json({ success: false, error: 'מספר טלפון חסר' });
     }
-    const uniform = Response.json({ success: true, phoneHint: requested.slice(-4) });
-
-    // Throttle on the REQUESTED number, before any lookup, and answer with the
-    // same generic response when throttled — otherwise a second request within
-    // the cooldown would reveal whether the number is registered.
-    const blocked = await codeSendBlocked(base44, requested);
-    if (blocked) return uniform;
-
+    // The login screen has no separate signup flow: an unregistered number is
+    // routed straight into the signup steps, so we report that back.
     const config = await findClientByPhone(base44, requested);
-    if (!config) return uniform;
+    if (!config) return Response.json({ success: true, registered: false });
+
+    const blocked = await codeSendBlocked(base44, requested);
+    if (blocked) return Response.json({ success: false, error: blocked });
 
     const url = greenApiUrl(config, "sendMessage");
-    if (!url) return uniform;
+    if (!url) return Response.json({ success: false, error: 'החיבור לוואטסאפ אינו מוגדר — פנו למנהל המערכת' });
 
     const phone = normalizePhone(config.clientPhone);
 
@@ -40,7 +37,7 @@ export default async function(req) {
         message: `קוד ההתחברות שלך: ${code}\nהקוד בתוקף ל-5 דקות.`
       })
     });
-    if (!res.ok) return uniform;
+    if (!res.ok) return Response.json({ success: false, error: 'שליחת הקוד נכשלה — נסו שוב' });
 
     await base44.asServiceRole.entities.LoginCode.create({
       accountNumber: String(config.accountNumber || "").trim() || phone,
@@ -50,7 +47,7 @@ export default async function(req) {
       used: false
     });
 
-    return Response.json({ success: true, phoneHint: phone.slice(-4) });
+    return Response.json({ success: true, registered: true, phoneHint: phone.slice(-4) });
   } catch (error) {
     return Response.json({ success: false, error: error.message }, { status: 500 });
   }
