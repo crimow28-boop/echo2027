@@ -23,6 +23,7 @@ import PrivateContacts from './pages/PrivateContacts';
 import MessageTemplatePage from './pages/MessageTemplate';
 import VoiceAnnouncements from './pages/VoiceAnnouncements';
 import Dialer from './pages/Dialer';
+import EchoIntelligence from './pages/EchoIntelligence';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -63,6 +64,7 @@ const AuthenticatedApp = () => {
     <Route path="/message-template" element={<MessageTemplatePage />} />
     <Route path="/voice-announcements" element={<VoiceAnnouncements />} />
     <Route path="/dialer" element={<Dialer />} />
+    <Route path="/intelligence" element={<EchoIntelligence />} />
     <Route path="/admin" element={<Admin />} />
     </Route>
     <Route path="/client-login" element={<ClientLogin />} />
