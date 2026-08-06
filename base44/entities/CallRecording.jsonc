@@ -59,6 +59,33 @@
       "type": "string",
       "format": "date-time",
       "title": "Sent At"
+    },
+    "transcript": {
+      "type": "array",
+      "title": "Transcript Segments",
+      "items": {
+        "type": "object",
+        "properties": {
+          "speaker": {
+            "type": "string",
+            "enum": [
+              "agent",
+              "client"
+            ],
+            "default": "client",
+            "title": "Speaker"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        }
+      }
+    },
+    "transcribedAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Transcribed At"
     }
   },
   "required": [

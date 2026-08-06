@@ -1,5 +1,6 @@
-import React from "react";
-import { Send, Loader2 } from "lucide-react";
+import React, { useState } from "react";
+import { Send, Loader2, FileText } from "lucide-react";
+import TranscriptDialog from "@/components/recordings/TranscriptDialog";
 import { Button } from "@/components/ui/button";
 import { formatDuration, formatDate } from "@/lib/recordingUtils";
 import RecordingPlayer from "@/components/recordings/RecordingPlayer";
@@ -11,6 +12,8 @@ import HideContactButton from "@/components/recordings/HideContactButton";
 export default function RecordingCard({ recording, sendingId, onSend, onHide }) {
   const r = recording;
   const isSending = sendingId === r.id;
+  const [showTranscript, setShowTranscript] = useState(false);
+  const canTranscribe = Number(r.duration) > 0 && !r.recordingMissing;
   const sent = r.sent || r.sentAt;
   return (
     <div className="rounded-xl border border-border bg-card p-4 space-y-3">
@@ -44,6 +47,16 @@ export default function RecordingCard({ recording, sendingId, onSend, onHide }) 
           </span>
         )}
         <div className="flex items-center gap-2">
+        {canTranscribe && (
+          <Button
+            variant="outline"
+            onClick={() => setShowTranscript(true)}
+            className="gap-2 h-8 px-3 text-xs font-medium rounded-lg shadow-none"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            תמלול
+          </Button>
+        )}
         <DownloadRecordingButton recording={r} />
         <Button
           disabled={isSending}
@@ -58,6 +71,9 @@ export default function RecordingCard({ recording, sendingId, onSend, onHide }) 
         </Button>
         </div>
       </div>
+      {showTranscript && (
+        <TranscriptDialog recording={r} open={showTranscript} onOpenChange={setShowTranscript} />
+      )}
       {onHide && (
         <div className="pt-1">
           <HideContactButton withLabel onClick={() => onHide(r)} />
