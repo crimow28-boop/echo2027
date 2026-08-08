@@ -13,7 +13,7 @@ export default function AutoTranscribeToggle() {
       <div className="flex-1 text-right">
         <Label htmlFor="auto-transcribe" className="text-sm font-medium">תמלול אוטומטי</Label>
         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-          כשמופעל, כל שיחה מתומללת מיד ותוצג כ"תמלול מוכן" ברשימה.
+          כשמופעל, כל שיחה חדשה מתומללת מיד ותוצג כ"תמלול מוכן" ברשימה. שיחות שקדמו להפעלה לא מתומללות אוטומטית.
         </p>
       </div>
       <Switch

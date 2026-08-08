@@ -6,7 +6,7 @@ import { enqueueTranscribe } from "@/lib/transcribeQueue";
 import useAutoTranscribe from "@/hooks/useAutoTranscribe";
 
 export default function TranscribeButton({ recording }) {
-  const { enabled } = useAutoTranscribe();
+  const { enabled, since } = useAutoTranscribe();
   const [transcript, setTranscript] = useState(recording.transcript || []);
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
@@ -15,6 +15,9 @@ export default function TranscribeButton({ recording }) {
 
   useEffect(() => {
     if (!enabled || ready || started.current) return;
+    // Never retroactive: only calls that happened after the feature was turned on.
+    const callTime = recording.callDate || recording.created_date;
+    if (!since || !callTime || callTime < since) return;
     started.current = true;
     setBusy(true);
     enqueueTranscribe(recording.id)
@@ -24,7 +27,7 @@ export default function TranscribeButton({ recording }) {
       .catch(() => {})
       .finally(() => setBusy(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled]);
+  }, [enabled, since]);
 
   if (busy) {
     return (
