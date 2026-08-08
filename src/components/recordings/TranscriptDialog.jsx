@@ -49,8 +49,11 @@ export default function TranscriptDialog({ recording, open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent dir="rtl" className="max-w-lg text-right flex flex-col max-h-[88vh] p-4 sm:p-6 gap-3">
-        <DialogHeader className="shrink-0">
+      <DialogContent
+        dir="rtl"
+        className="!flex flex-col text-right w-[calc(100vw-1.5rem)] max-w-lg max-h-[85vh] p-4 sm:p-6 gap-3 rounded-2xl overflow-hidden"
+      >
+        <DialogHeader className="shrink-0 pr-8">
           <DialogTitle className="text-right">
             תמלול השיחה · {recording.callerFriendly || recording.callerNumber}
           </DialogTitle>
