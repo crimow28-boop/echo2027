@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import TranscriptBubbles from "@/components/recordings/TranscriptBubbles";
+import CallSummaryPanel from "@/components/recordings/CallSummaryPanel";
 import { errorText } from "@/lib/errorText";
 import { Loader2, RefreshCw } from "lucide-react";
 
@@ -46,8 +47,11 @@ export default function TranscriptDialog({ recording, open, onOpenChange }) {
         ) : error ? (
           <p className="py-6 text-sm text-destructive">{error}</p>
         ) : (
-          <div className="max-h-[60vh] overflow-y-auto pl-1">
-            <TranscriptBubbles transcript={transcript} />
+          <div className="space-y-3">
+            {!!transcript.length && <CallSummaryPanel recording={recording} disabled={busy} />}
+            <div className="max-h-[50vh] overflow-y-auto pl-1">
+              <TranscriptBubbles transcript={transcript} />
+            </div>
           </div>
         )}
 
