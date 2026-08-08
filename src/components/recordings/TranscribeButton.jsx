@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileText, Loader2, CheckCircle2 } from "lucide-react";
 import TranscriptDialog from "@/components/recordings/TranscriptDialog";
-import { enqueueTranscribe } from "@/lib/transcribeQueue";
+import { enqueueTranscribe, enqueueSummarize } from "@/lib/transcribeQueue";
 import useAutoTranscribe from "@/hooks/useAutoTranscribe";
 
 export default function TranscribeButton({ recording }) {
   const { enabled, since } = useAutoTranscribe();
   const [transcript, setTranscript] = useState(recording.transcript || []);
+  const [summary, setSummary] = useState(recording.summary || "");
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
   const started = useRef(false);
@@ -21,8 +22,14 @@ export default function TranscribeButton({ recording }) {
     started.current = true;
     setBusy(true);
     enqueueTranscribe(recording.id)
-      .then((res) => {
-        if (res?.data?.success) setTranscript(res.data.transcript || []);
+      .then(async (res) => {
+        if (!res?.data?.success) return;
+        setTranscript(res.data.transcript || []);
+        // Auto summary right after the transcript is ready.
+        if (!summary) {
+          const sum = await enqueueSummarize(recording.id).catch(() => null);
+          if (sum?.data?.success) setSummary(sum.data.summary || "");
+        }
       })
       .catch(() => {})
       .finally(() => setBusy(false));
@@ -50,7 +57,7 @@ export default function TranscribeButton({ recording }) {
         {ready ? "תמלול מוכן" : "תמלול"}
       </Button>
       {open && (
-        <TranscriptDialog recording={{ ...recording, transcript }} open={open} onOpenChange={setOpen} />
+        <TranscriptDialog recording={{ ...recording, transcript, summary }} open={open} onOpenChange={setOpen} />
       )}
     </>
   );

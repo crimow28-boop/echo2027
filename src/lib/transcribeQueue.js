@@ -9,3 +9,9 @@ export function enqueueTranscribe(recordId) {
   chain = run.catch(() => {});
   return run;
 }
+
+export function enqueueSummarize(recordId) {
+  const run = chain.then(() => base44.functions.invoke("summarizeCall", { recordId }));
+  chain = run.catch(() => {});
+  return run;
+}

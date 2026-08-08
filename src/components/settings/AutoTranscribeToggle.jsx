@@ -11,9 +11,9 @@ export default function AutoTranscribeToggle() {
     <div className="flex items-start gap-3 rounded-xl border border-border bg-card p-4">
       <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />
       <div className="flex-1 text-right">
-        <Label htmlFor="auto-transcribe" className="text-sm font-medium">תמלול אוטומטי</Label>
+        <Label htmlFor="auto-transcribe" className="text-sm font-medium">תמלול וסיכום אוטומטיים</Label>
         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-          כשמופעל, כל שיחה חדשה מתומללת מיד ותוצג כ"תמלול מוכן" ברשימה. שיחות שקדמו להפעלה לא מתומללות אוטומטית.
+          כשמופעל, כל שיחה חדשה מתומללת ומסוכמת מיד ותוצג כ"תמלול מוכן" ברשימה. שיחות שקדמו להפעלה לא מתומללות אוטומטית.
         </p>
       </div>
       <Switch
