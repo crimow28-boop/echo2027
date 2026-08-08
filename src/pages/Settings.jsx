@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowRight, Loader2, ShieldCheck, ExternalLink } from "lucide-react";
+import AutoTranscribeToggle from "@/components/settings/AutoTranscribeToggle";
 
 const LOGO = "https://media.base44.com/images/public/6a689fcffadbeb43e30aa312/7557abb16_Screenshot2026-07-31at231525-Photoroom.png";
 const EXM_HELP = "https://www.exm.co.il/";
@@ -110,6 +111,7 @@ export default function Settings() {
           </div>
         ) : (
           <form onSubmit={handleSave} className="space-y-6">
+            <AutoTranscribeToggle />
             <div className="space-y-2.5">
               <Label htmlFor="exm" className="text-sm font-medium text-foreground/80">טוקן EXM API</Label>
               <Input

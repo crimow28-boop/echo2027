@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { formatDuration, formatDate } from "@/lib/recordingUtils";
 import DownloadRecordingButton from "@/components/recordings/DownloadRecordingButton";
 import HideContactButton from "@/components/recordings/HideContactButton";
+import TranscribeButton from "@/components/recordings/TranscribeButton";
 
 export default function RecordingRow({ recording, sendingId, onSend, onHide }) {
   const r = recording;
@@ -36,6 +37,7 @@ export default function RecordingRow({ recording, sendingId, onSend, onHide }) {
       </td>
       <td className="px-4 py-2.5">
         <div className="flex items-center justify-center gap-2">
+        {Number(r.duration) > 0 && !r.recordingMissing && <TranscribeButton recording={r} />}
         {onHide && <HideContactButton onClick={() => onHide(r)} />}
         <DownloadRecordingButton recording={r} />
         <Button
