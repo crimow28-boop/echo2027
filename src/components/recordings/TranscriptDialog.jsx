@@ -49,8 +49,8 @@ export default function TranscriptDialog({ recording, open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent dir="rtl" className="max-w-lg text-right">
-        <DialogHeader>
+      <DialogContent dir="rtl" className="max-w-lg text-right flex flex-col max-h-[88vh] p-4 sm:p-6 gap-3">
+        <DialogHeader className="shrink-0">
           <DialogTitle className="text-right">
             תמלול השיחה · {recording.callerFriendly || recording.callerNumber}
           </DialogTitle>
@@ -63,16 +63,14 @@ export default function TranscriptDialog({ recording, open, onOpenChange }) {
         ) : error ? (
           <p className="py-6 text-sm text-destructive">{error}</p>
         ) : (
-          <div className="space-y-3">
+          <div className="flex-1 min-h-0 overflow-y-auto pl-1 space-y-3">
             {!!transcript.length && <CallSummaryPanel recording={recording} disabled={busy} />}
-            <div className="max-h-[50vh] overflow-y-auto pl-1">
-              <TranscriptBubbles transcript={transcript} />
-            </div>
+            <TranscriptBubbles transcript={transcript} />
           </div>
         )}
 
         {!!transcript.length && (
-          <Button variant="outline" disabled={busy || swapping} onClick={swapSpeakers} className="gap-2 h-9">
+          <Button variant="outline" disabled={busy || swapping} onClick={swapSpeakers} className="gap-2 h-9 shrink-0">
             {swapping ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ArrowLeftRight className="w-3.5 h-3.5" />}
             החלף דוברים
           </Button>

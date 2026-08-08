@@ -65,7 +65,7 @@ export default function CallSummaryPanel({ recording, disabled }) {
             rows={5}
             value={summary}
             onChange={(e) => { setSummary(e.target.value); setSent(false); }}
-            className="text-right text-sm bg-card max-h-[28vh] overflow-y-auto leading-relaxed"
+            className="text-right text-sm bg-card leading-relaxed"
           />
           <div className="flex flex-wrap gap-2">
             <Button disabled={sending || !summary.trim()} onClick={send} className="gap-2 h-9">
