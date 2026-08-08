@@ -5,12 +5,28 @@ import { Button } from "@/components/ui/button";
 import TranscriptBubbles from "@/components/recordings/TranscriptBubbles";
 import CallSummaryPanel from "@/components/recordings/CallSummaryPanel";
 import { errorText } from "@/lib/errorText";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, ArrowLeftRight } from "lucide-react";
 
 export default function TranscriptDialog({ recording, open, onOpenChange }) {
   const [transcript, setTranscript] = useState(recording.transcript || []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [swapping, setSwapping] = useState(false);
+
+  // Diarization sometimes mixes up which side is the agent — let the user flip it.
+  const swapSpeakers = async () => {
+    setSwapping(true);
+    const swapped = transcript.map((s) => ({
+      ...s,
+      speaker: s.speaker === "agent" ? "client" : "agent"
+    }));
+    setTranscript(swapped);
+    try {
+      await base44.entities.CallRecording.update(recording.id, { transcript: swapped });
+    } finally {
+      setSwapping(false);
+    }
+  };
 
   const run = async (force) => {
     setBusy(true);
@@ -56,9 +72,9 @@ export default function TranscriptDialog({ recording, open, onOpenChange }) {
         )}
 
         {!!transcript.length && (
-          <Button variant="outline" disabled={busy} onClick={() => run(true)} className="gap-2 h-9">
-            {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
-            תמלול מחדש
+          <Button variant="outline" disabled={busy || swapping} onClick={swapSpeakers} className="gap-2 h-9">
+            {swapping ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ArrowLeftRight className="w-3.5 h-3.5" />}
+            החלף דוברים
           </Button>
         )}
       </DialogContent>
